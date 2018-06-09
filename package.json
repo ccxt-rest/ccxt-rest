@@ -1,0 +1,27 @@
+{
+  "name": "ccxt-rest",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "node ./node_modules/mocha/bin/mocha test/ --recursive --reporter spec",
+    "test:watch": "npm run test -- --watch"
+  },
+  "dependencies": {
+    "ccxt": "1.14.63",
+    "debug": "2.6.9",
+    "express": "4.16.3",
+    "http-errors": "1.6.3",
+    "morgan": "1.9.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "5.2.0",
+    "proxyquire": "2.0.1",
+    "sinon": "5.1.1",
+    "supertest": "^3.1.0"
+  },
+  "bin": {
+    "ccxt-rest": "./bin/www"
+  }
+}
