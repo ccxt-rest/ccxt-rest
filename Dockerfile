@@ -1,4 +1,4 @@
-FROM node:carbon
+FROM node:10.4.0-alpine
 
 LABEL authors="Franz See <franz@see.net.ph>"
 
