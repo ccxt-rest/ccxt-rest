@@ -78,12 +78,13 @@ You can install this as a global node package, or run the server via docker
 
 ```bash
 $ npm install -g ccxt-rest
+$ ccxt-rest
 ```
 
 #### Docker
 
 ```bash
-$ docker -i -p 3000:3000 run ccxt-rest
+$ docker run -p 3000:3000 franzsee/ccxt-rest
 ```
 
 ## TLDR
