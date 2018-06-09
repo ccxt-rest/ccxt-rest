@@ -9,6 +9,7 @@
   - [Installation](#installation)
     - [NPM Package](#npm-package)
     - [Docker](#docker)
+- [TLDR](#tldr)
 - [Exchange Instance Management Commands](#exchange-instance-management-commands)
   - [Listing all available exchange sites](#listing-all-available-exchange-sites)
   - [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site)
@@ -84,6 +85,39 @@ $ npm install -g ccxt-rest
 ```bash
 $ docker -i -p 3000:3000 run ccxt-rest
 ```
+
+## TLDR
+
+- List supported exchanges (_all possible values for `{{exchangeName}}`_)
+    ```bash
+   $ curl http://localhost:3000/exchanges
+    ```
+
+- List all exchange instance ids (_all possible values for `{{exchangeId}}`_)
+    ```bash
+    $ curl http://localhost:3000/exchanges/{{exchangeName}}
+    ```
+
+- Create an exchange instance (_creating an `{{exchangeId}}`_)
+    ```bash
+    $ curl -X POST http://localhost:3000/exchanges/{{exchangeName}} -d '{"id":"myExchangeId","appKey":"myAppKey","secret":"myAppSecret"}'
+    ```
+
+- Deleting an exchange instance
+    ```bash
+    $ curl -X DELETE http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}
+    ```
+
+- Calling an exchange instance method (_the REST API format for most of the interesting stuff like retreival of trades, order book, your wallet/balances, creating an order, canceling an order, etc_)
+    ```bash
+    $ curl -X POST http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}/{{methodName}} -d '["1stParameter", {"2ndParameter":"value"}, "etc"]'
+    ```
+
+_Note:_
+* _`exchangeName` - List of values from `curl http://localhost:3000/exchanges`. See [Listing all available exchange sites](#listing-all-available-exchange-sites) for more information._
+* _`exchangeId` - The `id` of the created exchange instance when you did `curl -X POST http://localhost:3000/exchanges/{{exchangeName}}`. See [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site) for more information._
+* _`methodName` - The method of the exchange instance that you would like to invoke. See the [CCXT Manual](https://github.com/ccxt/ccxt/wiki/Manual) for more information._
+* _`[method, parameters]` - This is an array of parameters, wherein the 1st entry in the array represents the first paramter of the method, and the 2nd entry in the array represetns the 2nd parameter of the method, etc. For an example, see [Creating an order](#creating-an-order) REST API._
 
 ## Exchange Instance Management Commands
 
