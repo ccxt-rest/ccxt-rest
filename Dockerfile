@@ -4,7 +4,7 @@ LABEL authors="Franz See <franz@see.net.ph>"
 
 WORKDIR /www
 
-COPY package*.json /www/package.json
+COPY package*.json /www/
 RUN cd /www; npm install
 
 COPY . /www
