@@ -2,6 +2,27 @@
 
 **Open Source Unified REST API of 100+ Crypto Exchange Sites !**
 
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Getting Started](#getting-started)
+  - [Installation](#installation)
+    - [NPM Package](#npm-package)
+    - [Docker](#docker)
+- [Exchange Instance Management Commands](#exchange-instance-management-commands)
+  - [Listing all available exchange sites](#listing-all-available-exchange-sites)
+  - [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site)
+  - [Listing the ids of all created instances of an exchange site](#listing-the-ids-of-all-created-instances-of-an-exchange-site)
+  - [Retreiving the details of an exchange instance](#retreiving-the-details-of-an-exchange-instance)
+  - [Deleting an exchange instance](#deleting-an-exchange-instance)
+- [Common APIs](#common-apis)
+  - [Fecthing the markets](#fecthing-the-markets)
+  - [Fetching ticker](#fetching-ticker)
+  - [Creating an order](#creating-an-order)
+  - [Fetch open orders](#fetch-open-orders)
+  - [Cancelling an order](#cancelling-an-order)
+- [API](#api)
+
 ## Introduction
 
 [CCXT](https://github.com/ccxt/ccxt/) is a popular open source library to connect to over 100 cryptocurrency exchange sites via a unified API. And the APIs are available by importing a nodejs, python or a PHP library. So if you're using any of those 3 programming languages, you'd be able to import and use ccxt. 
