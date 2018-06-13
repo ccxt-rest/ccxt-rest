@@ -1,5 +1,7 @@
 # CCXT REST
 
+[![Build Status](https://travis-ci.org/franz-see/ccxt-rest.svg?branch=master)](https://travis-ci.org/franz-see/ccxt-rest)
+
 **Open Source Unified REST API of 100+ Crypto Exchange Sites !**
 
 ## Table of Contents
