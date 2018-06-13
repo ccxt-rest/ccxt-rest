@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - "10.4.0"
+
+deploy:
+  provider: npm
+  email: franz@see.net.ph
+  api_key:
+    secure: OrLs5IhfsqhWVPZb5XJyxTAPvCAsK6v99rLNY2n0niRQjWoJDtasa6ID5JFywdkuxfUspcA2B6NDdHs3KbHFjEwnrRVVrTpxsRLGlHVw1fNCPEq8G07oTKGQj9D1OM9XhLj5JFmR9T3qWi2aJR9L5CN2yy0/wK83h7XVp4+mN5wnDYFQGfmxr4hWW8PngmlQEelAUFr2RpeGJ70A4oFmdGpzvM3+Tp+dgokfyQUq+AWeFQQ7STARMqtGkWCCRc66EgLCvl2QDaRL8X1XnxKx8g3IqEE4dhqqsOwAkQKCLeTRbhQrxszDopREKDA+lM3Z4KV3odg0wMKOmgiSiCTxUKhY2aohY7+eLTXX5Z29iJtaCj3V0vxc31wS2iK5HZ2t1ZKPy5OvhycGMPxp/pGrC891S26NJKdc6gixHFZlP+al8DK0e7Gahi2DQREkA16vnaune8BCpX3dhWc3U84ifoXCfgG/5c0Q2vh+xDgnm1jdMwRe+zT/OaY+9G846DRDERXKXdqLM/NqxAKVu55e3FHtwOTK6ye6usbor2OKqgIsPAYb346+LWzBNZBeJIHynPCeBQFGdTEIF71K/FTR8CYSGJliyWkMSOyb+epj++ycXunlMWWnGpQTt83JEq07KDffb11kG0VV9xzONDUyqfs2k/1BIBF+Oj/gKRn9rW4=
+  on:
+    condition: $TRAVIS_BRANCH == "master"
+    repo: franz-see/ccxt-rest
+
+branches:
+  only:
+    - master
+    - develop

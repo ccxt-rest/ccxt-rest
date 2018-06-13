@@ -1,5 +1,12 @@
 # CCXT REST
 
+[![Build Status](https://travis-ci.org/franz-see/ccxt-rest.svg)](https://travis-ci.org/franz-see/ccxt-rest)
+[![npm](https://img.shields.io/npm/v/ccxt-rest.svg)](https://npmjs.com/package/ccxt-rest)
+[![NPM Downloads](https://img.shields.io/npm/dm/ccxt-rest.svg)](https://www.npmjs.com/package/ccxt-rest)
+[![Docker Pulls](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svgt)
+[![Docker Stars](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svgt)
+[![Supported Exchanges](https://img.shields.io/badge/exchanges-117-blue.svg)](https://github.com/ccxt/ccxt/wiki/Exchange-Markets)
+
 **Open Source Unified REST API of 100+ Crypto Exchange Sites !**
 
 ## Table of Contents
