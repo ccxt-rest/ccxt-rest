@@ -1,6 +1,8 @@
 # CCXT REST
 
-[![Build Status](https://travis-ci.org/franz-see/ccxt-rest.svg?branch=master)](https://travis-ci.org/franz-see/ccxt-rest)
+[![Build Status](https://travis-ci.org/franz-see/ccxt-rest.svg)](https://travis-ci.org/franz-see/ccxt-rest)
+[![Docker Pulls](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svgt)
+[![Docker Stars](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svgt)
 
 **Open Source Unified REST API of 100+ Crypto Exchange Sites !**
 
