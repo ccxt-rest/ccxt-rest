@@ -361,7 +361,7 @@ And with this, you can now use the id that you supplied in order to control this
 If we want to retrieve the details of an exhange, we just need to supply both exchange name and exchange id in a GET REST API call. The format is 
 
 ```bash
-$ curl http://localhost:3000/exchanges/{{exchangeName}//{{exchangeId}}
+$ curl http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}
 ```
 
 For example. Given an exchangeName of `bitso` and exchangeId of `myBitso`, we can do the following REST API call
@@ -375,7 +375,7 @@ $ curl http://localhost:3000/exchanges/bitso/myBitso
 If we want to delete an exchange instance, we do the following REST API call.
 
 ```bash
-$ curl -X DELETE http://localhost:3000/exchanges/{{exchangeName}}//{{exchangeId}}
+$ curl -X DELETE http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}
 ```
 
 For example. Given an exchangeName of `bitso` and exchangeId of `myBitso`, we can do the following REST API call
