@@ -337,7 +337,7 @@ _Note: The exchangeId here is `myBitso`. This and the exchangeName `bitso` would
 To see the ids of all instances of a paritcular exchange site, we run the following command:
 
 ```bash
-$ curl http://localhost:3000/exchanges/{{exchangeName}
+$ curl http://localhost:3000/exchanges/{{exchangeName}}
 ```
 
 Again, if we use `bitso`, the REST API call would look like this
@@ -375,7 +375,7 @@ $ curl http://localhost:3000/exchanges/bitso/myBitso
 If we want to delete an exchange instance, we do the following REST API call.
 
 ```bash
-$ curl -X DELETE http://localhost:3000/exchanges/{{exchangeName}//{{exchangeId}}
+$ curl -X DELETE http://localhost:3000/exchanges/{{exchangeName}}//{{exchangeId}}
 ```
 
 For example. Given an exchangeName of `bitso` and exchangeId of `myBitso`, we can do the following REST API call
@@ -396,7 +396,7 @@ Once you have an exchange instance, you can then start calling methods of that e
 The format to call any exchange instance method is the following:
 
 ```bash
-$ curl -X POST http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}/{{method} -d '["1stParameter", {"2ndParameter":"value"}, "etc"]'
+$ curl -X POST http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}/{{method}} -d '["1stParameter", {"2ndParameter":"value"}, "etc"]'
 ```
 
 _Note: The HTTP Method for calling exchange instance method is always **POST**. Also the POST body is always of JSON format. Particularly, it's always an array wherein each entry represents the sequential parameter list of the method you are invoking._
@@ -477,7 +477,7 @@ The list of APIs as of this writing are the following
 Again, the format to call a ccxt exchange method is the following
 
 ```bash
-$ curl -X POST http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}/{{method} -d '["1stParameter", {"2ndParameter":"value"}, "etc"]'
+$ curl -X POST http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}/{{method}} -d '["1stParameter", {"2ndParameter":"value"}, "etc"]'
 ```
 
 * `exchangeName` - List of values from `curl http://localhost:3000/exchanges`. See [Listing all available exchange sites](#listing-all-available-exchange-sites) for more information.
