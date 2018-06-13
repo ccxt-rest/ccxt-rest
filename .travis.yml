@@ -10,3 +10,8 @@ deploy:
   on:
     tags: true
     repo: franz-see/ccxt-rest
+
+branches:
+  only:
+    - master
+    - develop
