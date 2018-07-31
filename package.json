@@ -7,7 +7,7 @@
     "test:watch": "npm run test -- --watch"
   },
   "dependencies": {
-    "ccxt": "1.14.63",
+    "ccxt": "1.17.53",
     "debug": "2.6.9",
     "express": "4.16.3",
     "http-errors": "1.6.3",
