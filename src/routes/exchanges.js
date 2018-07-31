@@ -1,4 +1,5 @@
 var ccxt = require ('ccxt')
+  , CircularJSON = require('circular-json')
   , db = require('./../db')
   , express = require('express');
 
@@ -11,13 +12,13 @@ module.exports =  function(app) {
   let wrap = fn => (...args) => fn(...args).catch(args[2])
 
   router.get('/', function(req, res, next) {
-    res.send(JSON.stringify(ccxt.exchanges));
+    res.send(CircularJSON.stringify(ccxt.exchanges));
   });
 
   router.get('/:exchangeName', function(req, res, next) {
     var exchangeName = req.params.exchangeName;
     var exchangeIds = db.getExchangeIds(exchangeName);
-    res.send(JSON.stringify(exchangeIds));
+    res.send(CircularJSON.stringify(exchangeIds));
   });
 
   router.post('/:exchangeName', function(req, res, next) {
@@ -27,7 +28,7 @@ module.exports =  function(app) {
     var exchange = new ccxt[exchangeName](reqBody);
     db.saveExchange(exchangeName, exchange);
     
-    res.send(JSON.stringify(exchange));
+    res.send(CircularJSON.stringify(exchange));
   });
 
   router.get('/:exchangeName/:exchangeId', function(req, res, next) {
@@ -35,7 +36,7 @@ module.exports =  function(app) {
     var exchangeId = req.params.exchangeId
     var exchange = db.getExchange(exchangeName, exchangeId);
     if (exchange) {
-      res.send(JSON.stringify(exchange));
+      res.send(CircularJSON.stringify(exchange));
     } else {
       res.sendStatus(404);
     }
@@ -49,7 +50,7 @@ module.exports =  function(app) {
     var exchange = db.deleteExchange(exchangeName, exchangeId);
     
     if (exchange) {
-      res.send(JSON.stringify(exchange));
+      res.send(CircularJSON.stringify(exchange));
     } else {
       res.sendStatus(404);
     }
@@ -69,6 +70,6 @@ module.exports =  function(app) {
     }
 
     var response = await exchange[methodName].apply(exchange, reqBody);
-    res.send(JSON.stringify(response));
+    res.send(CircularJSON.stringify(response));
   }));
 }
