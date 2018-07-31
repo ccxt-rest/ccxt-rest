@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "ccxt": "1.17.53",
+    "circular-json": "0.5.5",
     "debug": "2.6.9",
     "express": "4.16.3",
     "http-errors": "1.6.3",

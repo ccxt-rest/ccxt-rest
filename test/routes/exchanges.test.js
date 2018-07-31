@@ -9,6 +9,8 @@ describe('Exchange Route', function () {
   var stubbedCcxt, stubbedDb, request;
   
   beforeEach(function () {
+    this.timeout(10000);
+
     stubbedCcxt = sinon.stub();
     stubbedDb = sinon.stub();
 
