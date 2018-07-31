@@ -17,7 +17,7 @@ var getExchange = function(exchangeName, exchangeId) {
 };
 
 var getExchangeIds = function(exchangeName) {
-    var exchangesByExchangeName = inMemoryExchangeDatabase[exchangeName];
+    var exchangesByExchangeName = inMemoryExchangeDatabase[exchangeName] || {};
     var exchangeIds = Object.keys(exchangesByExchangeName);
     return exchangeIds;
 };
