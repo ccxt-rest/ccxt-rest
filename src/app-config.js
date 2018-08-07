@@ -33,6 +33,7 @@ var postRouters = function(app) {
         res.send(JSON.stringify({
             status:err.status,
             message:err.message,
+            type: err.constructor.name,
             error:error
         }));
     });
