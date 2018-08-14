@@ -14,6 +14,13 @@ var preRouters = function(app) {
       next();
     });
 
+    // map json null to undefined
+    app.use(function (req, res, next) {
+        if (req.body && typeof(req.body.map) === 'function') {
+            req.body = req.body.map(x => x === null ? undefined : x);
+        }
+        next();
+    });
 };
 
 var postRouters = function(app) {
@@ -26,6 +33,7 @@ var postRouters = function(app) {
         res.send(JSON.stringify({
             status:err.status,
             message:err.message,
+            type: err.constructor.name,
             error:error
         }));
     });
