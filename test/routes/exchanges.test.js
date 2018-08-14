@@ -90,7 +90,8 @@ describe('Exchange Route', function () {
         .expect(function (res) {
           expect(res.body).to.deep.equal({
             error: {},
-            message : error.message
+            message : error.message,
+            type: "Error"
           });
         })
         .end(function(err, res) {
