@@ -129,7 +129,7 @@ _Note:_
 
 ## Exchange Instance Management Commands
 
-Once ccxt-rest is running, but before we can integrate with any exchange site, we first need to create an exchange instance. An exchange instance is what is needed to define the connection with a particular exchange, and it is through the integration would be made.
+Once ccxt-rest is running, but before we can integrate with any exchange site, we first need to create an exchange instance. An exchange instance is what is needed to define the connection with a particular exchange, and it is through this integration a trade would be made.
 
 ### Listing all available exchange sites
 
