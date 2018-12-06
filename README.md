@@ -108,7 +108,7 @@ $ docker run -p 3000:3000 franzsee/ccxt-rest
 
 - Create an exchange instance (_creating an `{{exchangeId}}`_)
     ```bash
-    $ curl -X POST http://localhost:3000/exchanges/{{exchangeName}} -d '{"id":"myExchangeId","appKey":"myAppKey","secret":"myAppSecret"}'
+    $ curl -X POST http://localhost:3000/exchanges/{{exchangeName}} -d '{"id":"myExchangeId","apiKey":"myApiKey","secret":"myAppSecret"}'
     ```
 
 - Deleting an exchange instance
