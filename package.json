@@ -1,13 +1,13 @@
 {
   "name": "ccxt-rest",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "scripts": {
     "start": "node ./bin/www",
     "test": "node ./node_modules/mocha/bin/mocha test/ --recursive --reporter spec",
     "test:watch": "npm run test -- --watch"
   },
   "dependencies": {
-    "ccxt": "1.17.53",
+    "ccxt": "1.18.437",
     "circular-json": "0.5.5",
     "debug": "2.6.9",
     "express": "4.16.3",
