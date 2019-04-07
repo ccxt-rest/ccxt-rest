@@ -7,29 +7,34 @@
 [![Docker Stars](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svgt)
 [![Supported Exchanges](https://img.shields.io/badge/exchanges-117-blue.svg)](https://github.com/ccxt/ccxt/wiki/Exchange-Markets)
 
+[![Hire Us](https://img.shields.io/badge/Need%20a%20Feature%3F-Hire%20Us-green.svg)](mailto:hello@adroit.ph?subject=CCXT-REST%20Development)
+
 **Open Source Unified REST API of 100+ Crypto Exchange Sites !**
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Getting Started](#getting-started)
-  - [Installation](#installation)
-    - [NPM Package](#npm-package)
-    - [Docker](#docker)
-- [TLDR](#tldr)
-- [Exchange Instance Management Commands](#exchange-instance-management-commands)
-  - [Listing all available exchange sites](#listing-all-available-exchange-sites)
-  - [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site)
-  - [Listing the ids of all created instances of an exchange site](#listing-the-ids-of-all-created-instances-of-an-exchange-site)
-  - [Retreiving the details of an exchange instance](#retreiving-the-details-of-an-exchange-instance)
-  - [Deleting an exchange instance](#deleting-an-exchange-instance)
-- [Common APIs](#common-apis)
-  - [Fecthing the markets](#fecthing-the-markets)
-  - [Fetching ticker](#fetching-ticker)
-  - [Creating an order](#creating-an-order)
-  - [Fetch open orders](#fetch-open-orders)
-  - [Cancelling an order](#cancelling-an-order)
-- [API](#api)
+- [CCXT REST](#ccxt-rest)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Getting Started](#getting-started)
+    - [Installation](#installation)
+      - [NPM Package](#npm-package)
+      - [Docker](#docker)
+  - [TLDR](#tldr)
+  - [Exchange Instance Management Commands](#exchange-instance-management-commands)
+    - [Listing all available exchange sites](#listing-all-available-exchange-sites)
+    - [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site)
+    - [Listing the ids of all created instances of an exchange site](#listing-the-ids-of-all-created-instances-of-an-exchange-site)
+    - [Retreiving the details of an exchange instance](#retreiving-the-details-of-an-exchange-instance)
+    - [Deleting an exchange instance](#deleting-an-exchange-instance)
+  - [Common APIs](#common-apis)
+    - [Fecthing the markets](#fecthing-the-markets)
+    - [Fetching ticker](#fetching-ticker)
+    - [Creating an order](#creating-an-order)
+    - [Fetch open orders](#fetch-open-orders)
+    - [Cancelling an order](#cancelling-an-order)
+  - [API](#api)
+  - [Feature / Support Request](#feature--support-request)
 
 ## Introduction
 
@@ -122,10 +127,28 @@ $ docker run -p 3000:3000 franzsee/ccxt-rest
     ```
 
 _Note:_
-* _`exchangeName` - List of values from `curl http://localhost:3000/exchanges`. See [Listing all available exchange sites](#listing-all-available-exchange-sites) for more information._
-* _`exchangeId` - The `id` of the created exchange instance when you did `curl -X POST http://localhost:3000/exchanges/{{exchangeName}}`. See [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site) for more information._
-* _`methodName` - The method of the exchange instance that you would like to invoke. See the [CCXT Manual](https://github.com/ccxt/ccxt/wiki/Manual) for more information._
-* _`[method, parameters]` - This is an array of parameters, wherein the 1st entry in the array represents the first paramter of the method, and the 2nd entry in the array represetns the 2nd parameter of the method, etc. For an example, see [Creating an order](#creating-an-order) REST API._
+- [CCXT REST](#ccxt-rest)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Getting Started](#getting-started)
+    - [Installation](#installation)
+      - [NPM Package](#npm-package)
+      - [Docker](#docker)
+  - [TLDR](#tldr)
+  - [Exchange Instance Management Commands](#exchange-instance-management-commands)
+    - [Listing all available exchange sites](#listing-all-available-exchange-sites)
+    - [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site)
+    - [Listing the ids of all created instances of an exchange site](#listing-the-ids-of-all-created-instances-of-an-exchange-site)
+    - [Retreiving the details of an exchange instance](#retreiving-the-details-of-an-exchange-instance)
+    - [Deleting an exchange instance](#deleting-an-exchange-instance)
+  - [Common APIs](#common-apis)
+    - [Fecthing the markets](#fecthing-the-markets)
+    - [Fetching ticker](#fetching-ticker)
+    - [Creating an order](#creating-an-order)
+    - [Fetch open orders](#fetch-open-orders)
+    - [Cancelling an order](#cancelling-an-order)
+  - [API](#api)
+  - [Feature / Support Request](#feature--support-request)
 
 ## Exchange Instance Management Commands
 
@@ -388,10 +411,28 @@ $ curl -X DELETE http://localhost:3000/exchanges/bitso/myBitso
 
 Once you have an exchange instance, you can then start calling methods of that exchange instance by supplying the following:
 
-* `exchangeName` - List of values from `curl http://localhost:3000/exchanges`. See [Listing all available exchange sites](#listing-all-available-exchange-sites) for more information.
-* `exchangeId` - The `id` of the created exchange instance when you did `curl -X POST http://localhost:3000/exchanges/{{exchangeName}}`. See [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site) for more information.
-* `methodName` - The method of the exchange instance that you would like to invoke. See the [CCXT Manual](https://github.com/ccxt/ccxt/wiki/Manual) for more information.
-* `[method, parameters]` - This is an array of parameters, wherein the 1st entry in the array represents the first paramter of the method, and the 2nd entry in the array represetns the 2nd parameter of the method, etc. For an example, see [Creating an order](#creating-an-order) REST API.
+- [CCXT REST](#ccxt-rest)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Getting Started](#getting-started)
+    - [Installation](#installation)
+      - [NPM Package](#npm-package)
+      - [Docker](#docker)
+  - [TLDR](#tldr)
+  - [Exchange Instance Management Commands](#exchange-instance-management-commands)
+    - [Listing all available exchange sites](#listing-all-available-exchange-sites)
+    - [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site)
+    - [Listing the ids of all created instances of an exchange site](#listing-the-ids-of-all-created-instances-of-an-exchange-site)
+    - [Retreiving the details of an exchange instance](#retreiving-the-details-of-an-exchange-instance)
+    - [Deleting an exchange instance](#deleting-an-exchange-instance)
+  - [Common APIs](#common-apis)
+    - [Fecthing the markets](#fecthing-the-markets)
+    - [Fetching ticker](#fetching-ticker)
+    - [Creating an order](#creating-an-order)
+    - [Fetch open orders](#fetch-open-orders)
+    - [Cancelling an order](#cancelling-an-order)
+  - [API](#api)
+  - [Feature / Support Request](#feature--support-request)
 
 The format to call any exchange instance method is the following:
 
@@ -480,10 +521,28 @@ Again, the format to call a ccxt exchange method is the following
 $ curl -X POST http://localhost:3000/exchanges/{{exchangeName}}/{{exchangeId}}/{{method}} -d '["1stParameter", {"2ndParameter":"value"}, "etc"]'
 ```
 
-* `exchangeName` - List of values from `curl http://localhost:3000/exchanges`. See [Listing all available exchange sites](#listing-all-available-exchange-sites) for more information.
-* `exchangeId` - The `id` of the created exchange instance when you did `curl -X POST http://localhost:3000/exchanges/{{exchangeName}}`. See [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site) for more information.
-* `methodName` - The method of the exchange instance that you would like to invoke. See the [CCXT Manual](https://github.com/ccxt/ccxt/wiki/Manual) for more information.
-* `[method, parameters]` - This is an array of parameters, wherein the 1st entry in the array represents the first paramter of the method, and the 2nd entry in the array represetns the 2nd parameter of the method, etc. For an example, see [Creating an order](#creating-an-order) REST API.
+- [CCXT REST](#ccxt-rest)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Getting Started](#getting-started)
+    - [Installation](#installation)
+      - [NPM Package](#npm-package)
+      - [Docker](#docker)
+  - [TLDR](#tldr)
+  - [Exchange Instance Management Commands](#exchange-instance-management-commands)
+    - [Listing all available exchange sites](#listing-all-available-exchange-sites)
+    - [Creating an instance of an exchange site](#creating-an-instance-of-an-exchange-site)
+    - [Listing the ids of all created instances of an exchange site](#listing-the-ids-of-all-created-instances-of-an-exchange-site)
+    - [Retreiving the details of an exchange instance](#retreiving-the-details-of-an-exchange-instance)
+    - [Deleting an exchange instance](#deleting-an-exchange-instance)
+  - [Common APIs](#common-apis)
+    - [Fecthing the markets](#fecthing-the-markets)
+    - [Fetching ticker](#fetching-ticker)
+    - [Creating an order](#creating-an-order)
+    - [Fetch open orders](#fetch-open-orders)
+    - [Cancelling an order](#cancelling-an-order)
+  - [API](#api)
+  - [Feature / Support Request](#feature--support-request)
 
 As of this writing, these are the documented methods in CCXT.
 
@@ -565,3 +624,9 @@ As of this writing, these are the documented methods in CCXT.
 **For more information, kindly see the [CCXT Manual](https://github.com/ccxt/ccxt/wiki/Manual)**
 
 ***************************************************************
+
+## Feature / Support Request 
+
+Need a feature or need support? Reach out and let us know what you need.
+
+[![Hire Us](https://img.shields.io/badge/Need%20a%20Feature%3F-Hire%20Us-green.svg)](mailto:hello@adroit.ph?subject=CCXT-REST%20Development)
