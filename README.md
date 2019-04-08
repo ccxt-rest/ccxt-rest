@@ -7,7 +7,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/stars/franzsee/ccxt-rest.svgt)
 [![Supported Exchanges](https://img.shields.io/badge/exchanges-117-blue.svg)](https://github.com/ccxt/ccxt/wiki/Exchange-Markets)
 
-[![Hire Us](https://img.shields.io/badge/Need%20a%20Feature%3F-Hire%20Us-green.svg)](mailto:hello@adroit.ph?subject=CCXT-REST%20Development)
+[![Hire Us](https://img.shields.io/badge/Need%20a%20Feature%3F-Hire%20Us-green.svg)](https://adroit.ph/ccxt-rest-contact-us/)
 
 **Open Source Unified REST API of 100+ Crypto Exchange Sites !**
 
