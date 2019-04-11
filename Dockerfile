@@ -4,7 +4,9 @@ LABEL authors="Franz See <franz@see.net.ph>"
 
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh alpine-sdk python
-RUN npm install -g ccxt-rest@0.0.4 --unsafe-perm
+COPY package.json /tmp/package.json
+RUN version=`cat /tmp/package.json | grep version | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}'`
+RUN npm install -g ccxt-rest@$version --unsafe-perm
 
 FROM node:10.4.0-alpine
 COPY --from=builder /usr/local/lib /usr/local/lib
