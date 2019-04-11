@@ -1,6 +1,6 @@
 {
   "name": "ccxt-rest",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "scripts": {
     "start": "node ./bin/www",
     "test": "node ./node_modules/mocha/bin/mocha test/ --recursive --reporter spec",
