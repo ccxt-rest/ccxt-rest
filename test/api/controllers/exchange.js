@@ -6,7 +6,9 @@ var request = require('supertest');
 var server = require('../../../app');
 var db = require('../../../api/helpers/db');
 
-var exchangeDetailsMap = JSON.parse(process.env.CCXTREST_TEST_EXCHANGEDETAILS)
+var ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
+console.log('Sanity Spot Check : Test Config : ' + ccxtRestTestExchangeDetails.slice(0, 20))
+var exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 
 describe('controllers', function() {
 
