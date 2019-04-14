@@ -1,29 +1,8 @@
 {
   "name": "ccxt-rest",
-  "version": "0.1.1",
-  "scripts": {
-    "start": "node ./bin/www",
-    "test": "node ./node_modules/mocha/bin/mocha test/ --recursive --reporter spec",
-    "test:watch": "npm run test -- --watch"
-  },
-  "dependencies": {
-    "ccxt": "1.18.437",
-    "circular-json": "0.5.5",
-    "debug": "2.6.9",
-    "express": "4.16.3",
-    "http-errors": "1.6.3",
-    "morgan": "1.9.0"
-  },
-  "devDependencies": {
-    "chai": "4.1.2",
-    "mocha": "5.2.0",
-    "proxyquire": "2.0.1",
-    "sinon": "5.1.1",
-    "supertest": "^3.1.0"
-  },
-  "bin": {
-    "ccxt-rest": "./bin/www"
-  },
+  "version": "1.0.0-beta-1",
+  "private": true,
+  "description": "Open Source Unified REST API of 100+ Crypto Exchange Sites",
   "keywords": [
     "algorithmic",
     "algotrading",
@@ -410,5 +389,40 @@
     "Bequant",
     "mandalaex.com",
     "Mandala"
-  ]
+  ],
+  "author": {
+    "name": "Franz See",
+    "email": "franz@see.net.ph",
+    "url": "https://github.com/franz-see"
+  },
+  "license": "MIT",
+  "readme": "README.md",
+  "main": "app.js",
+  "dependencies": {
+    "ccxt": "^1.18.437",
+    "circular-json": "^0.5.9",
+    "express": "^4.12.3",
+    "swagger-express-mw": "^0.1.0",
+    "swagger-tools": "^0.10.4",
+    "swagger-ui": "^3.22.0",
+    "widdershins": "^3.6.7"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "proxyquire": "^2.1.0",
+    "should": "^7.1.0",
+    "sinon": "^7.3.1",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "swagger project test",
+    "generate:client": "rm -rf ./clients/$lang && docker run --rm -v ${PWD}:/local swaggerapi/swagger-codegen-cli generate --api-package ph.adroit.ccxtrest.api --model-package ph.adroit.ccxtrest.model --invoker-package ph.adroit.ccxtrest.invoker --group-id ph.adoit.ccxtrest --artifact-id ccxt-rest-$lang-client --artifact-version $npm_package_version -c /local/config.json --additional-properties scmConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmDeveloperConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactDescription=\"ccxt-rest $lang client\" -i /local/api/swagger/swagger.yaml -l $lang -o /local/clients/$lang",
+    "generate:clients": "for lang in `cat codegen_languages.txt`; do lang=$lang npm run generate:client; done",
+    "generate:docs": "./node_modules/.bin/widdershins --search true --language_tabs 'shell:Shell' 'go:Go' 'java:Java' 'javascript:Javascript' 'python:Python' 'ruby:Ruby' --summary api/swagger/swagger.yaml -o ./docs/source/index.html.md && cd ./docs && bundle exec middleman build --clean && cd .. && rm -rf ./out/docs && mv ./docs/build ./out/docs",
+    "swagger:edit": "swagger project edit"
+  },
+  "bin": {
+    "ccxt-rest": "./bin/www"
+  }
 }

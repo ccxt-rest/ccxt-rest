@@ -1,0 +1,802 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: CCXT REST
+  contact:
+    email: "franz@see.net.ph"
+  license:
+    name: "MIT"
+    url: "https://github.com/franz-see/ccxt-rest/blob/master/LICENSE.txt"
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /exchanges:
+    x-swagger-router-controller: exchanges
+    get:
+      description: List all support exchanges by this server
+      operationId: list
+      responses:
+        "200":
+          description: Success
+          schema: 
+            type: array
+            items: 
+              type: string
+  /exchange/{exchangeName}:
+    x-swagger-router-controller: exchange
+    get:
+      description: List all exchange instance ids for this exchange
+      operationId: listIds
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+      responses:
+        "200":
+          description: Success
+          schema: 
+            type: array
+            items: 
+              type: string
+    post:
+      description: Creates an instance of the exchange
+      operationId: createExchange
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - in: body
+          name: exchange
+          description: The exchange to create.
+          schema:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: string
+              apiKey:
+                type: string
+              secret:
+                type: string
+              enableRateLimit:
+                type: boolean
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ExchangeResponse"
+  /exchange/{exchangeName}/{exchangeId}:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the exchange details given the exchangeName and exchangeId
+      operationId: getOne
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ExchangeResponse"
+    delete:
+      description: Delete the exchange details referenced by the exchangeName and exchangeId
+      operationId: deleteExchange
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/ExchangeResponse"
+  /exchange/{exchangeName}/{exchangeId}/markets:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the markets of the exchange referenced by the exchangeName and exchangeId
+      operationId: markets
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MarketResponse"
+  /exchange/{exchangeName}/{exchangeId}/orderBook:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the markets of the exchange referenced by the exchangeName and exchangeId
+      operationId: orderBook
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/requiredExchangeSymbolParam"
+        - name: limit
+          in: query
+          description: The limit of the exchange's order book to be retrieved.
+          required: false
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderBookResponse"
+  /exchange/{exchangeName}/{exchangeId}/l2OrderBook:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the markets of the exchange referenced by the exchangeName and exchangeId
+      operationId: l2OrderBook
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/requiredExchangeSymbolParam"
+        - name: limit
+          in: query
+          description: The limit of the exchange's order book to be retrieved.
+          required: false
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderBookResponse"
+  /exchange/{exchangeName}/{exchangeId}/trades:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the trades of the exchange referenced by the exchangeName and exchangeId
+      operationId: trades
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/requiredExchangeSymbolParam"
+        - name: since
+          in: query
+          description: Retrieve the trades starting from 'since'
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: The limit of the exchange's trades to be retrieved.
+          required: false
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/TradeResponse"
+  /exchange/{exchangeName}/{exchangeId}/ticker:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the ticker of the exchange referenced by the exchangeName and exchangeId
+      operationId: ticker
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/requiredExchangeSymbolParam"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/TickerResponse"
+  /exchange/{exchangeName}/{exchangeId}/balances:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the balances of the exchange referenced by the exchangeName and exchangeId
+      operationId: balances
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/BalanceResponse"
+  /exchange/{exchangeName}/{exchangeId}/orders:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the orders of the exchange referenced by the exchangeName and exchangeId
+      operationId: fetchOrders
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/optionalExchangeSymbolParam"
+        - name: since
+          in: query
+          description: Retrieve the orders starting from 'since'
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: The limit of the exchange's orders to be retrieved.
+          required: false
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderResponse"
+  /exchange/{exchangeName}/{exchangeId}/orders/open:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the open orders of the exchange referenced by the exchangeName and exchangeId
+      operationId: fetchOpenOrders
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/optionalExchangeSymbolParam"
+        - name: since
+          in: query
+          description: Retrieve the orders starting from 'since'
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: The limit of the exchange's orders to be retrieved.
+          required: false
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderResponse"
+  /exchange/{exchangeName}/{exchangeId}/orders/closed:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get the closed orders of the exchange referenced by the exchangeName and exchangeId
+      operationId: fetchClosedOrders
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/optionalExchangeSymbolParam"
+        - name: since
+          in: query
+          description: Retrieve the orders starting from 'since'
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: The limit of the exchange's orders to be retrieved.
+          required: false
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderResponse"
+  /exchange/{exchangeName}/{exchangeId}/trades/mine:
+    x-swagger-router-controller: exchange
+    get:
+      description: Get my trades of the exchange referenced by the exchangeName and exchangeId
+      operationId: fetchMyTrades
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/optionalExchangeSymbolParam"
+        - name: since
+          in: query
+          description: Retrieve the trades starting from 'since'
+          required: false
+          type: string
+        - name: limit
+          in: query
+          description: The limit of the exchange's trades to be retrieved.
+          required: false
+          type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/TradeResponse"
+  /exchange/{exchangeName}/{exchangeId}/order:
+    x-swagger-router-controller: exchange
+    post:
+      description: Create an order on the exchange referenced by the exchangeName and exchangeId
+      operationId: createOrder
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - in: body
+          name: order
+          description: The order to place.
+          schema:
+            type: object
+            required:
+              - symbol
+              - type
+              - side
+              - amount
+            properties:
+              symbol:
+                type: string
+              type:
+                type: string
+                enum: [market, limit]
+              side:
+                type: string
+                enum: [buy, sell]
+              amount:
+                type: number
+              price:
+                type: number
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderResponse"
+  /exchange/{exchangeName}/{exchangeId}/order/{orderId}:
+    x-swagger-router-controller: exchange
+    get:
+      description: Retrieves the informatoin of an order on the exchange referenced by the exchangeName, exchangeId and orderId
+      operationId: fetchOrder
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/orderIdParam"
+        - $ref: "#/parameters/optionalExchangeSymbolParam"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderResponse"
+    delete:
+      description: Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId
+      operationId: cancelOrder
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - $ref: "#/parameters/orderIdParam"
+        - $ref: "#/parameters/optionalExchangeSymbolParam"
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/OrderResponse"
+  /exchange/{exchangeName}/{exchangeId}/_/{methodName}:
+    x-swagger-router-controller: exchange
+    post:
+      description: Get the balances of the exchange referenced by the exchangeName and exchangeId
+      operationId: directCall
+      parameters:
+        - $ref: "#/parameters/exchangeNameParam"
+        - $ref: "#/parameters/exchangeIdParam"
+        - name: methodName
+          in: path
+          description: The method name of the exchange that would be invoked directly
+          required: true
+          type: string
+        - in: body
+          name: methodParams
+          description: The stringified array of values that would be passed as parameters to the direct method call
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: object
+  /swagger:
+    x-swagger-pipe: swagger_raw
+parameters:
+  exchangeNameParam:
+    name: exchangeName
+    in: path
+    description: The name of the exchange. Possible values are any of the result of GET:/exchanges.
+    required: true
+    type: string
+  exchangeIdParam:
+    name: exchangeId
+    in: path
+    description: The id of the exchange instance. Possible values are any of the result of GET:/exchange/{exchangeName}.
+    required: true
+    type: string
+  requiredExchangeSymbolParam:
+    name: symbol
+    in: query
+    description: The symbol of the exchange's data to be retrieved. Possible values are any of symbols in GET:/exchange/{exchangeName}/{exchangeId}/markets
+    required: true
+    type: string
+  optionalExchangeSymbolParam:
+    name: symbol
+    in: query
+    description: The symbol of the exchange's data to be retrieved. Possible values are any of symbols in GET:/exchange/{exchangeName}/{exchangeId}/markets
+    required: false
+    type: string
+  orderIdParam:
+    name: orderId
+    in: path
+    description: The id of the order. Possible values are any of the result of GET:/exchange/{exchangeName}/{exchangeId}/orders.
+    required: true
+    type: string
+definitions:
+  ExchangeCapability:
+    type: string
+    enum: &ExchangeCapability
+      - 'true'
+      - 'false'
+      - emulated
+  OrderType:
+    type: string
+    enum: &OrderType
+      - market
+      - limit
+  OrderStatus:
+    type: string
+    enum: &OrderStatus
+      - open
+      - closed
+      - canceled
+      - canceling
+  Side:
+    type: string
+    enum: &Side
+      - buy
+      - sell
+  ExchangeResponse:
+    required:
+      - name
+      - enableRateLimit
+      - countries
+    properties:
+      name:
+        type: string
+      enableRateLimit:
+        type: boolean
+      countries:
+        type: array
+        items: 
+          type: string
+      rateLimit: 
+        type: number
+      twofa:
+        type: boolean
+      has:
+        $ref: '#/definitions/ExchangeHasCapabilities'
+      urls:
+        type: object
+  ExchangeHasCapabilities:
+    required:
+      - CORS
+      - publicAPI
+      - privateAPI
+      - cancelOrder
+      - cancelOrders
+      - createDepositAddress
+      - createOrder
+      - createMarketOrder
+      - createLimitOrder
+      - editOrder
+      - fetchBalance
+      - fetchBidsAsks
+      - fetchClosedOrders
+      - fetchCurrencies
+      - fetchDepositAddress
+      - fetchFundingFees
+      - fetchL2OrderBook
+      - fetchMarkets
+      - fetchMyTrades
+      - fetchOHLCV
+      - fetchOpenOrders
+      - fetchOrder
+      - fetchOrderBook
+      - fetchOrderBooks
+      - fetchOrders
+      - fetchTicker
+      - fetchTickers
+      - fetchTrades
+      - fetchTradingFees
+      - fetchTradingLimits
+      - withdraw
+    properties:
+      CORS:
+        type: string
+        enum: *ExchangeCapability
+      publicAPI:
+        type: string
+        enum: *ExchangeCapability
+      privateAPI:
+        type: string
+        enum: *ExchangeCapability
+      cancelOrder:
+        type: string
+        enum: *ExchangeCapability
+      cancelOrders:
+        type: string
+        enum: *ExchangeCapability
+      createDepositAddress:
+        type: string
+        enum: *ExchangeCapability
+      createOrder:
+        type: string
+        enum: *ExchangeCapability
+      createMarketOrder:
+        type: string
+        enum: *ExchangeCapability
+      createLimitOrder:
+        type: string
+        enum: *ExchangeCapability
+      editOrder:
+        type: string
+        enum: *ExchangeCapability
+      fetchBalance:
+        type: string
+        enum: *ExchangeCapability
+      fetchBidsAsks:
+        type: string
+        enum: *ExchangeCapability
+      fetchClosedOrders:
+        type: string
+        enum: *ExchangeCapability
+      fetchCurrencies:
+        type: string
+        enum: *ExchangeCapability
+      fetchDepositAddress:
+        type: string
+        enum: *ExchangeCapability
+      fetchFundingFees:
+        type: string
+        enum: *ExchangeCapability
+      fetchL2OrderBook:
+        type: string
+        enum: *ExchangeCapability
+      fetchMarkets:
+        type: string
+        enum: *ExchangeCapability
+      fetchMyTrades:
+        type: string
+        enum: *ExchangeCapability
+      fetchOHLCV:
+        type: string
+        enum: *ExchangeCapability
+      fetchOpenOrders:
+        type: string
+        enum: *ExchangeCapability
+      fetchOrder:
+        type: string
+        enum: *ExchangeCapability
+      fetchOrderBook:
+        type: string
+        enum: *ExchangeCapability
+      fetchOrderBooks:
+        type: string
+        enum: *ExchangeCapability
+      fetchOrders:
+        type: string
+        enum: *ExchangeCapability
+      fetchTicker:
+        type: string
+        enum: *ExchangeCapability
+      fetchTickers:
+        type: string
+        enum: *ExchangeCapability
+      fetchTrades:
+        type: string
+        enum: *ExchangeCapability
+      fetchTradingFees:
+        type: string
+        enum: *ExchangeCapability
+      fetchTradingLimits:
+        type: string
+        enum: *ExchangeCapability
+      withdraw:
+        type: string
+        enum: *ExchangeCapability
+  MarketResponse:
+    required:
+      - id
+      - symbol
+      - base
+      - quote
+      - info
+      - lot
+      - limits
+      - precision
+    properties:
+      id:
+        type: string
+      symbol:
+        type: string
+      base:
+        type: string
+      quote: 
+        type: string
+      info:
+        type: object
+      lot:
+        type: number
+      limits:
+        $ref: '#/definitions/Limits'
+      precision:
+        $ref: '#/definitions/Precision'
+  Limits:
+    required:
+      - amount
+      - price
+      - cost
+    properties:
+      amount:
+        $ref: '#/definitions/Limit'
+      price:
+        $ref: '#/definitions/Limit'
+      cost:
+        $ref: '#/definitions/Limit'
+  Limit:
+    required:
+      - min
+      - max
+    properties:
+      min:
+        type: number
+      max:
+        type: number
+  Precision:
+    required:
+      - amount
+      - price
+    properties:
+      amount:
+        type: number
+      price:
+        type: number
+  OrderBookResponse:
+    required:
+      - bids
+      - asks
+    properties:
+      bids:
+        type: array
+        items: 
+          $ref: "#/definitions/OrderBookLevel"
+      asks:
+        type: array
+        items: 
+          $ref: "#/definitions/OrderBookLevel"
+      timestamp:
+        type: number
+      datetime:
+        type: string
+        format: date-time
+  OrderBookLevel:
+    required:
+      - price
+    properties:
+      price:
+        type: number
+      amount:
+        type: number
+  TradeResponse:
+    required:
+      - info
+      - symbol
+      - side
+      - price
+      - amount
+    properties:
+      id:
+        type: string
+      info:
+        type: object
+      timestamp:
+        type: number
+        format: date-time
+      symbol:
+        type: string
+      side:
+        type: string
+        enum: *Side
+      price:
+        type: number
+      amount:
+        type: number
+  TickerResponse:
+    required:
+      - symbol
+      - timestamp
+      - datetime
+      - high
+      - low
+      - bid
+      - ask
+      - vwap
+      - close
+      - last
+      - baseVolume
+      - quoteVolume
+      - info
+    properties:
+      symbol:
+        type: string
+      timestamp:
+        type: number
+      datetime:
+        type: string
+        format: date-time
+      high:
+        type: number
+      low:
+        type: number
+      bid:
+        type: number
+      ask:
+        type: number
+      vwap:
+        type: number
+      close:
+        type: number
+      last:
+        type: number
+      baseVolume:
+        type: number
+      quoteVolume:
+        type: number
+      info:
+        type: object
+  BalanceResponse:
+    required:
+      - info
+      - balances
+    properties:
+      info:
+        type: object
+      balances:
+        type: array
+        items: 
+          $ref: "#/definitions/BalanceInfo"
+  BalanceInfo:
+    required:
+      - currency
+      - free
+      - used
+      - total
+    properties:
+      currency:
+        type: string
+      free:
+        type: number
+      used:
+        type: number
+      total:
+        type: number
+  OrderResponse:
+    required:
+      - id
+    properties:
+      id:
+        type: string
+      timestamp:
+        type: number
+      datetime:
+        type: string
+        format: date-time
+      symbol:
+        type: string
+      type:
+        type: string
+        enum: *OrderType
+      side:
+        type: string
+        enum: *Side
+      price:
+        type: number
+      amount:
+        type: number
+      cost:
+        type: number
+      filled:
+        type: number
+      remaining:
+        type: number
+      status:
+        type: string
+        enum: *OrderStatus
+      info:
+        type: object
