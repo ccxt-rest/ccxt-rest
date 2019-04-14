@@ -402,6 +402,7 @@
     "ccxt": "^1.18.437",
     "circular-json": "^0.5.9",
     "express": "^4.12.3",
+    "swagger": "^0.7.5",
     "swagger-express-mw": "^0.1.0",
     "swagger-tools": "^0.10.4",
     "swagger-ui": "^3.22.0",
@@ -416,11 +417,11 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "swagger project test",
+    "test": "./node_modules/.bin/swagger project test",
     "generate:client": "rm -rf ./clients/$lang && docker run --rm -v ${PWD}:/local swaggerapi/swagger-codegen-cli generate --api-package ph.adroit.ccxtrest.api --model-package ph.adroit.ccxtrest.model --invoker-package ph.adroit.ccxtrest.invoker --group-id ph.adoit.ccxtrest --artifact-id ccxt-rest-$lang-client --artifact-version $npm_package_version -c /local/config.json --additional-properties scmConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmDeveloperConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactDescription=\"ccxt-rest $lang client\" -i /local/api/swagger/swagger.yaml -l $lang -o /local/clients/$lang",
     "generate:clients": "for lang in `cat codegen_languages.txt`; do lang=$lang npm run generate:client; done",
     "generate:docs": "./node_modules/.bin/widdershins --search true --language_tabs 'shell:Shell' 'go:Go' 'java:Java' 'javascript:Javascript' 'python:Python' 'ruby:Ruby' --summary api/swagger/swagger.yaml -o ./docs/source/index.html.md && cd ./docs && bundle exec middleman build --clean && cd .. && rm -rf ./out/docs && mv ./docs/build ./out/docs",
-    "swagger:edit": "swagger project edit"
+    "swagger:edit": "./node_modules/.bin/swagger project edit"
   },
   "bin": {
     "ccxt-rest": "./bin/www"
