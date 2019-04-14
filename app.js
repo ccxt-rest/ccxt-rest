@@ -18,7 +18,7 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   // install middleware
   swaggerExpress.register(app);
 
-  var port = process.env.PORT || 10010;
+  var port = process.env.PORT || 3000;
   console.log('Starting up 0.0.0.0:' + port)
   app.listen(port);
 

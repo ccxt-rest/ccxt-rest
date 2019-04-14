@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "1.0.0"
+  version: "1.0.0-beta-1"
   title: CCXT REST
   contact:
     email: "franz@see.net.ph"
@@ -8,7 +8,7 @@ info:
     name: "MIT"
     url: "https://github.com/franz-see/ccxt-rest/blob/master/LICENSE.txt"
 # during dev, should point to your local machine
-host: localhost:10010
+host: localhost:3000
 # basePath prefixes all resource paths 
 basePath: /
 # 
