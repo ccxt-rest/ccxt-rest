@@ -449,16 +449,25 @@ definitions:
     properties:
       name:
         type: string
+        description: The name of the exchange. When you created the exchange (via POST:/exchanges/{exhangeName}), the 'id' parameter there becomes the name here
       enableRateLimit:
         type: boolean
+        enum: [true, false]
+        default: true
+        description: Whether to enable the built in rate limiter or not. The built in rate limiter is an approximation of the actual exchange's limit. To have a more accurate rate limiting, set this to false and implement the rate limiter on your client
       countries:
         type: array
         items: 
           type: string
+        description: The list of countries where this exchange is a member of
       rateLimit: 
-        type: number
+        type: integer
+        description: A request rate limit in milliseconds. Specifies the required minimal delay between two consequent HTTP requests to the same exchange. If enableRateLimit is set to false, this would be ignored.
       twofa:
         type: boolean
+        enum: [true, false]
+        default: false
+        description: Whether to enable two factor authentication or not
       has:
         $ref: '#/definitions/ExchangeHasCapabilities'
       urls:
