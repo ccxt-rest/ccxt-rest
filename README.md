@@ -114,7 +114,7 @@ $ curl -X DELETE http://localhost:3000/exchange/binance/myBinance/order/12345 \
 
 ## API
 
-For a complete list of API, see https://franz-see.github.io/ccxt-rest-website/
+For a complete list of API, see http://ccxt-rest.io
 
 ## Feature / Support Request 
 
