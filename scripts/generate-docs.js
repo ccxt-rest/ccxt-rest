@@ -21,11 +21,12 @@ var _deleteFolderRecursive = function(path) {
   };
   
   function run_command(command, params) {
-    console.log('Running `' + command + '`...')
+    console.log('[START] `' + command + '`...')
     if (params && !params.stdio) {
         params.stdio = 'inherit'
     }
     execSync(command, params);
+    console.log('[END] `' + command + '`...')
 }
 
 function git_pull() {
@@ -44,6 +45,7 @@ function widdershins() {
 }
 
 function split_widdershins_output() {
+    console.log('[START] split_widdershins_output()...')
     const data = fs.readFileSync(widdershins_output_file, 'utf8')
 
     const delimiter = '<h1 id="ccxt-rest-exchange-management-api">Exchange Management API</h1>'
@@ -55,21 +57,41 @@ function split_widdershins_output() {
     fs.writeFileSync("./docs/source/50_generated_api.html.md", ['\n', delimiter, segments[1]].join(''));
 
     fs.unlinkSync(widdershins_output_file)
+
+    console.log('[END] split_widdershins_output()...')
 }
 
 function docs_build() {
     run_command('rake build', {cwd:'./docs'});
+    if (!fs.existsSync('./docs/build')) {
+        console.error('Should have been able to find ./docs/build but did not')
+        process.exit(1)
+    }
 }
 
 function delete_out_docs() {
+    console.log('[START] delete_out_docs()...')
     _deleteFolderRecursive('./out/docs')
+    console.log('[END] delete_out_docs()...')
 }
 
 function move_docs_build_to_out_docs() {
+    console.log('[START] move_docs_build_to_out_docs()...')
     if (!fs.existsSync('./out')) {
         fs.mkdirSync('./out')
     }
-    fs.renameSync('./docs/build', './out/docs')
+    if (!fs.existsSync('./out')) {
+        console.error('Should have been able to find ./docs but did not')
+        process.exit(1)
+    }
+    try {
+        // this code fails inside docker
+        fs.renameSync('docs/build', 'out/docs')
+    } catch (err) {
+        // so we fallback to something we know will work inside node:10.4.0-alpine
+        run_command('mv docs/build out/docs')
+    }
+    console.log('[END] move_docs_build_to_out_docs()...')
 }
 
 git_pull();

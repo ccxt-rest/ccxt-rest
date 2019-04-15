@@ -1,16 +1,31 @@
-FROM node:10.4.0-alpine as builder
+#FROM node:10.4.0-alpine as builder
+FROM scardon/ruby-node-alpine:2.4 as builder
 
 LABEL authors="Franz See <franz@see.net.ph>"
 
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh alpine-sdk python
-COPY package.json /tmp/package.json
-RUN version=`cat /tmp/package.json | grep version | awk -F ': "' '{print $2}' | awk -F '",' '{print $1}'`
-RUN npm install -g ccxt-rest@$version --unsafe-perm
+RUN apk update && apk upgrade
+RUN apk add --no-cache bash git openssh alpine-sdk python
+RUN apk add ruby ruby-dev
+RUN gem install bundler --no-ri --no-rdoc
+RUN gem install rake --no-ri --no-rdoc
 
-FROM node:10.15.1-alpine
-COPY --from=builder /usr/local/lib /usr/local/lib
-RUN ln -s /usr/local/lib/node_modules/ccxt-rest/bin/www /usr/local/bin/ccxt-rest
+COPY . /www
+
+WORKDIR /www
+
+RUN npm install
+CMD ["sh"]
+RUN npm pack
+
+FROM node:10.4.0-alpine
+COPY --from=builder /www/ccxt-rest-*.tgz /tmp/
+RUN npm install -g /tmp/ccxt-rest-*.tgz --no-save
+
+WORKDIR /tmp
+
+RUN tar -xzf /tmp/ccxt-rest-*.tgz
+RUN ls -al /tmp/
+RUN ls -al /tmp/package
 
 ENV PORT 3000
 
