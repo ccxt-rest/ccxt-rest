@@ -2,6 +2,10 @@
   "name": "ccxt-rest",
   "version": "1.0.2",
   "description": "Open Source Unified REST API of 100+ Crypto Exchange Sites",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/franz-see/ccxt-rest.git"
+  },
   "keywords": [
     "algorithmic",
     "algotrading",
@@ -417,6 +421,7 @@
   "scripts": {
     "start": "node app.js",
     "test": "./node_modules/.bin/swagger project test",
+    "prepack": "npm run generate:docs",
     "generate:client": "rm -rf ./clients/$lang && docker run --rm -v ${PWD}:/local swaggerapi/swagger-codegen-cli generate --api-package ph.adroit.ccxtrest.api --model-package ph.adroit.ccxtrest.model --invoker-package ph.adroit.ccxtrest.invoker --group-id ph.adoit.ccxtrest --artifact-id ccxt-rest-$lang-client --artifact-version $npm_package_version -c /local/config.json --additional-properties scmConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmDeveloperConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactDescription=\"ccxt-rest $lang client\" -i /local/api/swagger/swagger.yaml -l $lang -o /local/clients/$lang",
     "generate:clients": "for lang in `cat codegen_languages.txt`; do lang=$lang npm run generate:client; done",
     "generate:docs": "node ./scripts/generate-docs.js",
