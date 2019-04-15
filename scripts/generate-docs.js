@@ -66,6 +66,9 @@ function delete_out_docs() {
 }
 
 function move_docs_build_to_out_docs() {
+    if (!fs.existsSync('./out')) {
+        fs.mkdirSync('./out')
+    }
     fs.renameSync('./docs/build', './out/docs')
 }
 
