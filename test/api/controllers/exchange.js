@@ -7,19 +7,22 @@ var server = require('../../../app');
 var db = require('../../../api/helpers/db');
 
 var ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
-console.log('Sanity Spot Check : Test Config : ' + ccxtRestTestExchangeDetails.slice(0, 20))
 var exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 
-describe('controllers', function() {
+describe('> controllers', function() {
 
-  describe('exchange', function() {
+  describe('> exchange', function() {
 
-    it('GET:/exchange/nonExistentExchangeName then return 404', function(done) {  
+    it('> GET:/exchange/nonExistentExchangeName then return 404', function(done) {  
       request(server)
         .get('/exchange/nonExistentExchangeName')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
-        .expect(404, done);
+        .expect(404)
+        .end((err, res) => {
+          should.not.exist(err);
+          done();
+        })
     });
 
     // ccxt.exchanges
@@ -29,9 +32,9 @@ describe('controllers', function() {
       exchangeDetails.exchangeId = exchangeDetails.creds.id
       return exchangeDetails
     }).forEach((_ctx) => {
-      describe('[' + _ctx.exchangeName + '] Given no saved exchanges', function() {
-        describe('[' + _ctx.exchangeName + '] No Saved public apis', function() {
-          it('When GET:/exchange/' + _ctx.exchangeName + ' then return empty array', function(done) {
+      describe('> [' + _ctx.exchangeName + '] Given no saved exchanges', function() {
+        describe('> [' + _ctx.exchangeName + '] No Saved public apis', function() {
+          it('> When GET:/exchange/' + _ctx.exchangeName + ' then return empty array', function(done) {
   
             request(server)
               .get('/exchange/' + _ctx.exchangeName)
@@ -47,54 +50,74 @@ describe('controllers', function() {
               });
           });
     
-          it('When GET:/exchange/' + _ctx.exchangeName + '/nonExistentId then return 404', function(done) {
+          it('> When GET:/exchange/' + _ctx.exchangeName + '/nonExistentId then return 404', function(done) {
     
             request(server)
               .get('/exchange/' + _ctx.exchangeName + '/nonExistentId')
               .set('Accept', 'application/json')
               .expect('Content-Type', /json/)
-              .expect(404, done);
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
           });
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets', function(done) {
   
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets')
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
-                .expect(404, done);
+                .expect(404)
+                .end((err, res) => {
+                  should.not.exist(err);
+                  done();
+                })
           });
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
                 .query({ symbol: _ctx.targetCurrencyPair })
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
-                .expect(404, done);
+                .expect(404)
+                .end((err, res) => {
+                  should.not.exist(err);
+                  done();
+                })
           }).timeout('10s');
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then get exchange\'s L2 Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then get exchange\'s L2 Order Book', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook')
                 .query({ symbol: _ctx.targetCurrencyPair })
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
-                .expect(404, done);
+                .expect(404)
+                .end((err, res) => {
+                  should.not.exist(err);
+                  done();
+                })
           }).timeout('10s');
     
-          it('When DELETE:/exchange/' + _ctx.exchangeName + '/nonExistentId then return 404', function(done) {
+          it('> When DELETE:/exchange/' + _ctx.exchangeName + '/nonExistentId then return 404', function(done) {
     
             request(server)
               .delete('/exchange/' + _ctx.exchangeName + '/nonExistentId')
               .set('Accept', 'application/json')
               .expect('Content-Type', /json/)
-              .expect(404, done);
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
           });
         });
       });
   
-      describe('[' + _ctx.exchangeName + '] Given with saved exchange', function() {
+      describe('> [' + _ctx.exchangeName + '] Given with saved exchange', function() {
         before(function() {
           this.timeout(10000)
           return new Promise((resolve) => {
@@ -139,8 +162,8 @@ describe('controllers', function() {
           });
         });
 
-        describe('[' + _ctx.exchangeName + '] Saved public apis', function() {
-          it('GET:/exchange/' + _ctx.exchangeName + ' then return id of new exchange', function(done) {
+        describe('> [' + _ctx.exchangeName + '] Saved public apis', function() {
+          it('> GET:/exchange/' + _ctx.exchangeName + ' then return id of new exchange', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName)
                 .set('Accept', 'application/json')
@@ -155,7 +178,7 @@ describe('controllers', function() {
                 });
           });
     
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + ' then get exchange', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + ' then get exchange', function(done) {
     
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId)
@@ -174,7 +197,7 @@ describe('controllers', function() {
                 });
           });
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets', function(done) {
   
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets')
@@ -191,7 +214,7 @@ describe('controllers', function() {
                 });
           }).timeout('10s');
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -208,7 +231,7 @@ describe('controllers', function() {
                 });
           }).timeout('10s');
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook with limit then get exchange\'s Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook with limit then get exchange\'s Order Book', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
                 .query({ symbol: _ctx.targetCurrencyPair, limit: 50 })
@@ -225,7 +248,7 @@ describe('controllers', function() {
                 });
           }).timeout('10s');
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then get exchange\'s L2 Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then get exchange\'s L2 Order Book', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook')
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -242,7 +265,7 @@ describe('controllers', function() {
                 });
           }).timeout('10s');
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook with limit then get exchange\'s L2 Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook with limit then get exchange\'s L2 Order Book', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook')
                 .query({ symbol: _ctx.targetCurrencyPair, limit: 50 })
@@ -259,7 +282,7 @@ describe('controllers', function() {
                 });
           }).timeout('10s');
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades then get exchange\'s trades', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades then get exchange\'s trades', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades')
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -275,7 +298,7 @@ describe('controllers', function() {
                 });
           }).timeout('10s');
   
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then get exchange\'s ticker', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then get exchange\'s ticker', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker')
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -291,7 +314,7 @@ describe('controllers', function() {
                 });
           }).timeout('10s');
   
-          it('POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then get exchange\'s direct method', function(done) {
+          it('> POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then get exchange\'s direct method', function(done) {
             request(server)
                 .post('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets')
                 .send([true])
@@ -307,8 +330,8 @@ describe('controllers', function() {
       
         });
   
-        describe('[' + _ctx.exchangeName + '] Saved private apis', function() {
-          it('GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/balances then get exchange\'s balances', function(done) {
+        describe('> [' + _ctx.exchangeName + '] Saved private apis', function() {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/balances then get exchange\'s balances', function(done) {
             this.timeout(10000)
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/balances')
@@ -328,15 +351,16 @@ describe('controllers', function() {
 
           for (var type of ['limit']) {
             for (var side of ['buy', 'sell']) {
-              describe('[' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order', function() {
+              describe('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order', function() {
                 var exchange
                 var orderId
                 before(function() {
                   this.timeout(10000)
                   return new Promise((resolve) => {
 
+                    const path = '/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId
                     request(server)
-                      .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId)
+                      .get(path)
                       .set('Accept', 'application/json')
                       .expect('Content-Type', /json/)
                       .expect(200)
@@ -346,7 +370,7 @@ describe('controllers', function() {
                         exchange = res.body
 
                         request(server)
-                          .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets')
+                          .get(path + '/markets')
                           .set('Accept', 'application/json')
                           .expect('Content-Type', /json/)
                           .expect(200)
@@ -362,7 +386,7 @@ describe('controllers', function() {
                             var precisionAmount = market.precision.amount
     
                             request(server)
-                              .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
+                              .get(path + '/orderBook')
                               .query({ symbol: _ctx.targetCurrencyPair })
                               .set('Accept', 'application/json')
                               .expect('Content-Type', /json/)
@@ -378,12 +402,15 @@ describe('controllers', function() {
                                 var orderPlacement = { symbol: _ctx.targetCurrencyPair, type: type, side: side, amount:amount, price:price }
                                 
                                 request(server)
-                                  .post('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/order')
+                                  .post(path + '/order')
                                   .send(orderPlacement)
                                   .set('Accept', 'application/json')
                                   .expect('Content-Type', /json/)
                                   .expect(200)
                                   .end((err, res) => {
+                                    if (err) {
+                                      console.log([orderPlacement, err])
+                                    }
                                     should.not.exist(err);
         
                                     orderId = res.body.id
@@ -415,7 +442,7 @@ describe('controllers', function() {
                   });
                 });
 
-                it('[' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get order', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get order', function(done) {
                   request(server)
                         .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/order/' + orderId)
                         .query({symbol : _ctx.targetCurrencyPair})
@@ -429,7 +456,7 @@ describe('controllers', function() {
                         });
                 }).timeout('10s')
 
-                it('[' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get orders', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get orders', function(done) {
                   if (exchange.has.fetchOrders == 'false') {
                     done();
                     return;
@@ -447,7 +474,7 @@ describe('controllers', function() {
                     });
                 }).timeout('10s')
 
-                it('[' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get open orders', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get open orders', function(done) {
                   request(server)
                         .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orders/open')
                         .query({symbol : _ctx.targetCurrencyPair})
@@ -461,7 +488,7 @@ describe('controllers', function() {
                         });
                 }).timeout('10s')
 
-                it('[' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get closed orders', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get closed orders', function(done) {
                   if (exchange.has.fetchClosedOrders == 'false') {
                     done();
                     return;
@@ -479,7 +506,7 @@ describe('controllers', function() {
                     });
                 }).timeout('10s')
 
-                it('[' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get my trades', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get my trades', function(done) {
                   if (exchange.has.fetchMyTrades == 'false') {
                     done();
                     return;

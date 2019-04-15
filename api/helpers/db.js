@@ -11,7 +11,7 @@ var saveExchange = function(exchangeName, exchange) {
 
 var getExchange = function(exchangeName, exchangeId) {
     if (!inMemoryExchangeDatabase[exchangeName]) {
-        inMemoryExchangeDatabase[exchangeName] = [];
+        inMemoryExchangeDatabase[exchangeName] = {};
     }
     return inMemoryExchangeDatabase[exchangeName][exchangeId];
 };

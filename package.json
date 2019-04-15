@@ -413,7 +413,7 @@
     "proxyquire": "^2.1.0",
     "should": "^7.1.0",
     "sinon": "^7.3.1",
-    "supertest": "^1.0.0"
+    "supertest": "^3.2.0"
   },
   "scripts": {
     "start": "node app.js",

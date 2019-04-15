@@ -3,7 +3,9 @@ info:
   version: "1.0.0-beta-1"
   title: CCXT REST
   contact:
-    email: "franz@see.net.ph"
+    name: "Adroit"
+    email: "hello@adroit.ph"
+    url: "https://adroit.ph/ccxt-rest-contact-us/"
   license:
     name: "MIT"
     url: "https://github.com/franz-see/ccxt-rest/blob/master/LICENSE.txt"
@@ -35,6 +37,7 @@ paths:
             type: array
             items: 
               type: string
+            example: ["_1btcxe","acx","allcoin","anxpro","anybits","bcex","bequant","bibox","bigone","binance","binanceje","bit2c","bitbank","bitbay","bitfinex","bitfinex2","bitflyer","bitforex","bithumb","bitibu","bitkk","bitlish","bitmarket","bitmex","bitsane","bitso","bitstamp","bitstamp1","bittrex","bitz","bl3p","bleutrade","braziliex","btcalpha","btcbox","btcchina","btcexchange","btcmarkets","btctradeim","btctradeua","btcturk","buda","bxinth","ccex","cex","chbtc","chilebit","cobinhood","coinbase","coinbaseprime","coinbasepro","coincheck","coinegg","coinex","coinexchange","coinfalcon","coinfloor","coingi","coinmarketcap","coinmate","coinnest","coinone","coinspot","cointiger","coolcoin","coss","crex24","crypton","cryptopia","deribit","dsx","ethfinex","exmo","exx","fcoin","fcoinjp","flowbtc","foxbit","fybse","fybsg","gateio","gdax","gemini","getbtc","hadax","hitbtc","hitbtc2","huobipro","huobiru","ice3x","independentreserve","indodax","itbit","jubi","kkex","kraken","kucoin","kucoin2","kuna","lakebtc","lbank","liqui","liquid","livecoin","luno","lykke","mandala","mercado","mixcoins","negociecoins","nova","okcoincny","okcoinusd","okex","paymium","poloniex","quadrigacx","rightbtc","southxchange","stronghold","surbitcoin","theocean","therock","tidebit","tidex","uex","upbit","urdubit","vaultoro","vbtc","virwox","xbtce","yobit","zaif","zb"]
   /exchange/{exchangeName}:
     x-swagger-router-controller: exchange
     get:
@@ -49,6 +52,7 @@ paths:
             type: array
             items: 
               type: string
+            example: ['myBitsoInstance', 'myBinanceInstance', 'someRandomNameIGaveToAnInstance']
     post:
       description: Creates an instance of the exchange
       operationId: createExchange
@@ -64,17 +68,25 @@ paths:
             properties:
               id:
                 type: string
+                description: The unique identifier for this exchange. This would be used as the 'exchangeId' of the other API calls
               apiKey:
                 type: string
+                description: The API key you got from the exchange itself. This with the secret is what will allow you to access the exchange
               secret:
                 type: string
+                description: The Secret key you got from the exchange itself. This with the apiKey is what will allow you to access the exchange
               enableRateLimit:
                 type: boolean
+                enum: [true, false]
+                default: true
+                description: Whether to enable the built in rate limiter or not. The built in rate limiter is an approximation of the actual exchange's limit. To have a more accurate rate limiting, set this to false and implement the rate limiter on your client
       responses:
         "200":
           description: Success
           schema:
             $ref: "#/definitions/ExchangeResponse"
+        "500":
+          description: Error
   /exchange/{exchangeName}/{exchangeId}:
     x-swagger-router-controller: exchange
     get:
@@ -470,8 +482,10 @@ definitions:
         description: Whether to enable two factor authentication or not
       has:
         $ref: '#/definitions/ExchangeHasCapabilities'
+        description: List of capabilities this exchange has
       urls:
         type: object
+        description: Collection of URLs this exchange has
   ExchangeHasCapabilities:
     required:
       - CORS
@@ -612,20 +626,28 @@ definitions:
     properties:
       id:
         type: string
+        description: The unique identifier for this market
       symbol:
         type: string
+        description: A unified way of referencing this Market. When a symbol parameter is needed in one of the APIs, this iis where you will get it.
       base:
         type: string
+        description: The base currency. Given 'BTC/USD', the base is 'BTC'
       quote: 
         type: string
+        description: The quote currency. Given 'BTC/USD', the quote is 'USD'
       info:
         type: object
+        description: Raw market response gotten from the exchange site's API
       lot:
         type: number
+        description: When placing an order, its amount must be divisible by this lot value
       limits:
         $ref: '#/definitions/Limits'
+        description: The limits associated to this exchange
       precision:
         $ref: '#/definitions/Precision'
+        description: The precision of the values of this exchange
   Limits:
     required:
       - amount
@@ -634,10 +656,13 @@ definitions:
     properties:
       amount:
         $ref: '#/definitions/Limit'
+        description: The mininum and maximum allowable amount when placing an order
       price:
         $ref: '#/definitions/Limit'
+        description: The mininum and maximum allowable price when placing an order
       cost:
         $ref: '#/definitions/Limit'
+        description: 'The mininum and maximum allowable cost when placing an order (note: cost is amount x price)'
   Limit:
     required:
       - min
@@ -645,8 +670,10 @@ definitions:
     properties:
       min:
         type: number
+        description: The minimum allowable value
       max:
         type: number
+        description: The maximum allowable value
   Precision:
     required:
       - amount
@@ -654,8 +681,10 @@ definitions:
     properties:
       amount:
         type: number
+        description: The allowable precision of the amount when placing an order. For example, given 2, then an amount of 0.123 must be made either 0.12 (or 0.13)
       price:
         type: number
+        description: The allowable precision of the amount when placing an order. For example, given 2, then a price of 0.123 must be made either 0.12 (or 0.13)
   OrderBookResponse:
     required:
       - bids
@@ -663,25 +692,31 @@ definitions:
     properties:
       bids:
         type: array
+        description: The publicly listed buy orders
         items: 
           $ref: "#/definitions/OrderBookLevel"
       asks:
         type: array
+        description: The publicly listed sell orders
         items: 
           $ref: "#/definitions/OrderBookLevel"
       timestamp:
         type: number
+        description: The timestamp associated for this order book
       datetime:
         type: string
         format: date-time
+        description: The timestamp associated for this order book
   OrderBookLevel:
     required:
       - price
     properties:
       price:
         type: number
+        description: The price being asked for. If this is a bid, then this is the amount the bidder is willing to buy. If this is a sell, then this is the amount the seller is willing to sell for.
       amount:
         type: number
+        description: The amount of units being sold. 
   TradeResponse:
     required:
       - info
@@ -692,20 +727,27 @@ definitions:
     properties:
       id:
         type: string
+        description: The unique identifier of the exchange for this trade
       info:
         type: object
+        description: Raw trade response gotten from the exchange site's API
       timestamp:
         type: number
         format: date-time
+        description: The timestamp of this trade
       symbol:
         type: string
+        description: The currency pair of this trade
       side:
         type: string
         enum: *Side
+        description: Whether this trade was a bid or ask (i.e. buy or sell)
       price:
         type: number
+        description: The price of this trade
       amount:
         type: number
+        description: The amount of this trade
   TickerResponse:
     required:
       - symbol
@@ -724,31 +766,44 @@ definitions:
     properties:
       symbol:
         type: string
+        description: The currency pair of this tick
       timestamp:
         type: number
+        description: The timestamp of this tick
       datetime:
         type: string
         format: date-time
+        description: The datetime of this tick
       high:
         type: number
+        description: The higest price of this tick
       low:
         type: number
+        description: The lowest price of this tick
       bid:
         type: number
+        description: The current bid price of this tick
       ask:
         type: number
+        description: The current ask price of this tick
       vwap:
         type: number
+        description: The volume weighted average price of this tick
       close:
         type: number
+        description: The closing price of this tick
       last:
         type: number
+        description: The last price of this tick
       baseVolume:
         type: number
+        description: The volume of the base currency of this tick
       quoteVolume:
         type: number
+        description: The volume of the quote currency of this tick
       info:
         type: object
+        description: Raw ticker response gotten from the exchange site's API
   BalanceResponse:
     required:
       - info
@@ -756,8 +811,10 @@ definitions:
     properties:
       info:
         type: object
+        description: Raw balance response gotten from the exchange site's API
       balances:
         type: array
+        description: List of balances per currency that you own
         items: 
           $ref: "#/definitions/BalanceInfo"
   BalanceInfo:
@@ -769,43 +826,60 @@ definitions:
     properties:
       currency:
         type: string
+        description: The currency at which this balance refers to
       free:
         type: number
+        description: The amount of currency that is free to used
       used:
         type: number
+        description: The amount of currency that is currently used
       total:
         type: number
+        description: The total amount of currency (free + used)
   OrderResponse:
     required:
       - id
     properties:
       id:
         type: string
+        description: The unique identifier of the exchange for this order
       timestamp:
         type: number
+        description: The timestamp of this order
       datetime:
         type: string
         format: date-time
+        description: The datetime of this order
       symbol:
         type: string
+        description: The currency pair of this order
       type:
         type: string
         enum: *OrderType
+        description: Wether this is a market order or a limit order
       side:
         type: string
         enum: *Side
+        description: Wether this is a bid or ask (i.e. buy or sell) order
       price:
         type: number
+        description: The price of this order
       amount:
         type: number
+        description: The amount of this order
       cost:
         type: number
+        description: The cost of this order (i.e. price x amount)
       filled:
         type: number
+        description: The amount of this order that is currently filled (i.e. this can be less than or equal to 'amount')
       remaining:
         type: number
+        description: The amount of this order that is still yet to be filled (i.e. this can be less than or equal to 'amount')
       status:
         type: string
         enum: *OrderStatus
+        description: The current status of this order
       info:
         type: object
+        description: Raw order response gotten from the exchange site's API
