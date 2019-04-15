@@ -20,12 +20,7 @@ RUN npm pack
 FROM node:10.4.0-alpine
 COPY --from=builder /www/ccxt-rest-*.tgz /tmp/
 RUN npm install -g /tmp/ccxt-rest-*.tgz --no-save
-
-WORKDIR /tmp
-
-RUN tar -xzf /tmp/ccxt-rest-*.tgz
-RUN ls -al /tmp/
-RUN ls -al /tmp/package
+RUN rm /tmp/ccxt-rest-*.tgz
 
 ENV PORT 3000
 
