@@ -20,8 +20,8 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   router.get('/', (req, res) => {
     res.redirect('/docs');
   })
-  app.use('/', express.static('out/docs'))
-  
+  app.use('/', express.static(__dirname + '/./out/docs'))
+
   var port = process.env.PORT || 3000;
   console.log('Starting up 0.0.0.0:' + port)
   app.listen(port);
