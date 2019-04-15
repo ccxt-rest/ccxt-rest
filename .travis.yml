@@ -7,7 +7,7 @@ before_install:
 
 script:
   - npm test
-  - npm run generate:docs
+  - npm pack
   - docker build -t franzsee/ccxt-rest:testing .
 deploy:
   provider: npm
