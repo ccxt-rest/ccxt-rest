@@ -29,7 +29,7 @@ var _deleteFolderRecursive = function(path) {
 }
 
 function git_pull() {
-    run_command('git pull', {cwd:'./docs'});
+    run_command('git pull origin master', {cwd:'./docs'});
 }
 
 function widdershins() {
