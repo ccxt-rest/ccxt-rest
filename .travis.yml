@@ -13,6 +13,7 @@ deploy:
   provider: npm
   email: franz@see.net.ph
   api_key: $NPM_TOKEN
+  skip_cleanup: true
   on:
     condition: $TRAVIS_BRANCH == "master"
     repo: franz-see/ccxt-rest
