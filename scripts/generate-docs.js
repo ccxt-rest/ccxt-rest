@@ -30,6 +30,10 @@ var _deleteFolderRecursive = function(path) {
 }
 
 function git_pull() {
+    if (!fs.existsSync('./docs/Rakefile')) {
+        run_command('git submodule init docs')
+        run_command('git submodule update docs')
+    }
     run_command('git pull origin master', {cwd:'./docs'});
 }
 
