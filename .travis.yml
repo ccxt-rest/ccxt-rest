@@ -6,6 +6,7 @@ before_install:
   - npm i -g makeshift && makeshift -r https://registry.npmjs.org
 
 script:
+  - npm install
   - npm test
   - npm pack
   - docker build -t franzsee/ccxt-rest:testing .
