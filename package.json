@@ -408,15 +408,16 @@
     "swagger": "^0.7.5",
     "swagger-express-mw": "^0.1.0",
     "swagger-tools": "^0.10.4",
-    "swagger-ui": "^3.22.0",
-    "widdershins": "^3.6.7"
+    "swagger-ui": "^3.22.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "proxyquire": "^2.1.0",
     "should": "^7.1.0",
     "sinon": "^7.3.1",
-    "supertest": "^3.2.0"
+    "supertest": "^3.2.0",
+    "uri-js": "^4.2.2",
+    "widdershins": "^3.6.7"
   },
   "scripts": {
     "start": "node app.js",
