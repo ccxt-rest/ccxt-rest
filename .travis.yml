@@ -16,7 +16,7 @@ deploy:
   api_key: $NPM_TOKEN
   skip_cleanup: true
   on:
-    condition: $TRAVIS_BRANCH == "master"
+    tags: true
     repo: franz-see/ccxt-rest
 
 branches:
