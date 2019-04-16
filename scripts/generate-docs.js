@@ -29,12 +29,11 @@ var _deleteFolderRecursive = function(path) {
     console.log('[END] `' + command + '`...')
 }
 
-function git_pull() {
+function ensure_submodule_exists() {
     if (!fs.existsSync('./docs/Rakefile')) {
         run_command('git submodule init docs')
         run_command('git submodule update docs')
     }
-    run_command('git pull origin master', {cwd:'./docs'});
 }
 
 function widdershins() {
@@ -98,7 +97,7 @@ function move_docs_build_to_out_docs() {
     console.log('[END] move_docs_build_to_out_docs()...')
 }
 
-git_pull();
+ensure_submodule_exists();
 widdershins();
 split_widdershins_output();
 docs_build();
