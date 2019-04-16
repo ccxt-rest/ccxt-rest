@@ -17,7 +17,7 @@ RUN npm install
 CMD ["sh"]
 RUN npm pack
 
-FROM node:10.4.0-alpine
+FROM node:10.15.1-alpine
 COPY --from=builder /www/ccxt-rest-*.tgz /tmp/
 RUN npm install -g /tmp/ccxt-rest-*.tgz --no-save
 RUN rm /tmp/ccxt-rest-*.tgz
