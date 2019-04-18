@@ -5,7 +5,7 @@ class ExchangeResponse {
 
         this.name = config.name;
         this.enableRateLimit = config.enableRateLimit;
-        this.countries = config.countries; 
+        this.countries = config.countries || []; 
         this.rateLimit = config.rateLimit
         this.twofa = config.twofa
         this.has = {};
