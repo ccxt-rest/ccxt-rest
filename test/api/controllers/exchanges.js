@@ -3,13 +3,13 @@ var request = require('supertest');
 var server = require('../../../app');
 var ccxt = require('ccxt')
 
-describe('controllers', function() {
+describe('> controllers', function() {
 
-  describe('exchanges', function() {
+  describe('> exchanges', function() {
 
-    describe('GET /exchanges', function() {
+    describe('> GET /exchanges', function() {
 
-      it('should return list of exchanges', function(done) {
+      it('> should return list of exchanges', function(done) {
 
         request(server)
           .get('/exchanges')
