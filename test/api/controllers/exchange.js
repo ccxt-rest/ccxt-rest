@@ -397,7 +397,8 @@ describe('> controllers', function() {
                                 var farLevel = (side == 'buy' ? res.body.bids : res.body.asks)[10]
     
                                 var price = farLevel.price
-                                var amount = parseFloat(Math.max(minimumAmount, minimumCost / price).toFixed(precisionAmount)) + Math.pow(10, -1 * precisionAmount)
+                                var computedAmount = parseFloat(((minimumCost / price) + Math.pow(10, -1 * precisionAmount)).toFixed(precisionAmount))
+                                var amount = Math.max(minimumAmount, computedAmount)
         
                                 var orderPlacement = { symbol: _ctx.targetCurrencyPair, type: type, side: side, amount:amount, price:price }
                                 
