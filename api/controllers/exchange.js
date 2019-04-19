@@ -80,7 +80,7 @@ function markets(req, res) {
         console.error(error);
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -98,7 +98,7 @@ function orderBook(req, res) {
         console.error(error);
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -116,7 +116,7 @@ function l2OrderBook(req, res) {
         console.error(error);
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -135,7 +135,7 @@ function trades(req, res) {
         console.error(error);
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -152,7 +152,7 @@ function ticker(req, res) {
         console.error(error);
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -343,7 +343,7 @@ function directCall(req, res) {
         console.error(error);
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 

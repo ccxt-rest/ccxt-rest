@@ -15,28 +15,116 @@ describe('> controllers', function() {
 
   describe('> exchange', function() {
 
-    describe('> Given unsupported exchange name', function(done) {
-      it('> GET:/exchange/nonExistentExchangeName then return 404', function(done) {  
-        request(server)
-          .get('/exchange/nonExistentExchangeName')
-          .set('Accept', 'application/json')
-          .expect(404)
-          .end((err, res) => {
-            should.not.exist(err);
-            done();
-          })
-      });
+    describe('> Given unsupported exchange name', function() {
+      describe('> [Unsupported Exchange name] Exchange Management API', function() {
+        it('> GET:/exchange/nonExistentExchangeName then return 404', function(done) {  
+          request(server)
+            .get('/exchange/nonExistentExchangeName')
+            .set('Accept', 'application/json')
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        });
+  
+        it('> POST:/exchange/nonExistentExchangeName then return 404', function(done) {  
+          request(server)
+            .post('/exchange/nonExistentExchangeName')
+            .send({id:'nonExistentExchangeName1'})
+            .set('Accept', 'application/json')
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        });
+  
+      })
 
-      it('> POST:/exchange/nonExistentExchangeName then return 404', function(done) {  
-        request(server)
-          .post('/exchange/nonExistentExchangeName')
-          .send({id:'nonExistentExchangeName1'})
-          .set('Accept', 'application/json')
-          .expect(404)
-          .end((err, res) => {
-            should.not.exist(err);
-            done();
-          })
+      describe('> [Unsupported Exchange Name] Public Data API', function() {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/markets then get exchange\'s markets then return 404', function(done) {
+
+          request(server)
+              .get('/exchange/nonExistentExchangeName/dummy/markets')
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        });
+
+        it('> GET:/exchange/nonExistentExchangeName/dummy/orderBook then get exchange\'s Order Book then return 404', function(done) {
+          this.timeout('10s');
+          request(server)
+              .get('/exchange/nonExistentExchangeName/dummy/orderBook')
+              .query({ symbol: 'BTC/ETH' })
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        })
+
+        it('> GET:/exchange/nonExistentExchangeName/dummy/l2OrderBook then get exchange\'s L2 Order Book then return 404', function(done) {
+          this.timeout('10s');
+          request(server)
+              .get('/exchange/nonExistentExchangeName/dummy/l2OrderBook')
+              .query({ symbol: 'BTC/ETH' })
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        })
+
+        it('> GET:/exchange/nonExistentExchangeName/dummy/trades then get exchange\'s trades then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+              .get('/exchange/nonExistentExchangeName/dummy/trades')
+              .query({ symbol: 'BTC/ETH' })
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        })
+
+        it('> GET:/exchange/nonExistentExchangeName/dummy/ticker then get exchange\'s ticker then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+              .get('/exchange/nonExistentExchangeName/dummy/ticker')
+              .query({ symbol: 'BTC/ETH' })
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        })
+
+        it('> POST:/exchange/nonExistentExchangeName/dummy/_/loadMarkets then get exchange\'s direct method then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+              .post('/exchange/nonExistentExchangeName/dummy/_/loadMarkets')
+              .type('text')
+              .send(JSON.stringify([true]))
+              .set('Accept', 'application/json')
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        })
       });
     });
 

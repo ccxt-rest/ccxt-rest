@@ -133,7 +133,7 @@ paths:
           schema:
             $ref: "#/definitions/ExchangeResponse"
         "404":
-          description: Exchange with that name is NOT supported
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
     delete:
       description: Delete the exchange details referenced by the exchangeName and exchangeId
       tags:
@@ -148,7 +148,7 @@ paths:
           schema:
             $ref: "#/definitions/ExchangeResponse"
         "404":
-          description: Exchange with that name is NOT supported
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/markets:
     x-swagger-router-controller: exchange
     get:
@@ -164,6 +164,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MarketResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/orderBook:
     x-swagger-router-controller: exchange
     get:
@@ -185,6 +187,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderBookResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/l2OrderBook:
     x-swagger-router-controller: exchange
     get:
@@ -206,6 +210,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderBookResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/trades:
     x-swagger-router-controller: exchange
     get:
@@ -232,6 +238,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/TradeResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/ticker:
     x-swagger-router-controller: exchange
     get:
@@ -248,6 +256,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/TickerResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/balances:
     x-swagger-router-controller: exchange
     get:
