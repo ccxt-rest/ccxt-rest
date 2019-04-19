@@ -317,9 +317,9 @@ describe('> controllers', function() {
           it('> POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then get exchange\'s direct method', function(done) {
             request(server)
                 .post('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets')
-                .send([true])
+                .type('text')
+                .send(JSON.stringify([true]))
                 .set('Accept', 'application/json')
-                .expect('Content-Type', /json/)
                 .expect(200)
                 .end((err, res) => {
                   should.not.exist(err);

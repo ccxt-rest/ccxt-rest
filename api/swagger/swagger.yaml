@@ -437,6 +437,8 @@ paths:
     x-swagger-router-controller: exchange
     post:
       description: Invokes a ccxt javascript object's method call directly
+      consumes:
+        - text/plain
       tags:
         - Experimental API
       operationId: directCall
