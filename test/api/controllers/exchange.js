@@ -126,6 +126,119 @@ describe('> controllers', function() {
               })
         })
       });
+
+      describe('> [Unsupported Exchange Name] Private Data APIs', function() {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/balances then get exchange\'s balances then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+              .get('/exchange/nonExistentExchangeName/dummy/balances')
+              .query({ symbol: 'BTC/ETH' })
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        });
+
+        it('> [Unsupported Exchange Name] Place order then return 404', function(done) {
+          request(server)
+            .post('/exchange/nonExistentExchangeName/dummy/order')
+            .send({ symbol: 'BTC/ETH', type: 'limit', side: 'buy', amount:0, price:0 })
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        })
+
+        it('> [Unsupported Exchange Name] Cancel order then return 404', function(done) {
+          request(server)
+            .delete('/exchange/nonExistentExchangeName/dummy/order/dummy')
+            .query({symbol : 'BTC/ETH'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        })
+
+        it('> [Unsupported Exchange Name] Get order then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+            .get('/exchange/nonExistentExchangeName/dummy/order/dummy')
+            .query({symbol : 'BTC/ETH'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        })
+
+        it('> [Unsupported Exchange Name] Get orders then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+            .get('/exchange/nonExistentExchangeName/dummy/orders')
+            .query({symbol : 'BTC/ETH'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        })
+
+        it('> [Unsupported Exchange Name] Get open orders then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+            .get('/exchange/nonExistentExchangeName/dummy/orders/open')
+            .query({symbol : 'BTC/ETH'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        })
+
+        it('> [Unsupported Exchange Name] Get closed orders then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+            .get('/exchange/nonExistentExchangeName/dummy/orders/closed')
+            .query({symbol : 'BTC/ETH'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        })
+
+        it('> [Unsupported Exchange Name] Get my trades then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+            .get('/exchange/nonExistentExchangeName/dummy/trades/mine')
+            .query({symbol : 'BTC/ETH'})
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(404)
+            .end((err, res) => {
+              should.not.exist(err);
+              done();
+            })
+        })
+
+      });
     });
 
     

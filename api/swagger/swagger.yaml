@@ -273,6 +273,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/BalanceResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/orders:
     x-swagger-router-controller: exchange
     get:
@@ -299,6 +301,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/orders/open:
     x-swagger-router-controller: exchange
     get:
@@ -325,6 +329,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/orders/closed:
     x-swagger-router-controller: exchange
     get:
@@ -351,6 +357,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/trades/mine:
     x-swagger-router-controller: exchange
     get:
@@ -377,6 +385,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/TradeResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/order:
     x-swagger-router-controller: exchange
     post:
@@ -415,6 +425,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/order/{orderId}:
     x-swagger-router-controller: exchange
     get:
@@ -432,6 +444,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
     delete:
       description: Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId
       tags:
@@ -447,6 +461,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderResponse"
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/_/{methodName}:
     x-swagger-router-controller: exchange
     post:
@@ -474,6 +490,8 @@ paths:
           description: Success
           schema:
             type: object
+        "404":
+          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
   /swagger:
     x-swagger-pipe: swagger_raw
 parameters:
