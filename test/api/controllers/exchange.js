@@ -253,7 +253,8 @@ describe('> controllers', function() {
 
       exchangeDetails.expectedStatusCodes = {};
       exchangeDetails.expectedStatusCodes['fetchClosedOrders'] = exchange.has.fetchClosedOrders ? 200 : 501;
-
+      exchangeDetails.expectedStatusCodes['fetchOrders'] = exchange.has.fetchOrders ? 200 : 501;
+      
       return exchangeDetails
     }).forEach((_ctx) => {
       describe('> [' + _ctx.exchangeName + '] Given no saved exchanges', function() {
@@ -744,19 +745,14 @@ describe('> controllers', function() {
                         });
                 })
 
-                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get orders', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get orders, then ' + _ctx.expectedStatusCodes['fetchOrders'], function(done) {
                   this.timeout('10s')
-                  if (exchange.has.fetchOrders == 'false') {
-                    console.info('[SKIP REASON] Fetching of open orders is NOT supported by ' + _ctx.exchangeName)
-                    this.skip();
-                    return
-                  }
                   request(server)
                     .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orders')
                     .query({symbol : _ctx.targetCurrencyPair})
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
-                    .expect(200)
+                    .expect(_ctx.expectedStatusCodes['fetchOrders'])
                     .end((err, res) => {
                       should.not.exist(err);
           

@@ -255,13 +255,17 @@ function fetchOrders(req, res) {
   var limit = req.swagger.params.limit.value;
 
   if (exchange) {
-    exchange.fetchOrders(symbol, since, limit)
-      .then((rawOrders) => {
-        res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
-      }).catch((error) => {
-        console.error(error);
-        res.status(500).json({});
-      });
+    if (!exchange.has.fetchOrders) {
+      res.status(501).json();      
+    } else {
+      exchange.fetchOrders(symbol, since, limit)
+        .then((rawOrders) => {
+          res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
+        }).catch((error) => {
+          console.error(error);
+          res.status(500).json({});
+        });
+    }
   } else {
     res.status(404).json();
   }
