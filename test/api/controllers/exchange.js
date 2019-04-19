@@ -251,7 +251,7 @@ describe('> controllers', function() {
       return exchangeDetails
     }).forEach((_ctx) => {
       describe('> [' + _ctx.exchangeName + '] Given no saved exchanges', function() {
-        describe('> [' + _ctx.exchangeName + '] Exchange Management API', function() {
+        describe('> [' + _ctx.exchangeName + '] Using no Saved Instance\'s Exchange Management API', function() {
           it('> When GET:/exchange/' + _ctx.exchangeName + ' then return empty array', function(done) {
   
             request(server)
@@ -295,7 +295,7 @@ describe('> controllers', function() {
           });
         });
 
-        describe('> [' + _ctx.exchangeName + '] Public Data API', function() {
+        describe('> [' + _ctx.exchangeName + '] Using no Saved Instance\'s Public Data API', function() {
           it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets then return 404', function(done) {
   
             request(server)
