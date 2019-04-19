@@ -79,7 +79,7 @@ describe('> controllers', function() {
         });
 
         describe('> [' + _ctx.exchangeName + '] Public Data API', function() {
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets then return 404', function(done) {
   
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets')
@@ -92,7 +92,7 @@ describe('> controllers', function() {
                 })
           });
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book then return 404', function(done) {
             this.timeout('10s');
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
@@ -106,13 +106,55 @@ describe('> controllers', function() {
                 })
           })
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then get exchange\'s L2 Order Book', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then get exchange\'s L2 Order Book then return 404', function(done) {
             this.timeout('10s');
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook')
                 .query({ symbol: _ctx.targetCurrencyPair })
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
+                .expect(404)
+                .end((err, res) => {
+                  should.not.exist(err);
+                  done();
+                })
+          })
+
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades then get exchange\'s trades then return 404', function(done) {
+            this.timeout('10s')
+            request(server)
+                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades')
+                .query({ symbol: _ctx.targetCurrencyPair })
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(404)
+                .end((err, res) => {
+                  should.not.exist(err);
+                  done();
+                })
+          })
+  
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then get exchange\'s ticker then return 404', function(done) {
+            this.timeout('10s')
+            request(server)
+                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker')
+                .query({ symbol: _ctx.targetCurrencyPair })
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(404)
+                .end((err, res) => {
+                  should.not.exist(err);
+                  done();
+                })
+          })
+  
+          it('> POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then get exchange\'s direct method then return 404', function(done) {
+            this.timeout('10s')
+            request(server)
+                .post('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets')
+                .type('text')
+                .send(JSON.stringify([true]))
+                .set('Accept', 'application/json')
                 .expect(404)
                 .end((err, res) => {
                   should.not.exist(err);
@@ -167,7 +209,7 @@ describe('> controllers', function() {
           });
         });
 
-        describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Public Data APIs', function() {
+        describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Exchange Management APIs', function() {
           it('> GET:/exchange/' + _ctx.exchangeName + ' then return id of new exchange', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName)
@@ -202,6 +244,9 @@ describe('> controllers', function() {
                 });
           });
   
+        })
+
+        describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Public Data APIs', function() {
           it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets', function(done) {
             this.timeout('10s')
             request(server)
