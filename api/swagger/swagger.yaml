@@ -132,6 +132,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/ExchangeResponse"
+        "404":
+          description: Exchange with that name is NOT supported
     delete:
       description: Delete the exchange details referenced by the exchangeName and exchangeId
       tags:
@@ -145,6 +147,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/ExchangeResponse"
+        "404":
+          description: Exchange with that name is NOT supported
   /exchange/{exchangeName}/{exchangeId}/markets:
     x-swagger-router-controller: exchange
     get:
