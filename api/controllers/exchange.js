@@ -168,7 +168,7 @@ function balances(req, res) {
         console.error(error);
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -201,7 +201,7 @@ function createOrder(req, res) {
         res.status(500).json({});
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -226,7 +226,7 @@ function cancelOrder(req, res) {
         res.status(500).json({});
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -244,7 +244,7 @@ function fetchOrder(req, res) {
         res.status(500).json({});
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -263,7 +263,7 @@ function fetchOrders(req, res) {
         res.status(500).json({});
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -282,7 +282,7 @@ function fetchOpenOrders(req, res) {
         res.status(500).json({});
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -293,15 +293,19 @@ function fetchClosedOrders(req, res) {
   var limit = req.swagger.params.limit.value;
 
   if (exchange) {
-    exchange.fetchClosedOrders(symbol, since, limit)
-      .then((rawOrders) => {
-        res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
-      }).catch((error) => {
-        console.error(error);
-        res.status(500).json({});
-      });
+    if (!exchange.has.fetchClosedOrders) {
+      res.status(501).json();      
+    } else {
+      exchange.fetchClosedOrders(symbol, since, limit)
+        .then((rawOrders) => {
+          res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
+        }).catch((error) => {
+          console.error(error);
+          res.status(500).json({});
+        });
+    }
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -320,7 +324,7 @@ function fetchMyTrades(req, res) {
         res.status(500).json({});
       });
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }
 
@@ -361,6 +365,6 @@ function _renderExchange(exchange, res) {
   if (exchange) {
     res.json(new exchange_response.ExchangeResponse(exchange));
   } else {
-    res.status(404).json({});
+    res.status(404).json();
   }
 }

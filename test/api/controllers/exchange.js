@@ -245,9 +245,15 @@ describe('> controllers', function() {
 
     // ccxt.exchanges
     ['bitso', 'binance'].map(exchangeName => {
-      var exchangeDetails = exchangeDetailsMap[exchangeName] || {}
-      exchangeDetails.exchangeName = exchangeName
-      exchangeDetails.exchangeId = exchangeDetails.creds ? exchangeDetails.creds.id : (exchangeName + new Date().getTime())
+      var exchangeDetails = exchangeDetailsMap[exchangeName] || {};
+      exchangeDetails.exchangeName = exchangeName;
+      exchangeDetails.exchangeId = exchangeDetails.creds ? exchangeDetails.creds.id : (exchangeName + new Date().getTime());
+
+      const exchange = new ccxt[exchangeName]()
+
+      exchangeDetails.expectedStatusCodes = {};
+      exchangeDetails.expectedStatusCodes['fetchClosedOrders'] = exchange.has.fetchClosedOrders ? 200 : 501;
+
       return exchangeDetails
     }).forEach((_ctx) => {
       describe('> [' + _ctx.exchangeName + '] Given no saved exchanges', function() {
@@ -773,19 +779,14 @@ describe('> controllers', function() {
                         });
                 })
 
-                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get closed orders', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get closed orders, then ' + _ctx.expectedStatusCodes['fetchClosedOrders'], function(done) {
                   this.timeout('10s')
-                  if (exchange.has.fetchClosedOrders == 'false') {
-                    console.info('[SKIP REASON] Fetching of closed orders is NOT supported by ' + _ctx.exchangeName)
-                    this.skip();
-                    return;
-                  }
                   request(server)
                     .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orders/closed')
                     .query({symbol : _ctx.targetCurrencyPair})
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
-                    .expect(200)
+                    .expect(_ctx.expectedStatusCodes['fetchClosedOrders'])
                     .end((err, res) => {
                       should.not.exist(err);
           
