@@ -33,7 +33,7 @@ function listIds(req, res) {
       var exchangeIds = db.getExchangeIds(exchangeName);
       res.json(exchangeIds);
     } else {
-      res.status(404).send({})
+      res.status(404).send()
     }
 }
 

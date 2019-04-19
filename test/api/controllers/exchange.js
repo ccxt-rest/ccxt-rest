@@ -19,7 +19,6 @@ describe('> controllers', function() {
       request(server)
         .get('/exchange/nonExistentExchangeName')
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
         .expect(404)
         .end((err, res) => {
           should.not.exist(err);
