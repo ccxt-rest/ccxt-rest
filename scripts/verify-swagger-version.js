@@ -11,8 +11,8 @@ function verify_swagger_version() {
     const package_version = package_json.version
     
     if (package_version != swagger_version) {
-        console.log('[swagger.yaml] Version is : ' + swagger_version);
-        console.log('[package.json] Version is : ' + package_version);
+        console.info('[swagger.yaml] Version is : ' + swagger_version);
+        console.info('[package.json] Version is : ' + package_version);
 
         console.error('******************************************************************************************************************')
         console.error('* swagger.yaml version does NOT match package.json. Update swagger.yaml\'s version to match that of package.json *')

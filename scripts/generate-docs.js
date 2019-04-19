@@ -21,12 +21,12 @@ var _deleteFolderRecursive = function(path) {
   };
   
   function run_command(command, params) {
-    console.log('[START] `' + command + '`...')
+    console.info('[START] `' + command + '`...')
     if (params && !params.stdio) {
         params.stdio = 'inherit'
     }
     execSync(command, params);
-    console.log('[END] `' + command + '`...')
+    console.info('[END] `' + command + '`...')
 }
 
 function ensure_submodule_exists() {
@@ -48,7 +48,7 @@ function widdershins() {
 }
 
 function split_widdershins_output() {
-    console.log('[START] split_widdershins_output()...')
+    console.info('[START] split_widdershins_output()...')
     const data = fs.readFileSync(widdershins_output_file, 'utf8')
 
     const delimiter = '<h1 id="ccxt-rest-exchange-management-api">Exchange Management API</h1>'
@@ -61,7 +61,7 @@ function split_widdershins_output() {
 
     fs.unlinkSync(widdershins_output_file)
 
-    console.log('[END] split_widdershins_output()...')
+    console.info('[END] split_widdershins_output()...')
 }
 
 function docs_build() {
@@ -73,13 +73,13 @@ function docs_build() {
 }
 
 function delete_out_docs() {
-    console.log('[START] delete_out_docs()...')
+    console.info('[START] delete_out_docs()...')
     _deleteFolderRecursive('./out/docs')
-    console.log('[END] delete_out_docs()...')
+    console.info('[END] delete_out_docs()...')
 }
 
 function move_docs_build_to_out_docs() {
-    console.log('[START] move_docs_build_to_out_docs()...')
+    console.info('[START] move_docs_build_to_out_docs()...')
     if (!fs.existsSync('./out')) {
         fs.mkdirSync('./out')
     }
@@ -94,7 +94,7 @@ function move_docs_build_to_out_docs() {
         // so we fallback to something we know will work inside node:10.4.0-alpine
         run_command('mv docs/build out/docs')
     }
-    console.log('[END] move_docs_build_to_out_docs()...')
+    console.info('[END] move_docs_build_to_out_docs()...')
 }
 
 ensure_submodule_exists();

@@ -15,16 +15,32 @@ describe('> controllers', function() {
 
   describe('> exchange', function() {
 
-    it('> GET:/exchange/nonExistentExchangeName then return 404', function(done) {  
-      request(server)
-        .get('/exchange/nonExistentExchangeName')
-        .set('Accept', 'application/json')
-        .expect(404)
-        .end((err, res) => {
-          should.not.exist(err);
-          done();
-        })
+    describe('> Given unsupported exchange name', function(done) {
+      it('> GET:/exchange/nonExistentExchangeName then return 404', function(done) {  
+        request(server)
+          .get('/exchange/nonExistentExchangeName')
+          .set('Accept', 'application/json')
+          .expect(404)
+          .end((err, res) => {
+            should.not.exist(err);
+            done();
+          })
+      });
+
+      it('> POST:/exchange/nonExistentExchangeName then return 404', function(done) {  
+        request(server)
+          .post('/exchange/nonExistentExchangeName')
+          .send({id:'nonExistentExchangeName1'})
+          .set('Accept', 'application/json')
+          .expect(404)
+          .end((err, res) => {
+            should.not.exist(err);
+            done();
+          })
+      });
     });
+
+    
 
     // ccxt.exchanges
     ['bitso', 'binance'].map(exchangeName => {
@@ -390,6 +406,7 @@ describe('> controllers', function() {
         describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Private Data APIs', function() {
           before(function() {
             if (!_ctx.creds) {
+              console.info('[SKIP REASON] No credentials found for ' + _ctx.exchangeName)
               this.skip()
             }
           })
@@ -472,7 +489,7 @@ describe('> controllers', function() {
                                   .expect(200)
                                   .end((err, res) => {
                                     if (err) {
-                                      console.log([orderPlacement, err])
+                                      console.info([orderPlacement, err])
                                     }
                                     should.not.exist(err);
         
@@ -523,6 +540,7 @@ describe('> controllers', function() {
                 it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get orders', function(done) {
                   this.timeout('10s')
                   if (exchange.has.fetchOrders == 'false') {
+                    console.info('[SKIP REASON] Fetching of open orders is NOT supported by ' + _ctx.exchangeName)
                     this.skip();
                     return
                   }
@@ -557,6 +575,7 @@ describe('> controllers', function() {
                 it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get closed orders', function(done) {
                   this.timeout('10s')
                   if (exchange.has.fetchClosedOrders == 'false') {
+                    console.info('[SKIP REASON] Fetching of closed orders is NOT supported by ' + _ctx.exchangeName)
                     this.skip();
                     return;
                   }
@@ -576,6 +595,7 @@ describe('> controllers', function() {
                 it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get my trades', function(done) {
                   this.timeout('10s')
                   if (exchange.has.fetchMyTrades == 'false') {
+                    console.info('[SKIP REASON] Fetching of trades is NOT supported by ' + _ctx.exchangeName)
                     this.skip();
                     return;
                   }
