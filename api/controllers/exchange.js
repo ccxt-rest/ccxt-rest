@@ -41,11 +41,15 @@ function createExchange(req, res) {
     var exchangeName = req.swagger.params.exchangeName.value;
     var reqBody = req.body;
 
-    var exchange = new ccxt[exchangeName](reqBody);
+    if (ccxt[exchangeName]) {
+      var exchange = new ccxt[exchangeName](reqBody);
 
-    db.saveExchange(exchangeName, exchange);
-    
-    _renderExchange(exchange, res);
+      db.saveExchange(exchangeName, exchange);
+      
+      _renderExchange(exchange, res);
+    } else {
+      res.status(404).send()
+    }
 }
 
 function getOne(req, res) {

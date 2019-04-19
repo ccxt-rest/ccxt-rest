@@ -113,6 +113,8 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/ExchangeResponse"
+        "404":
+          description: Exchange with that name is NOT supported
         "500":
           description: Error
   /exchange/{exchangeName}/{exchangeId}:
