@@ -26,7 +26,8 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   app.use('/', express.static(__dirname + '/./out/docs'))
 
   var port = process.env.PORT || 3000;
-  console.log('Starting up 0.0.0.0:' + port)
-  app.listen(port);
+  const server = app.listen(port, () => {
+    console.log('Starting up 0.0.0.0:', server.address().port);
+  });
 
 });
