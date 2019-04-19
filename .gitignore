@@ -42,3 +42,6 @@ config/runtime.yaml
 ## ccxt-rest specifics
 clients
 out
+
+# After npm pack
+ccxt-rest-*.tgz
