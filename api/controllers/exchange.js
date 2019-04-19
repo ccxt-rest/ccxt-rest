@@ -320,13 +320,17 @@ function fetchMyTrades(req, res) {
   var limit = req.swagger.params.limit.value;
 
   if (exchange) {
-    exchange.fetchMyTrades(symbol, since, limit)
-      .then((rawTrades) => {
-        res.json(rawTrades.map(rawTrade => new exchange_response.TradeResponse(rawTrade)));
-      }).catch((error) => {
-        console.error(error);
-        res.status(500).json({});
-      });
+    if (!exchange.has.fetchMyTrades) {
+      res.status(501).json();      
+    } else {
+      exchange.fetchMyTrades(symbol, since, limit)
+        .then((rawTrades) => {
+          res.json(rawTrades.map(rawTrade => new exchange_response.TradeResponse(rawTrade)));
+        }).catch((error) => {
+          console.error(error);
+          res.status(500).json({});
+        });
+    }
   } else {
     res.status(404).json();
   }

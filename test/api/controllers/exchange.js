@@ -254,6 +254,7 @@ describe('> controllers', function() {
       exchangeDetails.expectedStatusCodes = {};
       exchangeDetails.expectedStatusCodes['fetchClosedOrders'] = exchange.has.fetchClosedOrders ? 200 : 501;
       exchangeDetails.expectedStatusCodes['fetchOrders'] = exchange.has.fetchOrders ? 200 : 501;
+      exchangeDetails.expectedStatusCodes['fetchMyTrades'] = exchange.has.fetchMyTrades ? 200 : 501;
       
       return exchangeDetails
     }).forEach((_ctx) => {
@@ -790,19 +791,14 @@ describe('> controllers', function() {
                     });
                 })
 
-                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get my trades', function(done) {
+                it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get my trades, then ' + _ctx.expectedStatusCodes['fetchMyTrades'], function(done) {
                   this.timeout('10s')
-                  if (exchange.has.fetchMyTrades == 'false') {
-                    console.info('[SKIP REASON] Fetching of trades is NOT supported by ' + _ctx.exchangeName)
-                    this.skip();
-                    return;
-                  }
                   request(server)
                     .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades/mine')
                     .query({symbol : _ctx.targetCurrencyPair})
                     .set('Accept', 'application/json')
                     .expect('Content-Type', /json/)
-                    .expect(200)
+                    .expect(_ctx.expectedStatusCodes['fetchMyTrades'])
                     .end((err, res) => {
                       should.not.exist(err);
           
