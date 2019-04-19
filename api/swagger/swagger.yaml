@@ -303,6 +303,8 @@ paths:
             $ref: "#/definitions/OrderResponse"
         "404":
           description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+        "501":
+          description: If the exchange integration does NOT support this function
   /exchange/{exchangeName}/{exchangeId}/orders/open:
     x-swagger-router-controller: exchange
     get:
@@ -389,6 +391,8 @@ paths:
             $ref: "#/definitions/TradeResponse"
         "404":
           description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+        "501":
+          description: If the exchange integration does NOT support this function
   /exchange/{exchangeName}/{exchangeId}/order:
     x-swagger-router-controller: exchange
     post:
