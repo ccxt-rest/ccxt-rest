@@ -76,7 +76,7 @@ function markets(req, res) {
         var markets = rawMarkets.map(rawMarket => new exchange_response.MarketResponse(rawMarket))
         res.json(markets)
       }).catch((error) => {
-        res.status(500).json({});
+        res.status(500).json();
         console.error(error);
       });
   } else {
@@ -94,7 +94,7 @@ function orderBook(req, res) {
       .then((rawOrderBook) => {
         res.json(new exchange_response.OrderBookResponse(rawOrderBook));
       }).catch((error) => {
-        res.status(500).json({});
+        res.status(500).json();
         console.error(error);
       });
   } else {
@@ -112,7 +112,7 @@ function l2OrderBook(req, res) {
       .then((rawOrderBook) => {
         res.json(new exchange_response.OrderBookResponse(rawOrderBook));
       }).catch((error) => {
-        res.status(500).json({});
+        res.status(500).json();
         console.error(error);
       });
   } else {
@@ -131,7 +131,7 @@ function trades(req, res) {
       .then((rawTrades) => {
         res.json(rawTrades.map(rawTrade => new exchange_response.TradeResponse(rawTrade)));
       }).catch((error) => {
-        res.status(500).json({});
+        res.status(500).json();
         console.error(error);
       });
   } else {
@@ -148,7 +148,7 @@ function ticker(req, res) {
       .then((rawTicker) => {
         res.json(new exchange_response.TickerResponse(rawTicker));
       }).catch((error) => {
-        res.status(500).json({});
+        res.status(500).json();
         console.error(error);
       });
   } else {
@@ -164,7 +164,7 @@ function balances(req, res) {
       .then((rawBalance) => {
         res.json(new exchange_response.BalanceResponse(rawBalance));
       }).catch((error) => {
-        res.status(500).json({});
+        res.status(500).json();
         console.error(error);
       });
   } else {
@@ -198,7 +198,7 @@ function createOrder(req, res) {
         res.json(response);
       }).catch((error) => {
         console.error(error);
-        res.status(500).json({});
+        res.status(500).json();
       });
   } else {
     res.status(404).json();
@@ -223,7 +223,7 @@ function cancelOrder(req, res) {
         res.json(response);
       }).catch((error) => {
         console.error(error);
-        res.status(500).json({});
+        res.status(500).json();
       });
   } else {
     res.status(404).json();
@@ -241,7 +241,7 @@ function fetchOrder(req, res) {
         res.json(new exchange_response.OrderResponse(rawOrder));
       }).catch((error) => {
         console.error(error);
-        res.status(500).json({});
+        res.status(500).json();
       });
   } else {
     res.status(404).json();
@@ -263,7 +263,7 @@ function fetchOrders(req, res) {
           res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
         }).catch((error) => {
           console.error(error);
-          res.status(500).json({});
+          res.status(500).json();
         });
     }
   } else {
@@ -283,7 +283,7 @@ function fetchOpenOrders(req, res) {
         res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
       }).catch((error) => {
         console.error(error);
-        res.status(500).json({});
+        res.status(500).json();
       });
   } else {
     res.status(404).json();
@@ -305,7 +305,7 @@ function fetchClosedOrders(req, res) {
           res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
         }).catch((error) => {
           console.error(error);
-          res.status(500).json({});
+          res.status(500).json();
         });
     }
   } else {
@@ -328,7 +328,7 @@ function fetchMyTrades(req, res) {
           res.json(rawTrades.map(rawTrade => new exchange_response.TradeResponse(rawTrade)));
         }).catch((error) => {
           console.error(error);
-          res.status(500).json({});
+          res.status(500).json();
         });
     }
   } else {
@@ -351,7 +351,7 @@ function directCall(req, res) {
       .then((response) => {
         res.json(response);
       }).catch((error) => {
-        res.status(500).json({});
+        res.status(500).json();
         console.error(error);
       });
   } else {
