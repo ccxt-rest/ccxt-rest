@@ -417,6 +417,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "mochawesome": "^3.1.2",
     "proxyquire": "^2.1.0",
     "should": "^7.1.0",
     "sinon": "^7.3.1",
@@ -427,7 +428,7 @@
   "scripts": {
     "postinstall": "npm run swagger:verify_version",
     "start": "npm run swagger:verify_version && node app.js",
-    "test": "npm run swagger:verify_version && ./node_modules/.bin/swagger project test",
+    "test": "npm run swagger:verify_version && ./node_modules/.bin/mocha test/ --recursive --reporter mochawesome --reporter-options reportDir=./out/mochawesome-report",
     "prepack": "npm run swagger:verify_version && npm run generate:docs",
     "generate:client": "rm -rf ./clients/$lang && docker run --rm -v ${PWD}:/local swaggerapi/swagger-codegen-cli generate --api-package ph.adroit.ccxtrest.api --model-package ph.adroit.ccxtrest.model --invoker-package ph.adroit.ccxtrest.invoker --group-id ph.adoit.ccxtrest --artifact-id ccxt-rest-$lang-client --artifact-version $npm_package_version -c /local/config.json --additional-properties scmConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmDeveloperConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactDescription=\"ccxt-rest $lang client\" -i /local/api/swagger/swagger.yaml -l $lang -o /local/clients/$lang",
     "generate:clients": "for lang in `cat codegen_languages.txt`; do lang=$lang npm run generate:client; done",
