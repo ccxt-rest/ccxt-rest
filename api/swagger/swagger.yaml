@@ -77,6 +77,10 @@ paths:
             items: 
               type: string
             example: ['myBitsoInstance', 'myBinanceInstance', 'someRandomNameIGaveToAnInstance']
+        "404":
+          description: Exchange with that name is NOT supported
+          schema: 
+            type: object
     post:
       description: Creates an instance of the exchange
       tags:

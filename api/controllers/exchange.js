@@ -1,8 +1,8 @@
 'use strict';
 
-var ccxt = require('ccxt')
-  , db = require('./../helpers/db')
-  , exchange_response = require('../models/exchange_response')
+const ccxt = require('ccxt')
+    , db = require('./../helpers/db')
+    , exchange_response = require('../models/exchange_response')
 ;
 
 module.exports = {
@@ -33,7 +33,7 @@ function listIds(req, res) {
       var exchangeIds = db.getExchangeIds(exchangeName);
       res.json(exchangeIds);
     } else {
-      res.status(404).json({});
+      res.status(404).send({})
     }
 }
 
