@@ -459,8 +459,8 @@ describe('> controllers', function() {
 
                 it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get orders', function(done) {
                   if (exchange.has.fetchOrders == 'false') {
-                    done();
-                    return;
+                    this.skip();
+                    return
                   }
                   request(server)
                     .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orders')
@@ -491,7 +491,7 @@ describe('> controllers', function() {
 
                 it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get closed orders', function(done) {
                   if (exchange.has.fetchClosedOrders == 'false') {
-                    done();
+                    this.skip();
                     return;
                   }
                   request(server)
@@ -509,7 +509,7 @@ describe('> controllers', function() {
 
                 it('> [' + _ctx.exchangeName + '] Given with open ' + type + ' ' + side + ' order, get my trades', function(done) {
                   if (exchange.has.fetchMyTrades == 'false') {
-                    done();
+                    this.skip();
                     return;
                   }
                   request(server)
