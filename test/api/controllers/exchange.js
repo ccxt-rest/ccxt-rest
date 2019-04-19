@@ -3,6 +3,8 @@ var expect = require('chai').expect;
 var should = require('should');
 var request = require('supertest');
 
+process.env.PORT = 0
+
 var server = require('../../../app');
 var db = require('../../../api/helpers/db');
 
@@ -29,11 +31,11 @@ describe('> controllers', function() {
     ['bitso', 'binance'].map(exchangeName => {
       var exchangeDetails = exchangeDetailsMap[exchangeName] || {}
       exchangeDetails.exchangeName = exchangeName
-      exchangeDetails.exchangeId = exchangeDetails.creds.id
+      exchangeDetails.exchangeId = exchangeDetails.creds ? exchangeDetails.creds.id : (exchangeName + new Date().getTime())
       return exchangeDetails
     }).forEach((_ctx) => {
       describe('> [' + _ctx.exchangeName + '] Given no saved exchanges', function() {
-        describe('> [' + _ctx.exchangeName + '] No Saved public apis', function() {
+        describe('> [' + _ctx.exchangeName + '] No Saved instance', function() {
           it('> When GET:/exchange/' + _ctx.exchangeName + ' then return empty array', function(done) {
   
             request(server)
@@ -162,7 +164,7 @@ describe('> controllers', function() {
           });
         });
 
-        describe('> [' + _ctx.exchangeName + '] Saved public apis', function() {
+        describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Public Data APIs', function() {
           it('> GET:/exchange/' + _ctx.exchangeName + ' then return id of new exchange', function(done) {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName)
@@ -330,7 +332,12 @@ describe('> controllers', function() {
       
         });
   
-        describe('> [' + _ctx.exchangeName + '] Saved private apis', function() {
+        describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Private Data APIs', function() {
+          before(function() {
+            if (!_ctx.creds) {
+              this.skip()
+            }
+          })
           it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/balances then get exchange\'s balances', function(done) {
             this.timeout(10000)
             request(server)
