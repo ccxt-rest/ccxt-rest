@@ -210,22 +210,12 @@ function fetchOrders(req, res) {
 }
 
 function fetchOpenOrders(req, res) {
-  var exchange = _getExchange(req)
-  var symbol = req.swagger.params.symbol.value;
-  var since = req.swagger.params.since.value;
-  var limit = req.swagger.params.limit.value;
-
-  if (exchange) {
-    exchange.fetchOpenOrders(symbol, since, limit)
-      .then((rawOrders) => {
-        res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
-      }).catch((error) => {
-        console.error(error);
-        res.status(500).json();
-      });
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    ['symbol', 'since', 'limit'], 
+    'fetchOpenOrders', 
+    'fetchOpenOrders', 
+    (response) => response.map(rawOrder => new exchange_response.OrderResponse(rawOrder))
+  )
 }
 
 function fetchClosedOrders(req, res) {
@@ -325,11 +315,19 @@ function _handleError(req, res, functionName, error) {
 
 function _execute(req, res, parameterNamesOrParameterValuesExtractor, capabilityProperty, functionName, responseTransformer) {
   let context = {}
-  var exchange = _getExchange(req)
-  const parameterValues = typeof(parameterNamesOrParameterValuesExtractor) === 'function' ? 
-    parameterNamesOrParameterValuesExtractor(req, context) : 
-    parameterNamesOrParameterValuesExtractor.map(parameterName => req.swagger.params[parameterName].value)
-  context.parameterValues = parameterValues
+
+  let exchange
+  let parameterValues
+  try {
+    exchange = _getExchange(req)
+    parameterValues = typeof(parameterNamesOrParameterValuesExtractor) === 'function' ? 
+      parameterNamesOrParameterValuesExtractor(req, context) : 
+      parameterNamesOrParameterValuesExtractor.map(parameterName => req.swagger.params[parameterName].value)
+    context.parameterValues = parameterValues
+  } catch (error) {
+    _handleError(req, res, functionName, error)
+    return
+  }
 
   if (exchange) {
     if (capabilityProperty && !exchange.has[capabilityProperty]) {
