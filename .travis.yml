@@ -34,3 +34,4 @@ branches:
   only:
     - master
     - develop
+    - /^v[0-9.]+/
