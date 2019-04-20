@@ -241,7 +241,17 @@ describe('> controllers', function() {
       });
     });
 
-    
+    describe('> Given broken exchanges', function() {
+      ['allcoin'].forEach(function(exchangeName) {
+        it('> [' + exchangeName + '] When trying to instantiate, then 503', function(done) {
+          request(server)
+            .post('/exchange/' + exchangeName)
+            .send({id:exchangeName})
+            .set('Accept', 'application/json')
+            .expect(503, done);
+        })
+      })
+    });
 
     // ccxt.exchanges
     ['bitso', 'binance'].map(exchangeName => {

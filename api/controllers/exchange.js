@@ -1,7 +1,9 @@
 'use strict';
 
 const ccxt = require('ccxt')
+    , ccxtRestConfig = require('../config')
     , db = require('./../helpers/db')
+    , fs = require('fs')
     , exchange_response = require('../models/exchange_response')
 ;
 
@@ -39,6 +41,12 @@ function listIds(req, res) {
 
 function createExchange(req, res) {
     var exchangeName = req.swagger.params.exchangeName.value;
+
+    if (ccxtRestConfig[exchangeName]) {
+      res.status(503).send()
+      return
+    }
+
     var reqBody = req.body;
 
     if (ccxt[exchangeName]) {
@@ -69,16 +77,24 @@ function deleteExchange(req, res) {
 
 function markets(req, res) {
   var exchange = _getExchange(req)
-
+  
   if (exchange) {
-    exchange.fetchMarkets()
-      .then((rawMarkets) => {
-        var markets = rawMarkets.map(rawMarket => new exchange_response.MarketResponse(rawMarket))
-        res.json(markets)
-      }).catch((error) => {
-        res.status(500).json();
-        console.error(error);
-      });
+    if (!exchange.has.fetchMarkets) {
+      res.status(501).json();      
+    } else {
+      exchange.fetchMarkets()
+        .then((rawMarkets) => {
+          var markets = rawMarkets.map(rawMarket => new exchange_response.MarketResponse(rawMarket))
+          res.json(markets)
+        }).catch((error) => {
+          if (error instanceof ccxt.AuthenticationError) {
+            res.status(401).json();
+          } else {
+            console.error('[' + req.swagger.params.exchangeId.value + '] Error on fetching markets:\n' + typeof(error) + ':\n' + error);
+            res.status(500).json();
+          }
+        });
+    }    
   } else {
     res.status(404).json();
   }

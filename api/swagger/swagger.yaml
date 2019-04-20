@@ -117,6 +117,8 @@ paths:
           description: Exchange with that name is NOT supported
         "500":
           description: Error
+        "503":
+          description: Support for exchange is currently broken
   /exchange/{exchangeName}/{exchangeId}:
     x-swagger-router-controller: exchange
     get:
@@ -164,8 +166,12 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MarketResponse"
+        "403":
+          description: If the exchange integration requires api key and secret for this function
         "404":
           description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+        "501":
+          description: If the exchange integration does NOT support this function
   /exchange/{exchangeName}/{exchangeId}/orderBook:
     x-swagger-router-controller: exchange
     get:
