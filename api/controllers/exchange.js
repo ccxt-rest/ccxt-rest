@@ -98,7 +98,6 @@ function markets(req, res) {
   _execute(req, res, 
     [], 
     'fetchMarkets', 
-    'fetchMarkets', 
     (response) => response.map(rawMarket => new exchange_response.MarketResponse(rawMarket))
   )
 }
@@ -106,7 +105,6 @@ function markets(req, res) {
 function orderBook(req, res) {
   _execute(req, res, 
     ['symbol', 'limit'], 
-    'fetchOrderBook', 
     'fetchOrderBook', 
     (response) => new exchange_response.OrderBookResponse(response)
   )
@@ -116,7 +114,6 @@ function l2OrderBook(req, res) {
   _execute(req, res, 
     ['symbol', 'limit'], 
     'fetchL2OrderBook', 
-    'fetchL2OrderBook', 
     (response) => new exchange_response.OrderBookResponse(response)
   )
 }
@@ -124,7 +121,6 @@ function l2OrderBook(req, res) {
 function trades(req, res) {
   _execute(req, res, 
     ['symbol', 'since', 'limit'], 
-    'fetchTrades', 
     'fetchTrades', 
     (response) => response.map(rawTrade => new exchange_response.TradeResponse(rawTrade))
   )
@@ -134,7 +130,6 @@ function ticker(req, res) {
   _execute(req, res, 
     ['symbol'], 
     'fetchTicker', 
-    'fetchTicker', 
     (response) => new exchange_response.TickerResponse(response)
   )
 }
@@ -143,7 +138,6 @@ function tickers(req, res) {
   _execute(req, res, 
     ['symbol'], 
     'fetchTickers', 
-    'fetchTickers', 
     (response) => Object.keys(response).sort().map(symbol => new exchange_response.TickerResponse(response[symbol]))
   )
 }
@@ -151,7 +145,6 @@ function tickers(req, res) {
 function balances(req, res) {
   _execute(req, res, 
     [], 
-    'fetchBalance', 
     'fetchBalance', 
     (response) => new exchange_response.BalanceResponse(response)
   )
@@ -165,7 +158,6 @@ function createOrder(req, res) {
       const parameterValues = [orderPlacement.symbol, orderPlacement.type, orderPlacement.side, orderPlacement.amount, orderPlacement.price]
       return parameterValues
     }, 
-    'createOrder', 
     'createOrder', 
     (rawOrderPlacementResponse, context) => {
       const orderPlacement = context.orderPlacement
@@ -194,7 +186,6 @@ function cancelOrder(req, res) {
   _execute(req, res, 
     ['orderId', 'symbol'], 
     'cancelOrder', 
-    'cancelOrder', 
     (rawOrderCancellationResponse, context) => {
       var response = new exchange_response.OrderResponse(rawOrderCancellationResponse)
       if (!response.id) {
@@ -212,7 +203,6 @@ function fetchOrder(req, res) {
   _execute(req, res, 
     ['orderId', 'symbol'], 
     'fetchOrder', 
-    'fetchOrder', 
     (reponse) => new exchange_response.OrderResponse(reponse)
   )
 }
@@ -220,7 +210,6 @@ function fetchOrder(req, res) {
 function fetchOrders(req, res) {
   _execute(req, res, 
     ['symbol', 'since', 'limit'], 
-    'fetchOrders', 
     'fetchOrders', 
     (reponse) => reponse.map(rawOrder => new exchange_response.OrderResponse(rawOrder))
   )
@@ -230,7 +219,6 @@ function fetchOpenOrders(req, res) {
   _execute(req, res, 
     ['symbol', 'since', 'limit'], 
     'fetchOpenOrders', 
-    'fetchOpenOrders', 
     (response) => response.map(rawOrder => new exchange_response.OrderResponse(rawOrder))
   )
 }
@@ -238,7 +226,6 @@ function fetchOpenOrders(req, res) {
 function fetchClosedOrders(req, res) {
   _execute(req, res, 
     ['symbol', 'since', 'limit'], 
-    'fetchClosedOrders', 
     'fetchClosedOrders', 
     (response) => response.map(rawOrder => new exchange_response.OrderResponse(rawOrder))
   )
@@ -248,7 +235,6 @@ function fetchMyTrades(req, res) {
   _execute(req, res, 
     ['symbol', 'since', 'limit'], 
     'fetchMyTrades', 
-    'fetchMyTrades', 
     (response) => response.map(rawTrade => new exchange_response.TradeResponse(rawTrade))
   )
 }
@@ -257,7 +243,6 @@ function directCall(req, res) {
   var methodName = req.swagger.params.methodName.value;
   _execute(req, res, 
     (req) => JSON.parse(req.body),
-    methodName, 
     methodName, 
     (response) => response
   )
@@ -297,19 +282,33 @@ function _handleError(req, res, functionName, error) {
   }
 }
 
-function _execute(req, res, parameterNamesOrParameterValuesExtractor, capabilityProperty, functionName, responseTransformer) {
+function _execute(req, res, parameterNamesOrParameterValuesExtractor, functionName, responseTransformer) {
   try {
     let context = {}
 
     const exchange = _getExchange(req)
-    const parameterValues = typeof(parameterNamesOrParameterValuesExtractor) === 'function' ? 
-      parameterNamesOrParameterValuesExtractor(req, context) : 
-      parameterNamesOrParameterValuesExtractor.map(parameterName => req.swagger.params[parameterName].value)
+    let parameterValues
+    if (typeof(parameterNamesOrParameterValuesExtractor) === 'function') {
+      parameterValues = parameterNamesOrParameterValuesExtractor(req, context)
+    } else {
+      parameterValues = parameterNamesOrParameterValuesExtractor.map(parameterName => req.swagger.params[parameterName].value)
+
+      // extract exchange-specific params
+      let params = Object.assign({}, req.query)
+      parameterNamesOrParameterValuesExtractor.forEach(paramName => {
+        delete params[paramName]
+      })
+
+      // add exchange-specific params to parameterValues
+      parameterValues.push(params)
+    }
     context.parameterValues = parameterValues
 
+    
+
     if (exchange) {
-      if (capabilityProperty && exchange.has[capabilityProperty] === false) {
-        console.error('[' + exchange.name + '] does not support ' + capabilityProperty)
+      if (exchange.has[functionName] === false) {
+        console.error('[' + exchange.name + '] does not support ' + functionName)
         res.status(501).json();      
       } else {
         exchange[functionName].apply(exchange, parameterValues)
