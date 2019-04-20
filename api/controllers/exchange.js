@@ -3,7 +3,6 @@
 const ccxt = require('ccxt')
     , ccxtRestConfig = require('../config')
     , db = require('./../helpers/db')
-    , fs = require('fs')
     , exchange_response = require('../models/exchange_response')
 ;
 
@@ -36,7 +35,7 @@ function listIds(req, res) {
       var exchangeIds = db.getExchangeIds(exchangeName);
       res.json(exchangeIds);
     } else {
-      res.status(404).send()
+      res.status(404).json()
     }
 }
 
@@ -44,7 +43,7 @@ function createExchange(req, res) {
     var exchangeName = req.swagger.params.exchangeName.value;
 
     if (ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].status == 'broken') {
-      res.status(503).send()
+      res.status(503).json()
       return
     }
 
@@ -59,7 +58,7 @@ function createExchange(req, res) {
       
       _renderExchange(exchange, res);
     } else {
-      res.status(404).send()
+      res.status(404).json()
     }
 }
 
@@ -202,26 +201,12 @@ function fetchOrder(req, res) {
 }
 
 function fetchOrders(req, res) {
-  var exchange = _getExchange(req)
-  var symbol = req.swagger.params.symbol.value;
-  var since = req.swagger.params.since.value;
-  var limit = req.swagger.params.limit.value;
-
-  if (exchange) {
-    if (!exchange.has.fetchOrders) {
-      res.status(501).json();      
-    } else {
-      exchange.fetchOrders(symbol, since, limit)
-        .then((rawOrders) => {
-          res.json(rawOrders.map(rawOrder => new exchange_response.OrderResponse(rawOrder)));
-        }).catch((error) => {
-          console.error(error);
-          res.status(500).json();
-        });
-    }
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    ['symbol', 'since', 'limit'], 
+    'fetchOrders', 
+    'fetchOrders', 
+    (reponse) => reponse.map(rawOrder => new exchange_response.OrderResponse(rawOrder))
+  )
 }
 
 function fetchOpenOrders(req, res) {
@@ -312,6 +297,32 @@ function directCall(req, res) {
   }
 }
 
+function _handleError(req, res, functionName, error) {
+  if (error instanceof ccxt.AuthenticationError) {
+    res.status(401).json();
+  } else if (error instanceof ccxt.InvalidNonce) {
+    res.status(403).json();
+  } else if (error instanceof ccxt.OrderNotFound) {
+    res.status(404).json();
+  } else if (error instanceof ccxt.InvalidOrder || error instanceof ccxt.InsufficientFunds) {
+    res.status(400).json();
+  } else if (error instanceof ccxt.NotSupported) {
+    res.status(501).json();
+  } else if (error instanceof ccxt.NetworkError) {
+    res.status(598).json();
+  } else {
+    console.error()
+    let errorMessageSegments = []
+    errorMessageSegments.push('[' + req.swagger.params.exchangeId.value + '] Error on ' + functionName)
+    if (error.constructor && error.constructor.name) {
+      errorMessageSegments.push(error.constructor.name)
+    }
+    errorMessageSegments.push(error)
+    console.error(errorMessageSegments.join('\n'));
+    res.status(500).json();
+  }
+}
+
 function _execute(req, res, parameterNamesOrParameterValuesExtractor, capabilityProperty, functionName, responseTransformer) {
   let context = {}
   var exchange = _getExchange(req)
@@ -326,30 +337,13 @@ function _execute(req, res, parameterNamesOrParameterValuesExtractor, capability
     } else {
       exchange[functionName].apply(exchange, parameterValues)
         .then(response => {
-          res.json(responseTransformer(response, context));
-        }).catch((error) => {
-          if (error instanceof ccxt.AuthenticationError) {
-            res.status(401).json();
-          } else if (error instanceof ccxt.InvalidNonce) {
-            res.status(403).json();
-          } else if (error instanceof ccxt.OrderNotFound) {
-            res.status(404).json();
-          } else if (error instanceof ccxt.InvalidOrder || error instanceof ccxt.InsufficientFunds) {
-            res.status(400).json();
-          } else if (error instanceof ccxt.NotSupported) {
-            res.status(501).json();
-          } else if (error instanceof ccxt.NetworkError) {
-            res.status(598).json();
-          } else {
-            let errorMessageSegments = []
-            errorMessageSegments.push('[' + req.swagger.params.exchangeId.value + '] Error on ' + functionName)
-            if (error.constructor && error.constructor.name) {
-              errorMessageSegments.push(error.constructor.name)
-            }
-            errorMessageSegments.push(error)
-            console.error(errorMessageSegments.join('\n'));
-            res.status(500).json();
+          try {
+            res.json(responseTransformer(response, context));
+          } catch (error) {
+            _handleError(req, res, functionName, error)
           }
+        }).catch((error) => {
+          _handleError(req, res, functionName, error)
         });
     }
   } else {
