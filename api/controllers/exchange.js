@@ -112,20 +112,12 @@ function trades(req, res) {
 }
 
 function ticker(req, res) {
-  var symbol = req.swagger.params.symbol.value;
-  var exchange = _getExchange(req)
-
-  if (exchange) {
-    exchange.fetchTicker(symbol)
-      .then((rawTicker) => {
-        res.json(new exchange_response.TickerResponse(rawTicker));
-      }).catch((error) => {
-        res.status(500).json();
-        console.error(error);
-      });
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    ['symbol'], 
+    'fetchTicker', 
+    'fetchTicker', 
+    (response) => new exchange_response.TickerResponse(response)
+  )
 }
 
 function balances(req, res) {
