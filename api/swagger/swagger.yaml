@@ -487,10 +487,20 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderResponse"
+        "400":
+          description: If the exchange complained about the parameters passed
+        "401":
+          description: If the exchange integration requires api key and secret for this function
+        "403":
+          description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
           description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+        "500":
+          description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
+        "598":
+          description: If the exchange integration could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/trades/mine:
     x-swagger-router-controller: exchange
     get:
