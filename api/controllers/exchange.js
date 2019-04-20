@@ -238,28 +238,26 @@ function fetchMyTrades(req, res) {
 
 function directCall(req, res) {
   var methodName = req.swagger.params.methodName.value;
-  var methodParameters;
-  try {
-    methodParameters = JSON.parse(req.body);
-  } catch(e) {
-    methodParameters = [];
-  }
-  var exchange = _getExchange(req)
+  _execute(req, res, 
+    (req) => JSON.parse(req.body),
+    methodName, 
+    methodName, 
+    (response) => response
+  )
+}
 
-  if (exchange) {
-    exchange[methodName].apply(exchange, methodParameters)
-      .then((response) => {
-        res.json(response);
-      }).catch((error) => {
-        res.status(500).json();
-        console.error(error);
-      });
-  } else {
-    res.status(404).json();
+function _logError(req, functionName, error) {
+  let errorMessageSegments = []
+  errorMessageSegments.push('[' + req.swagger.params.exchangeId.value + '] Error on ' + functionName)
+  if (error.constructor && error.constructor.name) {
+    errorMessageSegments.push(error.constructor.name)
   }
+  errorMessageSegments.push(error)
+  console.error(errorMessageSegments.join('\n'));
 }
 
 function _handleError(req, res, functionName, error) {
+  _logError(req, functionName, error)
   if (error instanceof ccxt.AuthenticationError) {
     res.status(401).json();
   } else if (error instanceof ccxt.InvalidNonce) {
@@ -273,14 +271,6 @@ function _handleError(req, res, functionName, error) {
   } else if (error instanceof ccxt.NetworkError) {
     res.status(598).json();
   } else {
-    console.error()
-    let errorMessageSegments = []
-    errorMessageSegments.push('[' + req.swagger.params.exchangeId.value + '] Error on ' + functionName)
-    if (error.constructor && error.constructor.name) {
-      errorMessageSegments.push(error.constructor.name)
-    }
-    errorMessageSegments.push(error)
-    console.error(errorMessageSegments.join('\n'));
     res.status(500).json();
   }
 }
@@ -302,7 +292,8 @@ function _execute(req, res, parameterNamesOrParameterValuesExtractor, capability
   }
 
   if (exchange) {
-    if (capabilityProperty && !exchange.has[capabilityProperty]) {
+    if (capabilityProperty && exchange.has[capabilityProperty] === false) {
+      console.error('[' + exchange.name + '] does not support ' + capabilityProperty)
       res.status(501).json();      
     } else {
       exchange[functionName].apply(exchange, parameterValues)
