@@ -141,7 +141,7 @@ describe('> controllers', function() {
       });
 
       describe('> [Unsupported Exchange Name] Private Data APIs', function() {
-        it('> GET:/exchange/nonExistentExchangeName/dummy/balances then get exchange\'s balances then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/balances then return 404', function(done) {
           this.timeout('10s')
           request(server)
               .get('/exchange/nonExistentExchangeName/dummy/balances')
