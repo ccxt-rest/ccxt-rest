@@ -173,28 +173,21 @@ function createOrder(req, res) {
 }
 
 function cancelOrder(req, res) {
-  var exchange = _getExchange(req)
-  var orderId = req.swagger.params.orderId.value;
-  var symbol = req.swagger.params.symbol.value;
-
-  if (exchange) {
-    exchange.cancelOrder(orderId, symbol)
-      .then((rawOrderCancellationResponse) => {
-        var response = new exchange_response.OrderResponse(rawOrderCancellationResponse)
-        if (!response.id) {
-          response.id = orderId
-        }
-        if (!response.symbol) {
-          response.symbol = symbol
-        }
-        res.json(response);
-      }).catch((error) => {
-        console.error(error);
-        res.status(500).json();
-      });
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    ['orderId', 'symbol'], 
+    'cancelOrder', 
+    'cancelOrder', 
+    (rawOrderCancellationResponse, context) => {
+      var response = new exchange_response.OrderResponse(rawOrderCancellationResponse)
+      if (!response.id) {
+        response.id = context[0]
+      }
+      if (!response.symbol) {
+        response.symbol = context[1]
+      }
+      return response
+    }
+  )
 }
 
 function fetchOrder(req, res) {
