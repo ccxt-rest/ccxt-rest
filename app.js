@@ -19,10 +19,6 @@ SwaggerExpress.create(config, function(err, swaggerExpress) {
   // install middleware
   swaggerExpress.register(app);
 
-  const router = express.Router();
-  router.get('/', (req, res) => {
-    res.redirect('/docs');
-  })
   app.use('/', express.static(__dirname + '/./out/docs'))
 
   var port = process.env.PORT || 3000;
