@@ -12,7 +12,8 @@ WORKDIR /www
 RUN npm install
 RUN npm pack
 
-FROM node:10.15.1-alpine
+# 10.15.3 - LTS
+FROM node:10.15.3-alpine
 COPY --from=builder /www/ccxt-rest-*.tgz /tmp/
 RUN apk add ncurses alpine-sdk python
 RUN npm install -g /tmp/ccxt-rest-*.tgz --python=`which python` --no-save --unsafe-perm=true --allow-root
