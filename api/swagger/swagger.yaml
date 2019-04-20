@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  version: "1.0.6"
+  version: "1.0.7"
   title: CCXT REST
   contact:
     name: "Adroit"
