@@ -135,7 +135,7 @@ paths:
           schema:
             $ref: "#/definitions/ExchangeResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
     delete:
       description: Delete the exchange details referenced by the exchangeName and exchangeId
       tags:
@@ -150,7 +150,7 @@ paths:
           schema:
             $ref: "#/definitions/ExchangeResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/markets:
     x-swagger-router-controller: exchange
     get:
@@ -166,12 +166,20 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MarketResponse"
-        "403":
+        "400":
+          description: If the exchange complained about the parameters passed
+        "401":
           description: If the exchange integration requires api key and secret for this function
+        "403":
+          description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+        "500":
+          description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
+        "598":
+          description: If the exchange integration could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/orderBook:
     x-swagger-router-controller: exchange
     get:
@@ -193,8 +201,20 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/OrderBookResponse"
+        "400":
+          description: If the exchange complained about the parameters passed
+        "401":
+          description: If the exchange integration requires api key and secret for this function
+        "403":
+          description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+        "500":
+          description: If an unexpected error occurred
+        "501":
+          description: If the exchange integration does NOT support this function
+        "598":
+          description: If the exchange integration could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/l2OrderBook:
     x-swagger-router-controller: exchange
     get:
@@ -217,7 +237,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderBookResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/trades:
     x-swagger-router-controller: exchange
     get:
@@ -245,7 +265,7 @@ paths:
           schema:
             $ref: "#/definitions/TradeResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/ticker:
     x-swagger-router-controller: exchange
     get:
@@ -263,7 +283,7 @@ paths:
           schema:
             $ref: "#/definitions/TickerResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/balances:
     x-swagger-router-controller: exchange
     get:
@@ -280,7 +300,7 @@ paths:
           schema:
             $ref: "#/definitions/BalanceResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/orders:
     x-swagger-router-controller: exchange
     get:
@@ -308,7 +328,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
         "501":
           description: If the exchange integration does NOT support this function
   /exchange/{exchangeName}/{exchangeId}/orders/open:
@@ -338,7 +358,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/orders/closed:
     x-swagger-router-controller: exchange
     get:
@@ -366,7 +386,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
         "501":
           description: If the exchange integration does NOT support this function
   /exchange/{exchangeName}/{exchangeId}/trades/mine:
@@ -396,7 +416,7 @@ paths:
           schema:
             $ref: "#/definitions/TradeResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
         "501":
           description: If the exchange integration does NOT support this function
   /exchange/{exchangeName}/{exchangeId}/order:
@@ -438,7 +458,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/order/{orderId}:
     x-swagger-router-controller: exchange
     get:
@@ -457,7 +477,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
     delete:
       description: Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId
       tags:
@@ -474,7 +494,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /exchange/{exchangeName}/{exchangeId}/_/{methodName}:
     x-swagger-router-controller: exchange
     post:
@@ -503,7 +523,7 @@ paths:
           schema:
             type: object
         "404":
-          description: Exchange with that name is NOT supported or Exchagne with that id does NOT exist
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
   /swagger:
     x-swagger-pipe: swagger_raw
 parameters:

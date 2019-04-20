@@ -76,43 +76,59 @@ function deleteExchange(req, res) {
 }
 
 function markets(req, res) {
-  var exchange = _getExchange(req)
-  
-  if (exchange) {
-    if (!exchange.has.fetchMarkets) {
-      res.status(501).json();      
-    } else {
-      exchange.fetchMarkets()
-        .then((rawMarkets) => {
-          var markets = rawMarkets.map(rawMarket => new exchange_response.MarketResponse(rawMarket))
-          res.json(markets)
-        }).catch((error) => {
-          if (error instanceof ccxt.AuthenticationError) {
-            res.status(401).json();
-          } else {
-            console.error('[' + req.swagger.params.exchangeId.value + '] Error on fetching markets:\n' + typeof(error) + ':\n' + error);
-            res.status(500).json();
-          }
-        });
-    }    
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    [], 
+    'fetchMarkets', 
+    'fetchMarkets', 
+    (response) => response.map(rawMarket => new exchange_response.MarketResponse(rawMarket))
+  )
 }
 
 function orderBook(req, res) {
-  var symbol = req.swagger.params.symbol.value;
-  var limit = req.swagger.params.limit.value;
+  _execute(req, res, 
+    ['symbol', 'limit'], 
+    'fetchOrderBook', 
+    'fetchOrderBook', 
+    (response) => new exchange_response.OrderBookResponse(response)
+  )
+}
+
+function _execute(req, res, parameterNames, capabilityProperty, functionName, responseTransformer) {
   var exchange = _getExchange(req)
+  const parameterValues = parameterNames.map(parameterName => req.swagger.params[parameterName].value)
 
   if (exchange) {
-    exchange.fetchOrderBook(symbol, limit)
-      .then((rawOrderBook) => {
-        res.json(new exchange_response.OrderBookResponse(rawOrderBook));
-      }).catch((error) => {
-        res.status(500).json();
-        console.error(error);
-      });
+    if (capabilityProperty && !exchange.has[capabilityProperty]) {
+      res.status(501).json();      
+    } else {
+      exchange[functionName].apply(exchange, parameterValues)
+        .then(response => {
+          res.json(responseTransformer(response));
+        }).catch((error) => {
+          if (error instanceof ccxt.AuthenticationError) {
+            res.status(401).json();
+          } else if (error instanceof ccxt.InvalidNonce) {
+            res.status(403).json();
+          } else if (error instanceof ccxt.OrderNotFound) {
+            res.status(404).json();
+          } else if (error instanceof ccxt.InvalidOrder || error instanceof ccxt.InsufficientFunds) {
+            res.status(400).json();
+          } else if (error instanceof ccxt.NotSupported) {
+            res.status(501).json();
+          } else if (error instanceof ccxt.NetworkError) {
+            res.status(598).json();
+          } else {
+            let errorMessageSegments = []
+            errorMessageSegments.push('[' + req.swagger.params.exchangeId.value + '] Error on ' + functionName)
+            if (error.constructor && error.constructor.name) {
+              errorMessageSegments.push(error.constructor.name)
+            }
+            errorMessageSegments.push(error)
+            console.error(errorMessageSegments.join('\n'));
+            res.status(500).json();
+          }
+        });
+    }
   } else {
     res.status(404).json();
   }
