@@ -103,22 +103,12 @@ function l2OrderBook(req, res) {
 }
 
 function trades(req, res) {
-  var symbol = req.swagger.params.symbol.value;
-  var since = req.swagger.params.since.value;
-  var limit = req.swagger.params.limit.value;
-  var exchange = _getExchange(req)
-
-  if (exchange) {
-    exchange.fetchTrades(symbol, since, limit)
-      .then((rawTrades) => {
-        res.json(rawTrades.map(rawTrade => new exchange_response.TradeResponse(rawTrade)));
-      }).catch((error) => {
-        res.status(500).json();
-        console.error(error);
-      });
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    ['symbol', 'since', 'limit'], 
+    'fetchTrades', 
+    'fetchTrades', 
+    (response) => response.map(rawTrade => new exchange_response.TradeResponse(rawTrade))
+  )
 }
 
 function ticker(req, res) {
