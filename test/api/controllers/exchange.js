@@ -43,7 +43,7 @@ describe('> controllers', function() {
       })
 
       describe('> [Unsupported Exchange Name] Public Data API', function() {
-        it('> GET:/exchange/nonExistentExchangeName/dummy/markets then get exchange\'s markets then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/markets then return 404', function(done) {
 
           request(server)
               .get('/exchange/nonExistentExchangeName/dummy/markets')
@@ -56,7 +56,7 @@ describe('> controllers', function() {
               })
         });
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/orderBook then get exchange\'s Order Book then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/orderBook then return 404', function(done) {
           this.timeout('10s');
           request(server)
               .get('/exchange/nonExistentExchangeName/dummy/orderBook')
@@ -70,7 +70,7 @@ describe('> controllers', function() {
               })
         })
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/l2OrderBook then get exchange\'s L2 Order Book then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/l2OrderBook then return 404', function(done) {
           this.timeout('10s');
           request(server)
               .get('/exchange/nonExistentExchangeName/dummy/l2OrderBook')
@@ -84,7 +84,7 @@ describe('> controllers', function() {
               })
         })
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/trades then get exchange\'s trades then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/trades then return 404', function(done) {
           this.timeout('10s')
           request(server)
               .get('/exchange/nonExistentExchangeName/dummy/trades')
@@ -98,7 +98,7 @@ describe('> controllers', function() {
               })
         })
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/ticker then get exchange\'s ticker then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/ticker then return 404', function(done) {
           this.timeout('10s')
           request(server)
               .get('/exchange/nonExistentExchangeName/dummy/ticker')
@@ -112,7 +112,20 @@ describe('> controllers', function() {
               })
         })
 
-        it('> POST:/exchange/nonExistentExchangeName/dummy/_/loadMarkets then get exchange\'s direct method then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/dummy/tickers then return 404', function(done) {
+          this.timeout('10s')
+          request(server)
+              .get('/exchange/nonExistentExchangeName/dummy/tickers')
+              .set('Accept', 'application/json')
+              .expect('Content-Type', /json/)
+              .expect(404)
+              .end((err, res) => {
+                should.not.exist(err);
+                done();
+              })
+        })
+
+        it('> POST:/exchange/nonExistentExchangeName/dummy/_/loadMarkets then return 404', function(done) {
           this.timeout('10s')
           request(server)
               .post('/exchange/nonExistentExchangeName/dummy/_/loadMarkets')
@@ -265,6 +278,8 @@ describe('> controllers', function() {
       exchangeDetails.expectedStatusCodes['fetchClosedOrders'] = exchange.has.fetchClosedOrders ? 200 : 501;
       exchangeDetails.expectedStatusCodes['fetchOrders'] = exchange.has.fetchOrders ? 200 : 501;
       exchangeDetails.expectedStatusCodes['fetchMyTrades'] = exchange.has.fetchMyTrades ? 200 : 501;
+      exchangeDetails.expectedStatusCodes['fetchTicker'] = exchange.has.fetchTicker ? 200 : 501;
+      exchangeDetails.expectedStatusCodes['fetchTickers'] = exchange.has.fetchTickers ? 200 : 501;
       
       return exchangeDetails
     }).forEach((_ctx) => {
@@ -314,7 +329,7 @@ describe('> controllers', function() {
         });
 
         describe('> [' + _ctx.exchangeName + '] Using no Saved Instance\'s Public Data API', function() {
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets then return 404', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then return 404', function(done) {
   
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets')
@@ -327,7 +342,7 @@ describe('> controllers', function() {
                 })
           });
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book then return 404', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then return 404', function(done) {
             this.timeout('10s');
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
@@ -341,7 +356,7 @@ describe('> controllers', function() {
                 })
           })
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then get exchange\'s L2 Order Book then return 404', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then return 404', function(done) {
             this.timeout('10s');
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook')
@@ -355,7 +370,7 @@ describe('> controllers', function() {
                 })
           })
 
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades then get exchange\'s trades then return 404', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades then return 404', function(done) {
             this.timeout('10s')
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades')
@@ -369,7 +384,7 @@ describe('> controllers', function() {
                 })
           })
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then get exchange\'s ticker then return 404', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then return 404', function(done) {
             this.timeout('10s')
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker')
@@ -382,8 +397,21 @@ describe('> controllers', function() {
                   done();
                 })
           })
+
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/tickers then return 404', function(done) {
+            this.timeout('10s')
+            request(server)
+                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/tickers')
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(404)
+                .end((err, res) => {
+                  should.not.exist(err);
+                  done();
+                })
+          })
   
-          it('> POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then get exchange\'s direct method then return 404', function(done) {
+          it('> POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then return 404', function(done) {
             this.timeout('10s')
             request(server)
                 .post('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets')
@@ -588,21 +616,21 @@ describe('> controllers', function() {
                 });
           })
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then get exchange\'s ticker', function(done) {
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then ' + _ctx.expectedStatusCodes['fetchTicker'], function(done) {
             this.timeout('10s')
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker')
                 .query({ symbol: _ctx.targetCurrencyPair })
                 .set('Accept', 'application/json')
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .end((err, res) => {
-                  should.not.exist(err);
-    
-                  expect(res.body.symbol).to.be.eql(_ctx.targetCurrencyPair);
-    
-                  done();
-                });
+                .expect(_ctx.expectedStatusCodes['fetchTicker'], done);
+          })
+
+          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/tickers then ' + _ctx.expectedStatusCodes['fetchTickers'], function(done) {
+            this.timeout('10s')
+            request(server)
+                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/tickers')
+                .set('Accept', 'application/json')
+                .expect(_ctx.expectedStatusCodes['fetchTickers'], done);
           })
   
           it('> POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then get exchange\'s direct method', function(done) {

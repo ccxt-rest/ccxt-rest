@@ -17,6 +17,7 @@ module.exports = {
   l2OrderBook: l2OrderBook,
   trades: trades,
   ticker: ticker,
+  tickers: tickers,
   balances: balances,
   createOrder: createOrder,
   cancelOrder: cancelOrder,
@@ -117,6 +118,15 @@ function ticker(req, res) {
     'fetchTicker', 
     'fetchTicker', 
     (response) => new exchange_response.TickerResponse(response)
+  )
+}
+
+function tickers(req, res) {
+  _execute(req, res, 
+    ['symbol'], 
+    'fetchTickers', 
+    'fetchTickers', 
+    (response) => Object.keys(response).sort().map(symbol => new exchange_response.TickerResponse(response[symbol]))
   )
 }
 
