@@ -18,6 +18,7 @@ deploy:
     github_token: $GITHUB_TOKEN
     local_dir: ./out/mochawesome-report
     keep_history: false
+    skip_cleanup: true
     on:
       branch: develop
       repo: franz-see/ccxt-rest
