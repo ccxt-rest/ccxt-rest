@@ -10,14 +10,24 @@ script:
   - npm test
   - npm pack
   - docker build -t franzsee/ccxt-rest:testing .
+
 deploy:
-  provider: npm
-  email: franz@see.net.ph
-  api_key: $NPM_TOKEN
-  skip_cleanup: true
-  on:
-    tags: true
-    repo: franz-see/ccxt-rest
+  - provider: pages
+    email: franz@see.net.ph
+    name: 'Travis'
+    github_token: $GITHUB_TOKEN
+    local_dir: ./out/mochawesome-report
+    keep_history: false
+    on:
+      branch: develop
+      repo: franz-see/ccxt-rest
+  - provider: npm
+    email: franz@see.net.ph
+    api_key: $NPM_TOKEN
+    skip_cleanup: true
+    on:
+      tags: true
+      repo: franz-see/ccxt-rest
 
 branches:
   only:
