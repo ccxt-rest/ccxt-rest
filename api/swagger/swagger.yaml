@@ -60,6 +60,8 @@ paths:
             items: 
               type: string
             example: ["_1btcxe","acx","allcoin","anxpro","anybits","bcex","bequant","bibox","bigone","binance","binanceje","bit2c","bitbank","bitbay","bitfinex","bitfinex2","bitflyer","bitforex","bithumb","bitibu","bitkk","bitlish","bitmarket","bitmex","bitsane","bitso","bitstamp","bitstamp1","bittrex","bitz","bl3p","bleutrade","braziliex","btcalpha","btcbox","btcchina","btcexchange","btcmarkets","btctradeim","btctradeua","btcturk","buda","bxinth","ccex","cex","chbtc","chilebit","cobinhood","coinbase","coinbaseprime","coinbasepro","coincheck","coinegg","coinex","coinexchange","coinfalcon","coinfloor","coingi","coinmarketcap","coinmate","coinnest","coinone","coinspot","cointiger","coolcoin","coss","crex24","crypton","cryptopia","deribit","dsx","ethfinex","exmo","exx","fcoin","fcoinjp","flowbtc","foxbit","fybse","fybsg","gateio","gdax","gemini","getbtc","hadax","hitbtc","hitbtc2","huobipro","huobiru","ice3x","independentreserve","indodax","itbit","jubi","kkex","kraken","kucoin","kucoin2","kuna","lakebtc","lbank","liqui","liquid","livecoin","luno","lykke","mandala","mercado","mixcoins","negociecoins","nova","okcoincny","okcoinusd","okex","paymium","poloniex","quadrigacx","rightbtc","southxchange","stronghold","surbitcoin","theocean","therock","tidebit","tidex","uex","upbit","urdubit","vaultoro","vbtc","virwox","xbtce","yobit","zaif","zb"]
+        "500":
+          description: If an unexpected error occurred
   /exchange/{exchangeName}:
     x-swagger-router-controller: exchange
     get:
@@ -173,7 +175,7 @@ paths:
           schema:
             $ref: "#/definitions/MarketResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -184,8 +186,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/orderBook:
     x-swagger-router-controller: exchange
     get:
@@ -208,7 +210,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderBookResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -219,8 +221,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/l2OrderBook:
     x-swagger-router-controller: exchange
     get:
@@ -243,7 +245,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderBookResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -254,8 +256,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/trades:
     x-swagger-router-controller: exchange
     get:
@@ -283,7 +285,7 @@ paths:
           schema:
             $ref: "#/definitions/TradeResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -294,8 +296,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/ticker:
     x-swagger-router-controller: exchange
     get:
@@ -313,7 +315,7 @@ paths:
           schema:
             $ref: "#/definitions/TickerResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -324,8 +326,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/tickers:
     x-swagger-router-controller: exchange
     get:
@@ -345,7 +347,7 @@ paths:
             items: 
               $ref: "#/definitions/TickerResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -356,8 +358,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/balances:
     x-swagger-router-controller: exchange
     get:
@@ -374,7 +376,7 @@ paths:
           schema:
             $ref: "#/definitions/BalanceResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -385,8 +387,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/orders:
     x-swagger-router-controller: exchange
     get:
@@ -414,7 +416,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -425,8 +427,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/orders/open:
     x-swagger-router-controller: exchange
     get:
@@ -454,7 +456,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -465,8 +467,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/orders/closed:
     x-swagger-router-controller: exchange
     get:
@@ -494,7 +496,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -505,8 +507,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/trades/mine:
     x-swagger-router-controller: exchange
     get:
@@ -534,7 +536,7 @@ paths:
           schema:
             $ref: "#/definitions/TradeResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -545,8 +547,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/order:
     x-swagger-router-controller: exchange
     post:
@@ -586,7 +588,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -597,8 +599,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/order/{orderId}:
     x-swagger-router-controller: exchange
     get:
@@ -617,7 +619,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -628,8 +630,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
     delete:
       description: Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId
       tags:
@@ -646,7 +648,7 @@ paths:
           schema:
             $ref: "#/definitions/OrderResponse"
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -657,8 +659,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/{exchangeId}/_/{methodName}:
     x-swagger-router-controller: exchange
     post:
@@ -687,7 +689,7 @@ paths:
           schema:
             type: object
         "400":
-          description: If the exchange complained about the parameters passed
+          description: If the exchange itself complained about the parameters passed
         "401":
           description: If the exchange integration requires api key and secret for this function
         "403":
@@ -698,8 +700,8 @@ paths:
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
-        "598":
-          description: If the exchange integration could not be reached because of some network error
+        "504":
+          description: If the exchange itself could not be reached because of some network error
   /swagger:
     x-swagger-pipe: swagger_raw
 parameters:

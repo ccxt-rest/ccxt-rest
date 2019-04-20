@@ -291,7 +291,7 @@ function _handleError(req, res, functionName, error) {
   } else if (error instanceof ccxt.NotSupported) {
     res.status(501).json();
   } else if (error instanceof ccxt.NetworkError) {
-    res.status(598).json();
+    res.status(504).json();
   } else {
     res.status(500).json();
   }
