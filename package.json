@@ -404,11 +404,9 @@
   "dependencies": {
     "bignumber.js": "^8.1.1",
     "ccxt": "^1.18.481",
-    "circular-json": "^0.5.9",
     "ethereumjs-abi": "^0.6.7",
     "ethereumjs-util": "^6.1.0",
     "express": "^4.16.4",
-    "js-yaml": "^3.13.1",
     "swagger": "^0.7.5",
     "swagger-express-mw": "^0.7.0",
     "swagger-tools": "^0.10.4",
@@ -417,10 +415,9 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "js-yaml": "^3.13.1",
     "mochawesome": "^3.1.2",
-    "proxyquire": "^2.1.0",
     "should": "^7.1.0",
-    "sinon": "^7.3.1",
     "supertest": "^4.0.2",
     "uri-js": "^4.2.2",
     "widdershins": "^3.6.7"
