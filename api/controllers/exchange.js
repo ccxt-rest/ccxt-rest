@@ -29,30 +29,36 @@ module.exports = {
 };
 
 function listIds(req, res) {
-    var exchangeName = req.swagger.params.exchangeName.value;
+  try {
+    const exchangeName = req.swagger.params.exchangeName.value;
 
     if (ccxt[exchangeName]) {
-      var exchangeIds = db.getExchangeIds(exchangeName);
+      const exchangeIds = db.getExchangeIds(exchangeName);
       res.json(exchangeIds);
     } else {
       res.status(404).json()
     }
+  } catch(error) {
+    _genericHandleError(res, 'listIds', error)
+  }
 }
 
 function createExchange(req, res) {
-    var exchangeName = req.swagger.params.exchangeName.value;
+  try {
+    const exchangeName = req.swagger.params.exchangeName.value;
 
     if (ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].status == 'broken') {
+      console.error('[' + exchangeName + '] is broken and not supported right now')
       res.status(503).json()
       return
     }
 
-    var reqBody = req.body;
+    const reqBody = req.body;
 
     if (ccxt[exchangeName]) {
       const override = ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].override || {};
       const ccxtParam = Object.assign(reqBody, override)
-      var exchange = new ccxt[exchangeName](ccxtParam);
+      const exchange = new ccxt[exchangeName](ccxtParam);
 
       db.saveExchange(exchangeName, exchange);
       
@@ -60,21 +66,32 @@ function createExchange(req, res) {
     } else {
       res.status(404).json()
     }
+  } catch (error) {
+    _genericHandleError(res, 'createExchange', error)
+  }
 }
 
 function getOne(req, res) {
-  var exchange = _getExchange(req)
+  try {
+    const exchange = _getExchange(req)
 
-  _renderExchange(exchange, res);
+    _renderExchange(exchange, res);
+  } catch (error) {
+    _genericHandleError(res, 'getOne', error)
+  }
 }
 
 function deleteExchange(req, res) {
-  var exchangeName = req.swagger.params.exchangeName.value;
-  var exchangeId = req.swagger.params.exchangeId.value;
-
-  var exchange = db.deleteExchange(exchangeName, exchangeId);
+  try {
+    const exchangeName = req.swagger.params.exchangeName.value;
+    const exchangeId = req.swagger.params.exchangeId.value;
   
-  _renderExchange(exchange, res);
+    const exchange = db.deleteExchange(exchangeName, exchangeId);
+    
+    _renderExchange(exchange, res);  
+  } catch (error) {
+    _genericHandleError(res, 'deleteExchange', error)
+  }
 }
 
 function markets(req, res) {
@@ -256,6 +273,11 @@ function _logError(req, functionName, error) {
   console.error(errorMessageSegments.join('\n'));
 }
 
+function _genericHandleError(res, label, error) {
+  console.error('Error in ' + label + '\n' + error)
+  res.status(500).json()
+}
+
 function _handleError(req, res, functionName, error) {
   _logError(req, functionName, error)
   if (error instanceof ccxt.AuthenticationError) {
@@ -276,39 +298,36 @@ function _handleError(req, res, functionName, error) {
 }
 
 function _execute(req, res, parameterNamesOrParameterValuesExtractor, capabilityProperty, functionName, responseTransformer) {
-  let context = {}
-
-  let exchange
-  let parameterValues
   try {
-    exchange = _getExchange(req)
-    parameterValues = typeof(parameterNamesOrParameterValuesExtractor) === 'function' ? 
+    let context = {}
+
+    const exchange = _getExchange(req)
+    const parameterValues = typeof(parameterNamesOrParameterValuesExtractor) === 'function' ? 
       parameterNamesOrParameterValuesExtractor(req, context) : 
       parameterNamesOrParameterValuesExtractor.map(parameterName => req.swagger.params[parameterName].value)
     context.parameterValues = parameterValues
-  } catch (error) {
-    _handleError(req, res, functionName, error)
-    return
-  }
 
-  if (exchange) {
-    if (capabilityProperty && exchange.has[capabilityProperty] === false) {
-      console.error('[' + exchange.name + '] does not support ' + capabilityProperty)
-      res.status(501).json();      
-    } else {
-      exchange[functionName].apply(exchange, parameterValues)
-        .then(response => {
-          try {
-            res.json(responseTransformer(response, context));
-          } catch (error) {
+    if (exchange) {
+      if (capabilityProperty && exchange.has[capabilityProperty] === false) {
+        console.error('[' + exchange.name + '] does not support ' + capabilityProperty)
+        res.status(501).json();      
+      } else {
+        exchange[functionName].apply(exchange, parameterValues)
+          .then(response => {
+            try {
+              res.json(responseTransformer(response, context));
+            } catch (error) {
+              _handleError(req, res, functionName, error)
+            }
+          }).catch((error) => {
             _handleError(req, res, functionName, error)
-          }
-        }).catch((error) => {
-          _handleError(req, res, functionName, error)
-        });
+          });
+      }
+    } else {
+      res.status(404).json();
     }
-  } else {
-    res.status(404).json();
+  } catch (error) {
+    _genericHandleError(res, functionName, error)
   }
 }
 

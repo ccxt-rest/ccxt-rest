@@ -79,6 +79,8 @@ paths:
             example: ['myBitsoInstance', 'myBinanceInstance', 'someRandomNameIGaveToAnInstance']
         "404":
           description: Exchange with that name is NOT supported
+        "500":
+          description: If an unexpected error occurred
     post:
       description: Creates an instance of the exchange
       tags:
@@ -116,7 +118,7 @@ paths:
         "404":
           description: Exchange with that name is NOT supported
         "500":
-          description: Error
+          description: If an unexpected error occurred
         "503":
           description: Support for exchange is currently broken
   /exchange/{exchangeName}/{exchangeId}:
@@ -136,6 +138,8 @@ paths:
             $ref: "#/definitions/ExchangeResponse"
         "404":
           description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+        "500":
+          description: If an unexpected error occurred
     delete:
       description: Delete the exchange details referenced by the exchangeName and exchangeId
       tags:
@@ -151,6 +155,8 @@ paths:
             $ref: "#/definitions/ExchangeResponse"
         "404":
           description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+        "500":
+          description: If an unexpected error occurred
   /exchange/{exchangeName}/{exchangeId}/markets:
     x-swagger-router-controller: exchange
     get:
