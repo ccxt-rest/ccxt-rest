@@ -622,6 +622,7 @@ describe('> controllers', function() {
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker')
                 .query({ symbol: _ctx.targetCurrencyPair })
                 .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
                 .expect(_ctx.expectedStatusCodes['fetchTicker'], done);
           })
 
@@ -630,6 +631,7 @@ describe('> controllers', function() {
             request(server)
                 .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/tickers')
                 .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
                 .expect(_ctx.expectedStatusCodes['fetchTickers'], done);
           })
   
