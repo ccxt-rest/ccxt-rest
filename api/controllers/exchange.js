@@ -131,19 +131,12 @@ function tickers(req, res) {
 }
 
 function balances(req, res) {
-  var exchange = _getExchange(req)
-
-  if (exchange) {
-    exchange.fetchBalance()
-      .then((rawBalance) => {
-        res.json(new exchange_response.BalanceResponse(rawBalance));
-      }).catch((error) => {
-        res.status(500).json();
-        console.error(error);
-      });
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    [], 
+    'fetchBalance', 
+    'fetchBalance', 
+    (response) => new exchange_response.BalanceResponse(response)
+  )
 }
 
 function createOrder(req, res) {
