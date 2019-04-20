@@ -403,7 +403,7 @@
   "main": "app.js",
   "dependencies": {
     "bignumber.js": "^8.1.1",
-    "ccxt": "^1.18.437",
+    "ccxt": "^1.18.481",
     "circular-json": "^0.5.9",
     "ethereumjs-abi": "^0.6.7",
     "ethereumjs-util": "^6.1.0",
