@@ -140,36 +140,36 @@ function balances(req, res) {
 }
 
 function createOrder(req, res) {
-  var exchange = _getExchange(req)
-
-  if (exchange) {
-    var orderPlacement = req.body;
-    exchange.createOrder(orderPlacement.symbol, orderPlacement.type, orderPlacement.side, orderPlacement.amount, orderPlacement.price)
-      .then((rawOrderPlacementResponse) => {
-        var response = new exchange_response.OrderResponse(rawOrderPlacementResponse)
-        if (!response.symbol) {
-          response.symbol = orderPlacement.symbol
-        }
-        if (!response.type) {
-          response.type = orderPlacement.type
-        }
-        if (!response.side) {
-          response.side = orderPlacement.side
-        }
-        if (!response.amount) {
-          response.amount = orderPlacement.amount
-        }
-        if (!response.price) {
-          response.price = orderPlacement.price
-        }
-        res.json(response);
-      }).catch((error) => {
-        console.error(error);
-        res.status(500).json();
-      });
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    (req, context) => {
+      const orderPlacement = req.body;
+      context.orderPlacement = orderPlacement
+      const parameterValues = [orderPlacement.symbol, orderPlacement.type, orderPlacement.side, orderPlacement.amount, orderPlacement.price]
+      return parameterValues
+    }, 
+    'createOrder', 
+    'createOrder', 
+    (rawOrderPlacementResponse, context) => {
+      const orderPlacement = context.orderPlacement
+      let response = new exchange_response.OrderResponse(rawOrderPlacementResponse)
+      if (!response.symbol) {
+        response.symbol = orderPlacement.symbol
+      }
+      if (!response.type) {
+        response.type = orderPlacement.type
+      }
+      if (!response.side) {
+        response.side = orderPlacement.side
+      }
+      if (!response.amount) {
+        response.amount = orderPlacement.amount
+      }
+      if (!response.price) {
+        response.price = orderPlacement.price
+      }
+      return response
+    }
+  )
 }
 
 function cancelOrder(req, res) {
@@ -326,9 +326,13 @@ function directCall(req, res) {
   }
 }
 
-function _execute(req, res, parameterNames, capabilityProperty, functionName, responseTransformer) {
+function _execute(req, res, parameterNamesOrParameterValuesExtractor, capabilityProperty, functionName, responseTransformer) {
+  let context = {}
   var exchange = _getExchange(req)
-  const parameterValues = parameterNames.map(parameterName => req.swagger.params[parameterName].value)
+  const parameterValues = typeof(parameterNamesOrParameterValuesExtractor) === 'function' ? 
+    parameterNamesOrParameterValuesExtractor(req, context) : 
+    parameterNamesOrParameterValuesExtractor.map(parameterName => req.swagger.params[parameterName].value)
+  context.parameterValues = parameterValues
 
   if (exchange) {
     if (capabilityProperty && !exchange.has[capabilityProperty]) {
@@ -336,7 +340,7 @@ function _execute(req, res, parameterNames, capabilityProperty, functionName, re
     } else {
       exchange[functionName].apply(exchange, parameterValues)
         .then(response => {
-          res.json(responseTransformer(response));
+          res.json(responseTransformer(response, context));
         }).catch((error) => {
           if (error instanceof ccxt.AuthenticationError) {
             res.status(401).json();
