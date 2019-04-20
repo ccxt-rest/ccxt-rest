@@ -162,7 +162,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/markets:
     x-swagger-router-controller: exchange
     get:
-      description: Get the markets of the exchange referenced by the exchangeName and exchangeId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the markets of the exchange referenced by the exchangeName and exchangeId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Public Data API
       operationId: markets
@@ -191,7 +195,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/orderBook:
     x-swagger-router-controller: exchange
     get:
-      description: Get the order book of the exchange referenced by the exchangeName, exchangeId and symbol. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the order book of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Public Data API
       operationId: orderBook
@@ -226,7 +234,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/l2OrderBook:
     x-swagger-router-controller: exchange
     get:
-      description: Get the Level 2 Order Book of the exchange referenced by the exchangeName, exchangeId and symbol. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the Level 2 Order Book of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Public Data API
       operationId: l2OrderBook
@@ -261,7 +273,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/trades:
     x-swagger-router-controller: exchange
     get:
-      description: Get the trades of the exchange referenced by the exchangeName, exchangeId and symbol. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >- 
+        Get the trades of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Public Data API
       operationId: trades
@@ -301,7 +317,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/ticker:
     x-swagger-router-controller: exchange
     get:
-      description: Get the ticker of the exchange referenced by the exchangeName, exchangeId and symbol. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the ticker of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Public Data API
       operationId: ticker
@@ -331,7 +351,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/tickers:
     x-swagger-router-controller: exchange
     get:
-      description: Get the tickers of the exchange referenced by the exchangeName, exchangeId and symbol. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the tickers of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Public Data API
       operationId: tickers
@@ -363,7 +387,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/balances:
     x-swagger-router-controller: exchange
     get:
-      description: Get the balances of the exchange referenced by the exchangeName and exchangeId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the balances of the exchange referenced by the exchangeName and exchangeId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Private Data API
       operationId: balances
@@ -392,7 +420,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/orders:
     x-swagger-router-controller: exchange
     get:
-      description: Get the orders of the exchange referenced by the exchangeName and exchangeId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the orders of the exchange referenced by the exchangeName and exchangeId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Private Data API
       operationId: fetchOrders
@@ -432,7 +464,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/orders/open:
     x-swagger-router-controller: exchange
     get:
-      description: Get the open orders of the exchange referenced by the exchangeName and exchangeId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the open orders of the exchange referenced by the exchangeName and exchangeId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Private Data API
       operationId: fetchOpenOrders
@@ -472,7 +508,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/orders/closed:
     x-swagger-router-controller: exchange
     get:
-      description: Get the closed orders of the exchange referenced by the exchangeName and exchangeId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get the closed orders of the exchange referenced by the exchangeName and exchangeId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Private Data API
       operationId: fetchClosedOrders
@@ -512,7 +552,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/trades/mine:
     x-swagger-router-controller: exchange
     get:
-      description: Get my trades of the exchange referenced by the exchangeName and exchangeId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Get my trades of the exchange referenced by the exchangeName and exchangeId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Private Data API
       operationId: fetchMyTrades
@@ -612,7 +656,11 @@ paths:
   /exchange/{exchangeName}/{exchangeId}/order/{orderId}:
     x-swagger-router-controller: exchange
     get:
-      description: Retrieves the informatoin of an order on the exchange referenced by the exchangeName, exchangeId and orderId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >-
+        Retrieves the information of an order on the exchange referenced by the exchangeName, exchangeId and orderId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Private Data API
       operationId: fetchOrder
@@ -641,7 +689,11 @@ paths:
         "504":
           description: If the exchange itself could not be reached because of some network error
     delete:
-      description: Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId. Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange. 
+      description: >- 
+        Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId. 
+        
+        
+        <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
       tags:
         - Private Data API
       operationId: cancelOrder
