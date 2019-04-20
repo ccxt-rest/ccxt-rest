@@ -1,3 +1,13 @@
 module.exports = {
-    allcoin: 'broken'
+    allcoin: {
+        status: 'broken'
+    }, 
+    bitso: {
+        status: 'working',
+        override: {
+            has : {
+                fetchOrder: true
+            }
+        }
+    }
 };

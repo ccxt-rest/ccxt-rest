@@ -43,7 +43,7 @@ function listIds(req, res) {
 function createExchange(req, res) {
     var exchangeName = req.swagger.params.exchangeName.value;
 
-    if (ccxtRestConfig[exchangeName]) {
+    if (ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].status == 'broken') {
       res.status(503).send()
       return
     }
@@ -51,7 +51,9 @@ function createExchange(req, res) {
     var reqBody = req.body;
 
     if (ccxt[exchangeName]) {
-      var exchange = new ccxt[exchangeName](reqBody);
+      const override = ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].override || {};
+      const ccxtParam = Object.assign(reqBody, override)
+      var exchange = new ccxt[exchangeName](ccxtParam);
 
       db.saveExchange(exchangeName, exchange);
       
@@ -191,21 +193,12 @@ function cancelOrder(req, res) {
 }
 
 function fetchOrder(req, res) {
-  var exchange = _getExchange(req)
-  var orderId = req.swagger.params.orderId.value;
-  var symbol = req.swagger.params.symbol.value;
-
-  if (exchange) {
-    exchange.fetchOrder(orderId, symbol)
-      .then((rawOrder) => {
-        res.json(new exchange_response.OrderResponse(rawOrder));
-      }).catch((error) => {
-        console.error(error);
-        res.status(500).json();
-      });
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    ['orderId', 'symbol'], 
+    'fetchOrder', 
+    'fetchOrder', 
+    (reponse) => new exchange_response.OrderResponse(reponse)
+  )
 }
 
 function fetchOrders(req, res) {
