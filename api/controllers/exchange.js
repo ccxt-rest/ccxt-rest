@@ -228,26 +228,12 @@ function fetchClosedOrders(req, res) {
 }
 
 function fetchMyTrades(req, res) {
-  var exchange = _getExchange(req)
-  var symbol = req.swagger.params.symbol.value;
-  var since = req.swagger.params.since.value;
-  var limit = req.swagger.params.limit.value;
-
-  if (exchange) {
-    if (!exchange.has.fetchMyTrades) {
-      res.status(501).json();      
-    } else {
-      exchange.fetchMyTrades(symbol, since, limit)
-        .then((rawTrades) => {
-          res.json(rawTrades.map(rawTrade => new exchange_response.TradeResponse(rawTrade)));
-        }).catch((error) => {
-          console.error(error);
-          res.status(500).json();
-        });
-    }
-  } else {
-    res.status(404).json();
-  }
+  _execute(req, res, 
+    ['symbol', 'since', 'limit'], 
+    'fetchMyTrades', 
+    'fetchMyTrades', 
+    (response) => response.map(rawTrade => new exchange_response.TradeResponse(rawTrade))
+  )
 }
 
 function directCall(req, res) {
