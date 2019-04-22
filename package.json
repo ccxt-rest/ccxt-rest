@@ -419,6 +419,7 @@
     "mochawesome": "^3.1.2",
     "should": "^7.1.0",
     "supertest": "^4.0.2",
+    "swagger-editor": "^3.6.27",
     "uri-js": "^4.2.2",
     "widdershins": "^3.6.7"
   },
