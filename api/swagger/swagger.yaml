@@ -176,8 +176,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/MarketResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/MarketResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
@@ -215,8 +217,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/OrderBookResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/OrderBookResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
@@ -254,8 +258,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/OrderBookResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/OrderBookResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
@@ -298,8 +304,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/TradeResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/TradeResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
@@ -445,8 +453,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/OrderResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/OrderResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
@@ -489,8 +499,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/OrderResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/OrderResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
@@ -533,8 +545,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/OrderResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/OrderResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
@@ -577,8 +591,10 @@ paths:
       responses:
         "200":
           description: Success
-          schema:
-            $ref: "#/definitions/TradeResponse"
+          schema: 
+            type: array
+            items: 
+              $ref: "#/definitions/TradeResponse"
         "400":
           description: If the exchange itself complained about the parameters passed
         "401":
