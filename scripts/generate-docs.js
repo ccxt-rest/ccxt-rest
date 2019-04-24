@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const execSync = require('child_process').execSync;
+const spawnSync = require('child_process').spawnSync;
 
 const widdershins_output_file = './docs/source/_tmp.html.md'
 
@@ -53,8 +54,6 @@ function split_widdershins_output() {
 
     const delimiter = '<h1 id="ccxt-rest-exchange-management-api">Exchange Management API</h1>'
     segments = data.split(delimiter);
-    //first_half = [delimiter, segments[1], delimiter].join('')
-    //second_half = segments.slice(2).join(delimiter)
 
     fs.writeFileSync("./docs/source/00_generated_header.html.md", [segments[0], '\n'].join(''));
     fs.writeFileSync("./docs/source/50_generated_api.html.md", ['\n', delimiter, segments[1]].join(''));
@@ -62,6 +61,25 @@ function split_widdershins_output() {
     fs.unlinkSync(widdershins_output_file)
 
     console.info('[END] split_widdershins_output()...')
+}
+
+function create_exchange_summary_doc() {
+    console.info('[START] create_exchange_summary_doc()...')
+    let spawn = spawnSync('npm', ['run', 'generate:exchangeSummary'])
+    var errorText = spawn.stderr.toString().trim();
+
+	if (errorText) {
+        console.error(errorText);
+	} else {
+        console.info(spawn.stdout.toString().trim())
+    }
+    
+    if (!fs.existsSync('./out/exchanges/__summary.html.md')) {
+        console.error('Should have been able to find ./out/exchanges/__summary.html.md but did not')
+        process.exit(1)
+    }
+    fs.copyFileSync('./out/exchanges/__summary.html.md', './docs/source/55_exchange_summary.html.md')
+    console.info('[END] create_exchange_summary_doc()...')
 }
 
 function docs_build() {
@@ -98,6 +116,7 @@ function move_docs_build_to_out_docs() {
 }
 
 ensure_submodule_exists();
+create_exchange_summary_doc();
 widdershins();
 split_widdershins_output();
 docs_build();
