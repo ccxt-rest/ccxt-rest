@@ -8,6 +8,7 @@ before_install:
 script:
   - npm install
   - npm test
+  - npm run generate:exchangeSummary
   - npm pack
   - npm run test:dockerbuild
 
@@ -16,7 +17,7 @@ deploy:
     email: franz@see.net.ph
     name: 'Travis'
     github_token: $GITHUB_TOKEN
-    local_dir: ./out/mochawesome-report
+    local_dir: ./out/publish
     keep_history: false
     skip_cleanup: true
     on:

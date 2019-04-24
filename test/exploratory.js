@@ -1,6 +1,7 @@
 const ccxt = require('ccxt');
 const fs = require('fs');
 const request = require('supertest');
+const util = require('util')
 
 const server = require('../app');
 const db = require('../api/helpers/db');
@@ -46,20 +47,37 @@ describe('> exploratory', function() {
 
         const currentDate = new Date().toUTCString()
 
-        let summary = [
-            '# Exchange Summmary',
-            '\n',
-            'The following table contains all the list of supported exchanges, and the statuses of their APIs. Note: All supported apis ' +
-            'are listed below, but not all of their supported APIs are shown. We are still working on adding more of their APIs and their statuses',
-            '\n',
-            `<img src="https://img.shields.io/badge/Last%20Execution%20Date-${currentDate}-green.svg" alt="Last Execution Date: ${currentDate}" />`,
-            '\n',
-            '<table>',
-            '<thead>',
-            toRow(['Exchange', 'Connect', 'Market', 'Ticker', 'Tickers', 'Order Book', 'Trades']),
-            '</thead>',
-            '<tbody>'
-        ]
+        const HTML_TEMPLATE = `
+        <html lang="en">
+            <head><meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        
+            <title>Exchange Summary</title>
+        </head>
+        <body>
+        <div class="container-fluid" style="margin:2em">
+            <div class="row" style="margin:2em 0 2em 0">    
+                %s
+            </div>
+        
+            <div class="row">    
+                <table class="table">
+                    <thead>
+                        %s
+                    </thead>
+                    <tbody>
+                        %s
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </body>
+        </html>
+        `
+
+        const lastExecutionDate = `<img src="https://img.shields.io/badge/Last%20Execution%20Date-${currentDate}-green.svg" alt="Last Execution Date: ${currentDate}" />`
+        const headers = toRow(['Exchange', 'Connect', 'Market', 'Ticker', 'Tickers', 'Order Book', 'Trades'])
 
         const rows = exchangeNames.map((exchangeName) => {
             return toRow([
@@ -71,14 +89,12 @@ describe('> exploratory', function() {
                 statusCodeToLabel(exchangeDetails[exchangeName].orderBook),
                 statusCodeToLabel(exchangeDetails[exchangeName].trades)
             ])
-        })
+        }).join('\n')
 
-        summary = summary.concat(rows)
-        summary.push('</tbody>')
-        summary.push('</table>')
-        summary.push('\n')
+        const summary = util.format(HTML_TEMPLATE, lastExecutionDate, headers, rows)
 
-        fs.writeFileSync(EXCHANGES_ROOT_PATH + '__summary.html.md', summary.join('\n'));
+        
+        fs.writeFileSync(EXCHANGES_ROOT_PATH + 'index.html', summary);
         
         resolve()
     })

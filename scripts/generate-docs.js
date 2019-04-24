@@ -63,25 +63,6 @@ function split_widdershins_output() {
     console.info('[END] split_widdershins_output()...')
 }
 
-function create_exchange_summary_doc() {
-    console.info('[START] create_exchange_summary_doc()...')
-    let spawn = spawnSync('npm', ['run', 'generate:exchangeSummary'])
-    var errorText = spawn.stderr.toString().trim();
-
-	if (errorText) {
-        console.error(errorText);
-	} else {
-        console.info(spawn.stdout.toString().trim())
-    }
-    
-    if (!fs.existsSync('./out/exchanges/__summary.html.md')) {
-        console.error('Should have been able to find ./out/exchanges/__summary.html.md but did not')
-        process.exit(1)
-    }
-    fs.copyFileSync('./out/exchanges/__summary.html.md', './docs/source/55_exchange_summary.html.md')
-    console.info('[END] create_exchange_summary_doc()...')
-}
-
 function docs_build() {
     run_command('rake build', {cwd:'./docs'});
     if (!fs.existsSync('./docs/build')) {
@@ -116,7 +97,6 @@ function move_docs_build_to_out_docs() {
 }
 
 ensure_submodule_exists();
-create_exchange_summary_doc();
 widdershins();
 split_widdershins_output();
 docs_build();
