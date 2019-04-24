@@ -17,7 +17,7 @@ describe('> exploratory', function() {
     const PRIVATE_API_LABEL = '<img src="https://img.shields.io/badge/Private%20API-blue.svg" alt="Private API" />'
     const UNEXPECTED_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Unexpected-red.svg" alt="Unexpected Error" />'
     const BROKEN_INTEGRATION_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Broken%20Integration-red.svg" alt="Broken Integration Error" />'
-    const NOT_SUPPORTED_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Not%20Supported-yellow.svg" alt="Not Supported Error" />'
+    const NOT_SUPPORTED_LABEL = '<img src="https://img.shields.io/badge/Not%20Supported-yellow.svg" alt="Not Supported" />'
     const NETWORK_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Network-red.svg" alt="Network Error" />'
 
     before(function(resolve) {
@@ -118,7 +118,7 @@ describe('> exploratory', function() {
         } else if (statusCode == 500) {
             return UNEXPECTED_ERROR_LABEL
         } else if (statusCode == 501) {
-            return NOT_SUPPORTED_ERROR_LABEL
+            return NOT_SUPPORTED_LABEL
         } else if (statusCode == 503) {
             return BROKEN_INTEGRATION_ERROR_LABEL
         } else if (statusCode == 504) {
