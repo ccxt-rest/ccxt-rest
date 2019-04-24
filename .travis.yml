@@ -10,7 +10,8 @@ script:
   - npm test
   - npm run generate:exchangeSummary
   - npm pack
- 
+  - npm run test:dockerbuild
+  
 deploy:
   - provider: pages
     email: franz@see.net.ph
