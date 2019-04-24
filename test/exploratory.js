@@ -3,7 +3,8 @@ const fs = require('fs');
 const request = require('supertest');
 const util = require('util')
 
-const server = require('../app');
+var ccxtServer = require('../app');
+var server = ccxtServer.app;
 const db = require('../api/helpers/db');
 
 var exchangeToMarket = {}
@@ -257,5 +258,7 @@ describe('> exploratory', function() {
                 })
             })
     }
+
+    after(ccxtServer.shutdown)
 
 });

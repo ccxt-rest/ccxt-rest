@@ -2,7 +2,6 @@
 
 const fs = require('fs');
 const execSync = require('child_process').execSync;
-const spawnSync = require('child_process').spawnSync;
 
 const widdershins_output_file = './docs/source/_tmp.html.md'
 
@@ -54,6 +53,8 @@ function split_widdershins_output() {
 
     const delimiter = '<h1 id="ccxt-rest-exchange-management-api">Exchange Management API</h1>'
     segments = data.split(delimiter);
+    //first_half = [delimiter, segments[1], delimiter].join('')
+    //second_half = segments.slice(2).join(delimiter)
 
     fs.writeFileSync("./docs/source/00_generated_header.html.md", [segments[0], '\n'].join(''));
     fs.writeFileSync("./docs/source/50_generated_api.html.md", ['\n', delimiter, segments[1]].join(''));

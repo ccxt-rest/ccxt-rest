@@ -2,11 +2,12 @@
 
 const ccxt = require('ccxt')
     , ccxtRestConfig = require('../config')
-    , db = require('./../helpers/db')
+    , db = require('../helpers/db')
     , exchange_response = require('../models/exchange_response')
 ;
 
 module.exports = {
+  list: list,
   listIds: listIds,
   createExchange: createExchange,
   getOne : getOne,
@@ -28,15 +29,25 @@ module.exports = {
   directCall: directCall
 };
 
+function list(req, res) {
+  try {
+    res.send(ccxt.exchanges)
+  } catch (error) {
+    console.error('Error in list\n' + error)
+    res.status(500).send()
+  }
+}
+
+
 function listIds(req, res) {
   try {
     const exchangeName = req.swagger.params.exchangeName.value;
 
     if (ccxt[exchangeName]) {
       const exchangeIds = db.getExchangeIds(exchangeName);
-      res.json(exchangeIds);
+      res.send(exchangeIds);
     } else {
-      res.status(404).json()
+      res.status(404).send()
     }
   } catch(error) {
     _genericHandleError(res, 'listIds', error)
@@ -49,7 +60,7 @@ function createExchange(req, res) {
 
     if (ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].status == 'broken') {
       console.error('[' + exchangeName + '] is broken and not supported right now')
-      res.status(503).json()
+      res.status(503).send()
       return
     }
 
@@ -64,7 +75,7 @@ function createExchange(req, res) {
       
       _renderExchange(exchange, res);
     } else {
-      res.status(404).json()
+      res.status(404).send()
     }
   } catch (error) {
     _genericHandleError(res, 'createExchange', error)
@@ -242,7 +253,7 @@ function fetchMyTrades(req, res) {
 function directCall(req, res) {
   var methodName = req.swagger.params.methodName.value;
   _execute(req, res, 
-    (req) => JSON.parse(req.body),
+    (req) => req.body,
     methodName, 
     (response) => response
   )
@@ -255,30 +266,30 @@ function _logError(req, functionName, error) {
     errorMessageSegments.push(error.constructor.name)
   }
   errorMessageSegments.push(error)
-  console.error(errorMessageSegments.join('\n'));
+  console.trace(errorMessageSegments.join('\n'));
 }
 
 function _genericHandleError(res, label, error) {
-  console.error('Error in ' + label + '\n' + error)
-  res.status(500).json()
+  console.trace('Error in ' + label + '\n' + error)
+  res.status(500).send()
 }
 
 function _handleError(req, res, functionName, error) {
   _logError(req, functionName, error)
   if (error instanceof ccxt.AuthenticationError) {
-    res.status(401).json();
+    res.status(401).send();
   } else if (error instanceof ccxt.InvalidNonce) {
-    res.status(403).json();
+    res.status(403).send();
   } else if (error instanceof ccxt.OrderNotFound) {
-    res.status(404).json();
+    res.status(404).send();
   } else if (error instanceof ccxt.InvalidOrder || error instanceof ccxt.InsufficientFunds) {
-    res.status(400).json();
+    res.status(400).send();
   } else if (error instanceof ccxt.NotSupported) {
-    res.status(501).json();
+    res.status(501).send();
   } else if (error instanceof ccxt.NetworkError) {
-    res.status(504).json();
+    res.status(504).send();
   } else {
-    res.status(500).json();
+    res.status(500).send();
   }
 }
 
@@ -309,12 +320,12 @@ function _execute(req, res, parameterNamesOrParameterValuesExtractor, functionNa
     if (exchange) {
       if (exchange.has[functionName] === false) {
         console.error('[' + exchange.name + '] does not support ' + functionName)
-        res.status(501).json();      
+        res.status(501).send();      
       } else {
         exchange[functionName].apply(exchange, parameterValues)
           .then(response => {
             try {
-              res.json(responseTransformer(response, context));
+              res.send(responseTransformer(response, context));
             } catch (error) {
               _handleError(req, res, functionName, error)
             }
@@ -323,7 +334,7 @@ function _execute(req, res, parameterNamesOrParameterValuesExtractor, functionNa
           });
       }
     } else {
-      res.status(404).json();
+      res.status(404).send();
     }
   } catch (error) {
     _genericHandleError(res, functionName, error)
@@ -339,8 +350,8 @@ function _getExchange(req) {
 
 function _renderExchange(exchange, res) {
   if (exchange) {
-    res.json(new exchange_response.ExchangeResponse(exchange));
+    res.send(new exchange_response.ExchangeResponse(exchange));
   } else {
-    res.status(404).json();
+    res.status(404).send();
   }
 }

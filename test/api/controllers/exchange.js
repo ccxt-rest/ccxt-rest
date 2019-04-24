@@ -5,13 +5,38 @@ var request = require('supertest');
 
 process.env.PORT = 0
 
-var server = require('../../../app');
+var ccxtServer = require('../../../app')
+var server = ccxtServer.app;
 var db = require('../../../api/helpers/db');
 
 var ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
 var exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 
 describe('> controllers', function() {
+
+  describe('> exchanges', function() {
+
+    describe('> GET /exchanges', function() {
+
+      it('> should return list of exchanges', function(done) {
+
+        request(server)
+          .get('/exchanges')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end(function(err, res) {
+            should.not.exist(err);
+
+            res.body.should.eql(ccxt.exchanges.map(i => '' + i));
+
+            done();
+          });
+      });
+
+    });
+
+  });
 
   describe('> exchange', function() {
 
@@ -854,4 +879,5 @@ describe('> controllers', function() {
 
   });
 
+  after(ccxtServer.shutdown)
 });
