@@ -2,6 +2,7 @@
   "name": "ccxt-rest",
   "version": "2.0.0",
   "description": "Open Source Unified REST API of 100+ Crypto Exchange Sites",
+  "homepage": "https://ccxt-rest.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/franz-see/ccxt-rest.git"
