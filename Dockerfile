@@ -1,5 +1,4 @@
-#FROM node:10.4.0-alpine as builder
-FROM scardon/ruby-node-alpine:2.4 as builder
+FROM scardon/ruby-node-alpine:2.4.4 as builder
 
 LABEL authors="Franz See <franz@see.net.ph>"
 
