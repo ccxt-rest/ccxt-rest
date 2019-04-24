@@ -16,7 +16,7 @@ describe('> exploratory', function() {
     const PRIVATE_API_LABEL = '<img src="https://img.shields.io/badge/Private%20API-blue.svg" alt="Private API" />'
     const UNEXPECTED_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Unexpected-red.svg" alt="Unexpected Error" />'
     const BROKEN_INTEGRATION_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Broken%20Integration-red.svg" alt="Broken Integration Error" />'
-    const NOT_SUPPORTED_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Not%20Supported-red.svg" alt="Not Supported Error" />'
+    const NOT_SUPPORTED_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Not%20Supported-yellow.svg" alt="Not Supported Error" />'
     const NETWORK_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Network-red.svg" alt="Network Error" />'
 
     before(function(resolve) {
@@ -141,13 +141,15 @@ describe('> exploratory', function() {
 
         function generateTest(_ctx, property, config) {
             config = config || {}
+            config.canExecute = config.canExecute || (_ctx => true)
             return it('> [' + _ctx.exchangeName + '] ' + property, function(done) {
                 this.timeout(10000)
-                if (_ctx.exchange) {
+                if (_ctx.exchange && config.canExecute(_ctx)) {
                     const query = config.queryBuilder ? config.queryBuilder(_ctx) : undefined
                     request(server)
                         .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/' + property)
                         .query(query)
+                        .retry(3)
                         .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .end((err, res) => {
@@ -194,6 +196,7 @@ describe('> exploratory', function() {
                         request(server)
                             .post('/exchange/' + _ctx.exchangeName)
                             .send({'id':_ctx.exchangeId})
+                            .retry(3)
                             .set('Accept', 'application/json')
                             .expect('Content-Type', /json/)
                             .end((err, res) => {
@@ -218,6 +221,9 @@ describe('> exploratory', function() {
                     })
 
                     generateTest(_ctx, 'ticker', {
+                        canExecute : function(_ctx) {
+                            return exchangeToMarket[_ctx.exchangeName]
+                        },
                         queryBuilder : function(_ctx) {
                             return {
                                 symbol : exchangeToMarket[_ctx.exchangeName]
@@ -228,6 +234,9 @@ describe('> exploratory', function() {
                     generateTest(_ctx, 'tickers')
 
                     generateTest(_ctx, 'orderBook', {
+                        canExecute : function(_ctx) {
+                            return exchangeToMarket[_ctx.exchangeName]
+                        },
                         queryBuilder : function(_ctx) {
                             return {
                                 symbol : exchangeToMarket[_ctx.exchangeName]
@@ -236,6 +245,9 @@ describe('> exploratory', function() {
                     })
 
                     generateTest(_ctx, 'trades', {
+                        canExecute : function(_ctx) {
+                            return exchangeToMarket[_ctx.exchangeName]
+                        },
                         queryBuilder : function(_ctx) {
                             return {
                                 symbol : exchangeToMarket[_ctx.exchangeName]
