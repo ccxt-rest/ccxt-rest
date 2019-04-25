@@ -14,17 +14,30 @@ servers:
 tags:
   - name: Exchange Management API
     description: >-
-      APIs that manage [creation](#createexchange) / [deletion](#deleteexchange) / [listing](#listids) / [retrieving](#getone) of exchange instances. 
+      APIs that manage [creation](#createexchange) / [deletion](#deleteexchange) / [retrieving](#getone) of exchange connections. 
       
 
-      Before you start using the [Public](#ccxt-rest-public-data-api) and [Private](#ccxt-rest-private-data-api) Data APIs, you would need to create first an exchange instance. 
-      You do this by selecting which exchange you want to create an exchange instance of (you can see the list of supported from [`GET:/exchanges`](#list)), and then using that 
-      exchange name as part of the path of [`POST:/exchange/{exchangeName}`](#createexchange) in order to create an exchange instance. The body to the API call contains 
-      `exchangeId` (_any name you want to use to identify this exchange instance of_), the `apiKey` and `secret` that you got from that exchange's website.
+      Most [Public Data APIs](#ccxt-rest-public-data-api) by most exchanges can be used without providing the API Key and Secret. 
+      
+      
+      For example, you get retrieve the market of binance by doing GET:/exchange/binance/market directly and would be able to get
+      the markets of binance. 
+      
+      
+      But some exchanges though would require you to use an API Key and Secret even when accessing their Public Data API. For 
+      example, for cointiger, if you want to retrieve its market and you do GET:/exchange/cointiger/market, you will a 403 error
+      (i.e. meaning you were unauthorized to access it). Thus, to use that api of continger, you would first have to provide your
+      API Key and Secret to continger via POST:/exchange/continger -d {"id":"myCoinTiger","apiKey":"My-COINTIGER-KEY","secret":"s3cret"}.
+      From there, you will get a response {"token":"xxx.yyy.zzz"}. That "xxx.yyy.zzz" would then what you will use to connect to
+      coiniger - i.e. GET:/exchange/cointiger/market -H "Authorization: Bearer xxx.yyy.zzz" and this time, your request will push 
+      through and would be able to get cointiger's market.
 
-
-      Once you have an exchange instance, you can then start using that exchange instance to invoke the [Public](#ccxt-rest-public-data-api) and 
-      [Private](#ccxt-rest-private-data-api) Data API calls which roughly has a format of `/exchange/{exchangeName}/{exchangeId}/X/Y/Z`.
+      
+      Furthemore, all [Private Data APIs](#ccxt-rest-private-data-api) of all exchanges would require API Key and Secret. Thus,
+      although GET:/exchange/binance/market would work, doing GET:/exchange/binance/balances will not. You'd have to provide first
+      binance your API Key and Secret like POST:/exchange/binance -d {"id":"myBinance","apiKey":"binance-key","secret":"s3cret"}, to
+      get something like {"token":"aaa.bbb.ccc"}, which you can then use to execute 
+      GET:/exchange/binance/balances -H "Authorization: Bearer aaa.bbb.ccc" which would finally get your balances.
   - name: Public Data API
     description: APIs that retrieve public data (like ticker, order books, trades, etc)
   - name: Private Data API
@@ -337,7 +350,7 @@ paths:
           description: >-
             The symbol of the exchange's data to be retrieved. Possible values
             are any of symbols in
-            GET:/exchange/{exchangeName}/{exchangeId}/markets
+            GET:/exchange/{exchangeName}/markets
           required: true
           style: form
           explode: true
@@ -1370,7 +1383,7 @@ components:
       in: path
       description: >-
         The id of the order. Possible values are any of the result of
-        GET:/exchange/{exchangeName}/{exchangeId}/orders.
+        GET:/exchange/{exchangeName}/orders.
       required: true
       style: simple
       explode: false
@@ -1381,7 +1394,7 @@ components:
       in: query
       description: >-
         The symbol of the exchange's data to be retrieved. Possible values are
-        any of symbols in GET:/exchange/{exchangeName}/{exchangeId}/markets
+        any of symbols in GET:/exchange/{exchangeName}/markets
       required: true
       style: form
       explode: true
@@ -1392,7 +1405,7 @@ components:
       in: query
       description: >-
         The symbol of the exchange's data to be retrieved. Possible values are
-        any of symbols in GET:/exchange/{exchangeName}/{exchangeId}/markets
+        any of symbols in GET:/exchange/{exchangeName}/markets
       required: false
       style: form
       explode: true
