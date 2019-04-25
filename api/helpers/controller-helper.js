@@ -10,17 +10,13 @@ const db = require('../helpers/db')
 
 
 function logError(req, functionName, error) {
-  let errorMessageSegments = []
-  errorMessageSegments.push('[' + req.swagger.params.exchangeId.value + '] Error on ' + functionName)
-  if (error.constructor && error.constructor.name) {
-    errorMessageSegments.push(error.constructor.name)
-  }
-  errorMessageSegments.push(error)
-  console.trace(errorMessageSegments.join('\n'));
+  console.error('[' + getExchangeId(req) + '] Error on ' + functionName);
+  console.trace(error)
 }
 
 function genericHandleError(res, label, error) {
-    console.trace('Error in ' + label + '\n' + error)
+    console.error('Error in ' + label)
+    console.trace(error)
     res.status(500).send()
 }
   
