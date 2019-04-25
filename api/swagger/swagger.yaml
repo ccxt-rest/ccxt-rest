@@ -55,6 +55,8 @@ paths:
   /exchange/{exchangeName}:
     get:
       description: Get the exchange details given the exchangeName and access token in the header
+      security:
+        - bearerAuth: []
       tags:
         - Exchange Management API
       x-swagger-router-controller: exchange
@@ -74,6 +76,8 @@ paths:
           description: If an unexpected error occurred
     post:
       description: Creates an instance of the exchange
+      security:
+        - bearerAuth: []
       tags:
         - Exchange Management API
       operationId: createExchange
@@ -128,6 +132,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
@@ -165,6 +171,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
@@ -211,6 +219,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
@@ -257,6 +267,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
@@ -311,6 +323,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
@@ -357,6 +371,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
@@ -388,20 +404,21 @@ paths:
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/balances:
+  /exchange/{exchangeName}/balances:
     get:
       description: >-
-        Get the balances of the exchange referenced by the exchangeName and exchangeId. 
+        Get the balances of the exchange referenced by the exchangeName. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: balances
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
       responses:
         "200":
           description: Success

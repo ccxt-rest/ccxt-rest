@@ -49,7 +49,7 @@ function list(req, res) {
 function createExchange(req, res) {
   _doExchangeSpecificOrDefault(req, res, 'createExchange', (req, res) => {
     try {
-      const exchangeName = req.swagger.params.exchangeName.value;
+      const exchangeName = getExchangeName(req)
   
       if (ccxt[exchangeName]) {
         const ccxtParam = req.body;
@@ -285,7 +285,7 @@ function directCall(req, res) {
 }
 
 function _doExchangeSpecificOrDefault(req, res, overrideFunctionName, defaultBehaviour) {
-  const exchangeName = req.swagger.params.exchangeName && req.swagger.params.exchangeName.value
+  const exchangeName = getExchangeName(req)
   if (exchangeName && ccxtRestConfig[exchangeName] 
       && ccxtRestConfig[exchangeName].override 
       && ccxtRestConfig[exchangeName].override[overrideFunctionName]) {

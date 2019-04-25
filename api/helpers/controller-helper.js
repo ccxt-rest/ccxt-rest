@@ -4,6 +4,7 @@ const db = require('../helpers/db')
     , ccxt = require('ccxt')
     , jwt = require('jsonwebtoken')
     , exchange_response = require('../models/exchange-response')
+    , ccxtRestErrors = require('../errors')
     , jwtHelper = require('./jwt-helper')
 ;
 
@@ -27,7 +28,7 @@ function handleError(req, res, functionName, error) {
     logError(req, functionName, error)
     if (error instanceof ccxt.AuthenticationError) {
       res.status(401).send();
-    } else if (error instanceof ccxt.InvalidNonce) {
+    } else if (error instanceof ccxt.InvalidNonce || error instanceof ccxtRestErrors.AuthError) {
       res.status(403).send();
     } else if (error instanceof ccxt.OrderNotFound) {
       res.status(404).send();
@@ -108,6 +109,10 @@ function getExchangeId(req) {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
     var token = req.headers.authorization.split('Bearer ')[1]
     var decoded = jwt.verify(token, jwtHelper.secretKey);
+
+    if (decoded.iss != jwtHelper.issuer) {
+      throw new ccxtRestErrors.AuthError(`Invalid issuer ${decoded.iss}`)
+    }
   
     return decoded.sub
   }

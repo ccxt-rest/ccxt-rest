@@ -30,14 +30,6 @@ var options_object = {
     apiDocsPrefix: '',
     swaggerUi: '/explorer',
     swaggerUiPrefix: ''
-  },
-  oasSecurity: true,
-  securityFile: {
-    bearerAuth: {
-      issuer: jwtHelper.issuer,
-      algorithms: [jwtHelper.algorithm],
-      key: jwtHelper.secretKey
-    }
   }
 };
 
