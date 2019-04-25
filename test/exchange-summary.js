@@ -139,6 +139,15 @@ describe('> exploratory', function() {
     }
 
     if (process.env.EXPLORE) {
+        function assertResponse(err, res) {
+            if (!REPORT_ONLY) {
+                should.not.exist(err);
+                expect(res.status).to.satisfy(statusCode => {
+                    return (200 <= statusCode && statusCode < 300) || statusCode == 501
+                }, 'Should have been a success (status code between 200 and 299), or "Not Supported" (status code 501)')
+            }
+        }
+
         it('warm up server', function(done) {
             this.timeout(10000)
             request(server)
@@ -146,10 +155,7 @@ describe('> exploratory', function() {
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .end((err, res) => {
-                    if (!REPORT_ONLY) {
-                        should.not.exist(err);
-                        expect(res.status).to.be.within(200, 299);
-                    }
+                    assertResponse(err, res)
                     done();
                 });
         });
@@ -176,10 +182,7 @@ describe('> exploratory', function() {
                                 config.successCallback(_ctx, res)
                             }
 
-                            if (!REPORT_ONLY) {
-                                should.not.exist(err);
-                                expect(res.status).to.be.within(200, 299);
-                            }
+                            assertResponse(err, res)
 
                             done();
                         });
@@ -231,10 +234,7 @@ describe('> exploratory', function() {
                                     _ctx.exchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
                                 }
 
-                                if (!REPORT_ONLY) {
-                                    should.not.exist(err);
-                                    expect(res.status).to.be.within(200, 299);
-                                }
+                                assertResponse(err, res)
                 
                                 done();
                             });
