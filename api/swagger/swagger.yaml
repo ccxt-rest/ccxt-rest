@@ -250,10 +250,10 @@ paths:
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  '/exchange/{exchangeName}/{exchangeId}/trades':
+  /exchange/{exchangeName}/trades:
     get:
       description: >- 
-        Get the trades of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        Get the trades of the exchange referenced by the exchangeName and symbol. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -263,7 +263,6 @@ paths:
       operationId: trades
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/requiredExchangeSymbolParam"
         - name: since
           in: query
