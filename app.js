@@ -41,8 +41,6 @@ var options_object = {
   }
 };
 
-console.log(`options_object.securityFile.bearerAuth.key = ${options_object.securityFile.bearerAuth.key}`)
-
 oasTools.configure(options_object);
 
 const SECS_IN_MS = 1000
