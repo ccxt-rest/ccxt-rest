@@ -662,16 +662,15 @@ paths:
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/order:
+  /exchange/{exchangeName}/order:
     post:
-      description: Create an order on the exchange referenced by the exchangeName and exchangeId
+      description: Create an order on the exchange referenced by the exchangeName
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: createOrder
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
       requestBody:
         description: The order to place.
         content:
