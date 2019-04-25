@@ -17,9 +17,9 @@ const ccxt = require('ccxt')
 
 module.exports = {
   list: list,
-  createExchange: createExchange,
-  getExchange : getExchange,
-  deleteExchange : deleteExchange,
+  createPrivateConnection: createPrivateConnection,
+  getConnection : getConnection,
+  deletePrivateConnection : deletePrivateConnection,
   markets: markets,
   orderBook: orderBook,
   l2OrderBook: l2OrderBook,
@@ -46,8 +46,8 @@ function list(req, res) {
   }
 }
 
-function createExchange(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'createExchange', (req, res) => {
+function createPrivateConnection(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'createPrivateConnection', (req, res) => {
     try {
       const exchangeName = getExchangeName(req)
   
@@ -68,34 +68,34 @@ function createExchange(req, res) {
         res.status(404).send()
       }
     } catch (error) {
-      genericHandleError(res, 'createExchange', error)
+      genericHandleError(res, 'createPrivateConnection', error)
     }
   })
 }
 
-function getExchange(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'getExchange', (req, res) => {
+function getConnection(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'getConnection', (req, res) => {
     try {
       const exchange = getExchangeFromRequest(req)
   
       renderExchange(exchange, res);
     } catch (error) {
-      genericHandleError(res, 'getExchange', error)
+      genericHandleError(res, 'getConnection', error)
     }
   })
 }
 
-function deleteExchange(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'deleteExchange', (req, res) => {
+function deletePrivateConnection(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'deletePrivateConnection', (req, res) => {
     try {
       const exchangeId = getExchangeId(req)
       const exchangeName = getExchangeName(req)
 
-      const exchange = db.deleteExchange(exchangeName, exchangeId);
+      const exchange = db.deletePrivateConnection(exchangeName, exchangeId);
 
       renderExchange(exchange, res);  
     } catch (error) {
-      genericHandleError(res, 'deleteExchange', error)
+      genericHandleError(res, 'deletePrivateConnection', error)
     }
   })
 }

@@ -12,9 +12,9 @@ info:
 servers:
   - url: 'http://localhost:3000/'
 tags:
-  - name: Exchange Management API
+  - name: Authentication API
     description: >-
-      APIs that manage [creation](/#createexchange) / [deletion](/#deleteexchange) / [retrieving](/#getone) of exchange connections. 
+      APIs that manage [creation](/#createPrivateConnection) / [deletion](/#deletePrivateConnection) / [retrieving](/#getone) of exchange connections. 
       
 
       Most [Public Data APIs](/#ccxt-rest-public-data-api) by most exchanges can be used without providing the API Key and Secret. 
@@ -38,6 +38,8 @@ tags:
       binance your API Key and Secret like `POST:/exchange/binance -d {"id":"myBinance","apiKey":"binance-key","secret":"s3cret"}`, to
       get something like `{"token":"aaa.bbb.ccc"}`, which you can then use to execute 
       `GET:/exchange/binance/balances -H "Authorization: Bearer aaa.bbb.ccc"` which would finally get your balances.
+  - name: Exchange Management API
+    description: APIs for retrieving supported exchanges
   - name: Public Data API
     description: APIs that retrieve public data (like ticker, order books, trades, etc)
   - name: Private Data API
@@ -67,13 +69,13 @@ paths:
           description: If an unexpected error occurred
   /exchange/{exchangeName}:
     get:
-      description: Get the exchange details given the exchangeName and access token in the header
+      description: Retreives the current exchange connection details given the {exchangeName} and access token in the header
       security:
         - bearerAuth: []
       tags:
-        - Exchange Management API
+        - Authentication API
       x-swagger-router-controller: exchange
-      operationId: getExchange
+      operationId: getConnection
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
       responses:
@@ -88,12 +90,12 @@ paths:
         "500":
           description: If an unexpected error occurred
     post:
-      description: Creates an instance of the exchange
+      description: Creates a private connection to the exchange referenced in {exchangeName}
       security:
         - bearerAuth: []
       tags:
-        - Exchange Management API
-      operationId: createExchange
+        - Authentication API
+      operationId: createPrivateConnection
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
       requestBody:
@@ -118,13 +120,13 @@ paths:
           description: Support for exchange is currently broken
       x-swagger-router-controller: exchange
     delete:
-      description: Delete the exchange details referenced by access token in the header
+      description: Delete the exchange connection referenced by access token in the header
       security:
         - bearerAuth: []
       tags:
-        - Exchange Management API
+        - Authentication API
       x-swagger-router-controller: exchange
-      operationId: deleteExchange
+      operationId: deletePrivateConnection
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
       responses:
@@ -141,7 +143,7 @@ paths:
   /exchange/{exchangeName}/markets:
     get:
       description: >-
-        Get the markets of the exchange referenced by the exchangeName.
+        Get the markets of the exchange referenced by the {exchangeName}.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -180,7 +182,7 @@ paths:
   /exchange/{exchangeName}/orderBook:
     get:
       description: >-
-        Get the order book of the exchange referenced by the exchangeName and symbol. 
+        Get the order book of the exchange referenced by the {exchangeName} and `?symbol=`. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -228,7 +230,7 @@ paths:
   /exchange/{exchangeName}/l2OrderBook:
     get:
       description: >-
-        Get the Level 2 Order Book of the exchange referenced by the exchangeName and symbol. 
+        Get the Level 2 Order Book of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -276,7 +278,7 @@ paths:
   /exchange/{exchangeName}/trades:
     get:
       description: >- 
-        Get the trades of the exchange referenced by the exchangeName and symbol. 
+        Get the trades of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -332,7 +334,7 @@ paths:
   /exchange/{exchangeName}/ticker:
     get:
       description: >-
-        Get the ticker of the exchange referenced by the exchangeName and symbol. 
+        Get the ticker of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -380,7 +382,7 @@ paths:
   /exchange/{exchangeName}/tickers:
     get:
       description: >-
-        Get the tickers of the exchange referenced by the exchangeName and symbol. 
+        Get the tickers of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -420,7 +422,7 @@ paths:
   /exchange/{exchangeName}/balances:
     get:
       description: >-
-        Get the balances of the exchange referenced by the exchangeName. 
+        Get the balances of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -456,7 +458,7 @@ paths:
   /exchange/{exchangeName}/orders:
     get:
       description: >-
-        Get the orders of the exchange referenced by the exchangeName. 
+        Get the orders of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -512,7 +514,7 @@ paths:
   /exchange/{exchangeName}/orders/open:
     get:
       description: >-
-        Get the open orders of the exchange referenced by the exchangeName. 
+        Get the open orders of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -568,7 +570,7 @@ paths:
   /exchange/{exchangeName}/orders/closed:
     get:
       description: >-
-        Get the closed orders of the exchange referenced by the exchangeName.
+        Get the closed orders of the exchange referenced by the {exchangeName}.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -624,7 +626,7 @@ paths:
   /exchange/{exchangeName}/trades/mine:
     get:
       description: >-
-        Get my trades of the exchange referenced by the exchangeName. 
+        Get my trades of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -679,7 +681,7 @@ paths:
           description: If the exchange itself could not be reached because of some network error
   /exchange/{exchangeName}/order:
     post:
-      description: Create an order on the exchange referenced by the exchangeName
+      description: Create an order on the exchange referenced by the {exchangeName}
       security:
         - bearerAuth: []
       tags:
@@ -719,7 +721,7 @@ paths:
   /exchange/{exchangeName}/order/{orderId}:
     get:
       description: >-
-        Retrieves the information of an order on the exchange referenced by the exchangeName and orderId. 
+        Retrieves the information of an order on the exchange referenced by the {exchangeName} and {orderId}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
@@ -756,7 +758,7 @@ paths:
           description: If the exchange itself could not be reached because of some network error
     delete:
       description: >- 
-        Cancel an open order on the exchange referenced by the exchangeName and orderId. 
+        Cancel an open order on the exchange referenced by the {exchangeName} and {orderId}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
