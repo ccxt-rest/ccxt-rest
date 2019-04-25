@@ -1,5 +1,8 @@
-const path = require('path')
+const jwt = require('jsonwebtoken')
+    , path = require('path')
     , fs = require('fs');
+
+const ccxtRestErrors = require('../errors')
 
 // TODO : Move this to a database
 const secretKey = (function() {
@@ -13,8 +16,29 @@ const secretKey = (function() {
 const ISSUER = 'CCXT REST'
 const ALGORITHM = 'HS256'
 
+function sign(exchangeName, exchangeId, callback) {
+    jwt.sign(
+        { iss: ISSUER, sub: exchangeId, exchange: exchangeName }, 
+        secretKey, 
+        { algorithm: ALGORITHM }, 
+        callback);
+}
+
+function decode(token) {
+    try {
+        const decoded = jwt.verify(token, secretKey);
+        if (decoded.iss != ISSUER) {
+            throw new ccxtRestErrors.AuthError(`Invalid issuer ${decoded.iss}`)
+        }
+        console.log(`decoded to ${JSON.stringify(decoded)}`)
+        return decoded      
+    } catch (error) {
+        console.trace(error)
+        throw new ccxtRestErrors.InvalidTokenError(`Invalid token ${token}`)
+    }
+}
+
 module.exports = {
-    algorithm : ALGORITHM,
-    secretKey : secretKey,
-    issuer : ISSUER
+    decode : decode,
+    sign : sign
 }

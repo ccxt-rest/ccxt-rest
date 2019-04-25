@@ -8,6 +8,7 @@ process.env.PORT = 0
 var ccxtServer = require('../../../app')
 var server = ccxtServer.app;
 var db = require('../../../api/helpers/db');
+var jwtHelper = require('../../../api/helpers/jwt-helper')
 
 var ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
 var exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
@@ -22,7 +23,6 @@ describe('> controllers', function() {
 
         request(server)
           .get('/exchanges')
-          .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
           .end(function(err, res) {
@@ -45,7 +45,6 @@ describe('> controllers', function() {
         it('> GET:/exchange/nonExistentExchangeName then return 404', function(done) {  
           request(server)
             .get('/exchange/nonExistentExchangeName')
-            .set('Accept', 'application/json')
             .expect(404)
             .end((err, res) => {
               should.not.exist(err);
@@ -68,11 +67,10 @@ describe('> controllers', function() {
       })
 
       describe('> [Unsupported Exchange Name] Public Data API', function() {
-        it('> GET:/exchange/nonExistentExchangeName/dummy/markets then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/markets then return 404', function(done) {
 
           request(server)
-              .get('/exchange/nonExistentExchangeName/dummy/markets')
-              .set('Accept', 'application/json')
+              .get('/exchange/nonExistentExchangeName/markets')
               .expect('Content-Type', /json/)
               .expect(404)
               .end((err, res) => {
@@ -81,10 +79,10 @@ describe('> controllers', function() {
               })
         });
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/orderBook then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/orderBook then return 404', function(done) {
           this.timeout('10s');
           request(server)
-              .get('/exchange/nonExistentExchangeName/dummy/orderBook')
+              .get('/exchange/nonExistentExchangeName/orderBook')
               .query({ symbol: 'BTC/ETH' })
               .set('Accept', 'application/json')
               .expect('Content-Type', /json/)
@@ -95,12 +93,11 @@ describe('> controllers', function() {
               })
         })
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/l2OrderBook then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/l2OrderBook then return 404', function(done) {
           this.timeout('10s');
           request(server)
-              .get('/exchange/nonExistentExchangeName/dummy/l2OrderBook')
+              .get('/exchange/nonExistentExchangeName/l2OrderBook')
               .query({ symbol: 'BTC/ETH' })
-              .set('Accept', 'application/json')
               .expect('Content-Type', /json/)
               .expect(404)
               .end((err, res) => {
@@ -109,12 +106,11 @@ describe('> controllers', function() {
               })
         })
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/trades then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/trades then return 404', function(done) {
           this.timeout('10s')
           request(server)
-              .get('/exchange/nonExistentExchangeName/dummy/trades')
+              .get('/exchange/nonExistentExchangeName/trades')
               .query({ symbol: 'BTC/ETH' })
-              .set('Accept', 'application/json')
               .expect('Content-Type', /json/)
               .expect(404)
               .end((err, res) => {
@@ -123,12 +119,11 @@ describe('> controllers', function() {
               })
         })
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/ticker then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/ticker then return 404', function(done) {
           this.timeout('10s')
           request(server)
-              .get('/exchange/nonExistentExchangeName/dummy/ticker')
+              .get('/exchange/nonExistentExchangeName/ticker')
               .query({ symbol: 'BTC/ETH' })
-              .set('Accept', 'application/json')
               .expect('Content-Type', /json/)
               .expect(404)
               .end((err, res) => {
@@ -137,11 +132,10 @@ describe('> controllers', function() {
               })
         })
 
-        it('> GET:/exchange/nonExistentExchangeName/dummy/tickers then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/tickers then return 404', function(done) {
           this.timeout('10s')
           request(server)
-              .get('/exchange/nonExistentExchangeName/dummy/tickers')
-              .set('Accept', 'application/json')
+              .get('/exchange/nonExistentExchangeName/tickers')
               .expect('Content-Type', /json/)
               .expect(404)
               .end((err, res) => {
@@ -150,10 +144,10 @@ describe('> controllers', function() {
               })
         })
 
-        it('> POST:/exchange/nonExistentExchangeName/dummy/_/loadMarkets then return 404', function(done) {
+        it('> POST:/exchange/nonExistentExchangeName/_/loadMarkets then return 404', function(done) {
           this.timeout('10s')
           request(server)
-              .post('/exchange/nonExistentExchangeName/dummy/_/loadMarkets')
+              .post('/exchange/nonExistentExchangeName/_/loadMarkets')
               .type('text')
               .send(JSON.stringify([true]))
               .set('Accept', 'application/json')
@@ -166,11 +160,10 @@ describe('> controllers', function() {
       });
 
       describe('> [Unsupported Exchange Name] Private Data APIs', function() {
-        it('> GET:/exchange/nonExistentExchangeName/dummy/balances then return 404', function(done) {
+        it('> GET:/exchange/nonExistentExchangeName/balances then return 404', function(done) {
           this.timeout('10s')
           request(server)
-              .get('/exchange/nonExistentExchangeName/dummy/balances')
-              .set('Accept', 'application/json')
+              .get('/exchange/nonExistentExchangeName/balances')
               .expect('Content-Type', /json/)
               .expect(404)
               .end((err, res) => {
@@ -181,7 +174,7 @@ describe('> controllers', function() {
 
         it('> [Unsupported Exchange Name] Place order then return 404', function(done) {
           request(server)
-            .post('/exchange/nonExistentExchangeName/dummy/order')
+            .post('/exchange/nonExistentExchangeName/order')
             .send({ symbol: 'BTC/ETH', type: 'limit', side: 'buy', amount:0, price:0 })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -194,9 +187,8 @@ describe('> controllers', function() {
 
         it('> [Unsupported Exchange Name] Cancel order then return 404', function(done) {
           request(server)
-            .delete('/exchange/nonExistentExchangeName/dummy/order/dummy')
+            .delete('/exchange/nonExistentExchangeName/order/dummy')
             .query({symbol : 'BTC/ETH'})
-            .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(404)
             .end((err, res) => {
@@ -208,9 +200,8 @@ describe('> controllers', function() {
         it('> [Unsupported Exchange Name] Get order then return 404', function(done) {
           this.timeout('10s')
           request(server)
-            .get('/exchange/nonExistentExchangeName/dummy/order/dummy')
+            .get('/exchange/nonExistentExchangeName/order/dummy')
             .query({symbol : 'BTC/ETH'})
-            .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(404)
             .end((err, res) => {
@@ -222,9 +213,8 @@ describe('> controllers', function() {
         it('> [Unsupported Exchange Name] Get orders then return 404', function(done) {
           this.timeout('10s')
           request(server)
-            .get('/exchange/nonExistentExchangeName/dummy/orders')
+            .get('/exchange/nonExistentExchangeName/orders')
             .query({symbol : 'BTC/ETH'})
-            .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(404)
             .end((err, res) => {
@@ -236,9 +226,8 @@ describe('> controllers', function() {
         it('> [Unsupported Exchange Name] Get open orders then return 404', function(done) {
           this.timeout('10s')
           request(server)
-            .get('/exchange/nonExistentExchangeName/dummy/orders/open')
+            .get('/exchange/nonExistentExchangeName/orders/open')
             .query({symbol : 'BTC/ETH'})
-            .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(404)
             .end((err, res) => {
@@ -250,9 +239,8 @@ describe('> controllers', function() {
         it('> [Unsupported Exchange Name] Get closed orders then return 404', function(done) {
           this.timeout('10s')
           request(server)
-            .get('/exchange/nonExistentExchangeName/dummy/orders/closed')
+            .get('/exchange/nonExistentExchangeName/orders/closed')
             .query({symbol : 'BTC/ETH'})
-            .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(404)
             .end((err, res) => {
@@ -264,9 +252,8 @@ describe('> controllers', function() {
         it('> [Unsupported Exchange Name] Get my trades then return 404', function(done) {
           this.timeout('10s')
           request(server)
-            .get('/exchange/nonExistentExchangeName/dummy/trades/mine')
+            .get('/exchange/nonExistentExchangeName/trades/mine')
             .query({symbol : 'BTC/ETH'})
-            .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(404)
             .end((err, res) => {
@@ -280,7 +267,7 @@ describe('> controllers', function() {
 
     describe('> Given broken exchanges', function() {
       ['allcoin'].forEach(function(exchangeName) {
-        it('> [' + exchangeName + '] When trying to instantiate, then 503', function(done) {
+        it(`> [${exchangeName}] When trying to instantiate, then 503`, function(done) {
           request(server)
             .post('/exchange/' + exchangeName)
             .send({id:exchangeName})
@@ -307,44 +294,62 @@ describe('> controllers', function() {
       
       return exchangeDetails
     }).forEach((_ctx) => {
-      describe('> [' + _ctx.exchangeName + '] Given no saved exchanges', function() {
-        describe('> [' + _ctx.exchangeName + '] Using no Saved Instance\'s Exchange Management API', function() {
-          it('> When GET:/exchange/' + _ctx.exchangeName + ' then return empty array', function(done) {
+      describe(`> [${_ctx.exchangeName}] Given no saved exchanges`, function() {
+        describe(`> [${_ctx.exchangeName}] Using no Saved Instance's Exchange Management API`, function() {
+          it(`> When GET:/exchange/${_ctx.exchangeName} then return public ${_ctx.exchangeName}`, function(done) {
   
             request(server)
-              .get('/exchange/' + _ctx.exchangeName)
-              .set('Accept', 'application/json')
+              .get(`/exchange/${_ctx.exchangeName}`)
               .expect('Content-Type', /json/)
               .expect(200)
               .end((err, res) => {
                 should.not.exist(err);
       
-                res.body.should.eql([]);
+                res.body.private.should.eql(false);
       
                 done();
               });
           });
     
-          it('> When GET:/exchange/' + _ctx.exchangeName + '/nonExistentId then return 404', function(done) {
-    
+          it(`> When GET:/exchange/${_ctx.exchangeName} with invalid jwt token, then return 403`, function(done) {
+            this.timeout('10s')
+            const token = 'xxx.yyy.zzz'
             request(server)
-              .get('/exchange/' + _ctx.exchangeName + '/nonExistentId')
-              .set('Accept', 'application/json')
-              .expect('Content-Type', /json/)
-              .expect(404)
-              .end((err, res) => {
+                  .get(`/exchange/${_ctx.exchangeName}`)
+                  .set('Authorization', `Bearer ${token}`)
+                  .expect('Content-Type', /json/)
+                  .expect(403)
+                  .end((err, res) => {
+                    should.not.exist(err);
+                    done();
+                  })
+          });
+
+          it(`> When GET:/exchange/${_ctx.exchangeName} with valid jwt token but referencing non-existent exchange, then return 404`, function(done) {
+            this.timeout('10s')
+            jwtHelper.sign(
+              _ctx.exchangeName, 
+              `${_ctx.exchangeName}_dummy`, 
+              function(err, token) {
                 should.not.exist(err);
-                done();
+                request(server)
+                  .get(`/exchange/${_ctx.exchangeName}`)
+                  .set('Authorization', `Bearer ${token}`)
+                  .expect('Content-Type', /json/)
+                  .expect(404)
+                  .end((err, res) => {
+                    should.not.exist(err);
+                    done();
+                  })
               })
           });
   
-          it('> When DELETE:/exchange/' + _ctx.exchangeName + '/nonExistentId then return 404', function(done) {
+          it(`> When DELETE:/exchange/${_ctx.exchangeName} with no jwt token then return 403`, function(done) {
     
             request(server)
-              .delete('/exchange/' + _ctx.exchangeName + '/nonExistentId')
-              .set('Accept', 'application/json')
+              .delete(`/exchange/${_ctx.exchangeName}`)
               .expect('Content-Type', /json/)
-              .expect(404)
+              .expect(403)
               .end((err, res) => {
                 should.not.exist(err);
                 done();
@@ -352,97 +357,91 @@ describe('> controllers', function() {
           });
         });
 
-        describe('> [' + _ctx.exchangeName + '] Using no Saved Instance\'s Public Data API', function() {
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then return 404', function(done) {
+        describe(`> [${_ctx.exchangeName}] Using no Saved Instance\'s Public Data API`, function() {
+          it(`> GET:/exchange/${_ctx.exchangeName}/markets then use public ${_ctx.exchangeName} and return 200`, function(done) {
   
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets')
-                .set('Accept', 'application/json')
+                .get(`/exchange/${_ctx.exchangeName}/markets`)
                 .expect('Content-Type', /json/)
-                .expect(404)
+                .expect(200)
                 .end((err, res) => {
                   should.not.exist(err);
                   done();
                 })
           });
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then return 404', function(done) {
+          it(`'> GET:/exchange/${_ctx.exchangeName}/orderBook?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return 200'`, function(done) {
             this.timeout('10s');
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
+                .get(`/exchange/${_ctx.exchangeName}/orderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair })
-                .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
-                .expect(404)
+                .expect(200)
                 .end((err, res) => {
                   should.not.exist(err);
                   done();
                 })
           })
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook then return 404', function(done) {
+          it(`> GET:/exchange/${_ctx.exchangeName}/l2OrderBook?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return 200'`, function(done) {
             this.timeout('10s');
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/l2OrderBook')
+                .get(`/exchange/${_ctx.exchangeName}/l2OrderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair })
-                .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
-                .expect(404)
+                .expect(200)
                 .end((err, res) => {
                   should.not.exist(err);
                   done();
                 })
           })
 
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades then return 404', function(done) {
+          it(`> GET:/exchange/${_ctx.exchangeName}/trades?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return 200`, function(done) {
             this.timeout('10s')
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/trades')
+                .get(`/exchange/${_ctx.exchangeName}/trades`)
                 .query({ symbol: _ctx.targetCurrencyPair })
-                .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
-                .expect(404)
+                .expect(200)
                 .end((err, res) => {
                   should.not.exist(err);
                   done();
                 })
           })
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker then return 404', function(done) {
+          it(`> GET:/exchange/${_ctx.exchangeName}/ticker?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return ${_ctx.expectedStatusCodes['fetchTicker']}`, function(done) {
             this.timeout('10s')
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/ticker')
+                .get(`/exchange/${_ctx.exchangeName}/ticker`)
                 .query({ symbol: _ctx.targetCurrencyPair })
-                .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
-                .expect(404)
+                .expect(_ctx.expectedStatusCodes['fetchTicker'])
                 .end((err, res) => {
                   should.not.exist(err);
                   done();
                 })
           })
 
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/tickers then return 404', function(done) {
+          it(`> GET:/exchange/${_ctx.exchangeName}/tickers then return use public ${_ctx.exchangeName} and return ${_ctx.expectedStatusCodes['fetchTickers']}`, function(done) {
             this.timeout('10s')
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/tickers')
-                .set('Accept', 'application/json')
+                .get(`/exchange/${_ctx.exchangeName}/tickers`)
                 .expect('Content-Type', /json/)
-                .expect(404)
+                .expect(_ctx.expectedStatusCodes['fetchTickers'])
                 .end((err, res) => {
                   should.not.exist(err);
                   done();
                 })
           })
   
-          it('> POST:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets then return 404', function(done) {
+          it(`> POST:/exchange/${_ctx.exchangeName}/_/loadMarkets then use public ${_ctx.exchangeName} and return 200`, function(done) {
             this.timeout('10s')
             request(server)
-                .post('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/_/loadMarkets')
+                .post(`/exchange/${_ctx.exchangeName}/_/loadMarkets`)
                 .type('text')
                 .send(JSON.stringify([true]))
                 .set('Accept', 'application/json')
-                .expect(404)
+                .expect(200)
                 .end((err, res) => {
                   should.not.exist(err);
                   done();
@@ -451,12 +450,12 @@ describe('> controllers', function() {
         });
       });
   
-      describe('> [' + _ctx.exchangeName + '] Given with saved exchange', function() {
+      describe(`> [${_ctx.exchangeName}] Given with saved exchange`, function() {
         before(function() {
           this.timeout('10s')
           return new Promise((resolve) => {
             request(server)
-              .post('/exchange/' + _ctx.exchangeName)
+              .post(`/exchange/${_ctx.exchangeName}`)
               .send(_ctx.creds)
               .set('Accept', 'application/json')
               .expect('Content-Type', /json/)
@@ -480,7 +479,7 @@ describe('> controllers', function() {
             var beforeDeleteExchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
   
             request(server)
-                .delete('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId)
+                .delete(`/exchange/${_ctx.exchangeName}/${_ctx.exchangeId}`)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -496,10 +495,10 @@ describe('> controllers', function() {
           });
         });
 
-        describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Exchange Management APIs', function() {
-          it('> GET:/exchange/' + _ctx.exchangeName + ' then return id of new exchange', function(done) {
+        describe(`> [${_ctx.exchangeName}] Using Saved Instance\'s Exchange Management APIs`, function() {
+          it(`> GET:/exchange/${_ctx.exchangeName} then return id of new exchange`, function(done) {
             request(server)
-                .get('/exchange/' + _ctx.exchangeName)
+                .get(`'/exchange/${_ctx.exchangeName}`)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -512,10 +511,10 @@ describe('> controllers', function() {
                 });
           });
     
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + ' then get exchange', function(done) {
+          it(`> GET:/exchange/${_ctx.exchangeName}/${_ctx.exchangeId} then get exchange`, function(done) {
     
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId)
+                .get(`/exchange/${_ctx.exchangeName}/${_ctx.exchangeId}`)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -533,11 +532,11 @@ describe('> controllers', function() {
   
         })
 
-        describe('> [' + _ctx.exchangeName + '] Using Saved Instance\'s Public Data APIs', function() {
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets then get exchange\'s markets', function(done) {
+        describe(`> [${_ctx.exchangeName}] Using Saved Instance's Public Data APIs`, function() {
+          it(`> GET:/exchange/${_ctx.exchangeName}/${_ctx.exchangeId}/markets then get exchange's markets`, function(done) {
             this.timeout('10s')
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/markets')
+                .get(`/exchange/${_ctx.exchangeName}/${_ctx.exchangeId}/markets`)
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .expect(200)
@@ -551,10 +550,10 @@ describe('> controllers', function() {
                 });
           })
   
-          it('> GET:/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook then get exchange\'s Order Book', function(done) {
+          it(`> GET:/exchange/${_ctx.exchangeName}/${_ctx.exchangeId}/orderBook then get exchange's Order Book`, function(done) {
             this.timeout('10s')
             request(server)
-                .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/orderBook')
+                .get(`/exchange/${_ctx.exchangeName}/${_ctx.exchangeId}/orderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair })
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)

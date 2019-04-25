@@ -9,29 +9,27 @@ const db = require('../helpers/db')
 ;
 
 
-function logError(req, functionName, error) {
-  console.error('[' + getExchangeId(req) + '] Error on ' + functionName);
-  console.trace(error)
-}
-
-function genericHandleError(res, label, error) {
-    console.error('Error in ' + label)
+function handleError(req, res, label, error) {
+    let exchangeId;
+    try {
+      exchangeId = getExchangeId(req)
+    } catch (error) {
+      exchangeId = '???invalid_token???'
+    }
+    console.error(`[${exchangeId}] Error on ${label}`);
     console.trace(error)
-    res.status(500).send()
-}
-  
-function handleError(req, res, functionName, error) {
-    logError(req, functionName, error)
     if (error instanceof ccxt.AuthenticationError) {
       res.status(401).send();
     } else if (error instanceof ccxt.InvalidNonce || error instanceof ccxtRestErrors.AuthError) {
       res.status(403).send();
-    } else if (error instanceof ccxt.OrderNotFound) {
+    } else if (error instanceof ccxt.OrderNotFound || error instanceof ccxtRestErrors.UnknownExchangeNameError) {
       res.status(404).send();
     } else if (error instanceof ccxt.InvalidOrder || error instanceof ccxt.InsufficientFunds) {
       res.status(400).send();
-    } else if (error instanceof ccxt.NotSupported) {
+    } else if (error instanceof ccxt.NotSupported || error instanceof ccxtRestErrors.UnsupportedApiError) {
       res.status(501).send();
+    } else if (error instanceof ccxtRestErrors.BrokenExchangeError) {
+      res.status(503).send();
     } else if (error instanceof ccxt.NetworkError) {
       res.status(504).send();
     } else {
@@ -61,27 +59,23 @@ function execute(req, res, parameterNamesOrParameterValuesExtractor, functionNam
       }
       context.parameterValues = parameterValues
   
-      if (exchange) {
-        if (exchange.has[functionName] === false) {
-          console.error('[' + exchange.name + '] does not support ' + functionName)
-          res.status(501).send();      
-        } else {
-          exchange[functionName].apply(exchange, parameterValues)
-            .then(response => {
-              try {
-                res.send(responseTransformer(response, context));
-              } catch (error) {
-                handleError(req, res, functionName, error)
-              }
-            }).catch((error) => {
-              handleError(req, res, functionName, error)
-            });
-        }
+      if (exchange.has[functionName] === false) {
+        console.error(`[${exchange.name}] does not support ${functionName}`)
+        throw new ccxtRestErrors.UnsupportedApiError(`${exchange.name}#${functionName} is not supported`)
       } else {
-        res.status(404).send();
+        exchange[functionName].apply(exchange, parameterValues)
+          .then(response => {
+            try {
+              res.send(responseTransformer(response, context));
+            } catch (error) {
+              handleError(req, res, functionName, error)
+            }
+          }).catch((error) => {
+            handleError(req, res, functionName, error)
+          });
       }
     } catch (error) {
-      genericHandleError(res, functionName, error)
+      handleError(req, res, functionName, error)
     }
 }
   
@@ -98,21 +92,22 @@ function getExchangeFromRequest(req) {
 }
 
 function getExchangeName(req) {
-  return req.swagger.params.exchangeName && req.swagger.params.exchangeName.value;
+  const exchangeName = req.swagger.params.exchangeName && req.swagger.params.exchangeName.value;
+  if (!ccxt[exchangeName]) {
+    throw new ccxtRestErrors.UnknownExchangeNameError(`${exchangeName} is not supported`)
+  } else {
+    return exchangeName;
+  }
 }
 
 function getExchangeId(req) {
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    var token = req.headers.authorization.split('Bearer ')[1]
-    var decoded = jwt.verify(token, jwtHelper.secretKey);
-
-    if (decoded.iss != jwtHelper.issuer) {
-      throw new ccxtRestErrors.AuthError(`Invalid issuer ${decoded.iss}`)
-    }
-  
+  if (req.headers && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    let token = req.headers.authorization.split('Bearer ')[1]
+    let decoded = jwtHelper.decode(token)
+    
     return decoded.sub
   }
-  return ''
+  return null
 }
 
 var getPublicExchange = function(exchangeName) {
@@ -138,11 +133,9 @@ function renderExchange(exchange, res) {
 
 module.exports = {
     execute : execute,
-    genericHandleError : genericHandleError, 
     getExchangeFromRequest : getExchangeFromRequest, 
     getExchangeId : getExchangeId,
     getExchangeName : getExchangeName,
     handleError : handleError,
-    logError : logError,
     renderExchange : renderExchange
 }

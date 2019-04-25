@@ -3,11 +3,12 @@
 const ccxt = require('ccxt')
     , jwt = require('jsonwebtoken')
     , ccxtRestConfig = require('../config')
+    , ccxtRestErrors = require('../errors')
     , db = require('../helpers/db')
     , exchange_response = require('../models/exchange-response')
     , controller_helper = require('../helpers/controller-helper')
     , jwtHelper = require('../helpers/jwt-helper')
-    , genericHandleError = controller_helper.genericHandleError
+    , handleError = controller_helper.handleError
     , execute = controller_helper.execute
     , getExchangeFromRequest = controller_helper.getExchangeFromRequest
     , getExchangeName = controller_helper.getExchangeName
@@ -57,18 +58,15 @@ function createPrivateConnection(req, res) {
   
         db.saveExchange(exchangeName, exchange);
 
-        jwt.sign(
-            { iss: jwtHelper.issuer, sub: ccxtParam.id }, 
-            jwtHelper.secretKey, 
-            { algorithm: jwtHelper.algorithm }, 
-            (err, token) => {
-              res.send(new exchange_response.AccessToken(token))
-            });
+        jwtHelper.sign(
+          exchangeName, 
+          ccxtParam.id, 
+          (err, token) => res.send(new exchange_response.AccessToken(token)))
       } else {
         res.status(404).send()
       }
     } catch (error) {
-      genericHandleError(res, 'createPrivateConnection', error)
+      handleError(req, res, 'createPrivateConnection', error)
     }
   })
 }
@@ -77,10 +75,10 @@ function getConnection(req, res) {
   _doExchangeSpecificOrDefault(req, res, 'getConnection', (req, res) => {
     try {
       const exchange = getExchangeFromRequest(req)
-  
+      
       renderExchange(exchange, res);
     } catch (error) {
-      genericHandleError(res, 'getConnection', error)
+      handleError(req, res, 'getConnection', error)
     }
   })
 }
@@ -89,13 +87,16 @@ function deletePrivateConnection(req, res) {
   _doExchangeSpecificOrDefault(req, res, 'deletePrivateConnection', (req, res) => {
     try {
       const exchangeId = getExchangeId(req)
+      if (!exchangeId) {
+        throw new ccxtRestErrors.MissingRequiredTokenError(`Required valid token but did not get any`)
+      }
       const exchangeName = getExchangeName(req)
 
-      const exchange = db.deletePrivateConnection(exchangeName, exchangeId);
+      const exchange = db.deleteExchange(exchangeName, exchangeId);
 
       renderExchange(exchange, res);  
     } catch (error) {
-      genericHandleError(res, 'deletePrivateConnection', error)
+      handleError(req, res, 'deletePrivateConnection', error)
     }
   })
 }
@@ -285,13 +286,17 @@ function directCall(req, res) {
 }
 
 function _doExchangeSpecificOrDefault(req, res, overrideFunctionName, defaultBehaviour) {
-  const exchangeName = getExchangeName(req)
-  if (exchangeName && ccxtRestConfig[exchangeName] 
-      && ccxtRestConfig[exchangeName].override 
-      && ccxtRestConfig[exchangeName].override[overrideFunctionName]) {
-    ccxtRestConfig[exchangeName].override[overrideFunctionName](req, res, defaultBehaviour)
-  } else {
-    defaultBehaviour(req, res)
+  try {
+    const exchangeName = getExchangeName(req)
+    if (exchangeName && ccxtRestConfig[exchangeName] 
+        && ccxtRestConfig[exchangeName].override 
+        && ccxtRestConfig[exchangeName].override[overrideFunctionName]) {
+      ccxtRestConfig[exchangeName].override[overrideFunctionName](req, res, defaultBehaviour)
+    } else {
+      defaultBehaviour(req, res)
+    }
+  } catch (error) {
+    handleError(req, res, overrideFunctionName, error)
   }
 }
 
