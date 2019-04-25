@@ -1,7 +1,9 @@
 const ccxt = require('ccxt');
+var expect = require('chai').expect;
 const fs = require('fs');
 const request = require('supertest');
-const util = require('util')
+var should = require('should');
+const util = require('util');
 
 var ccxtServer = require('../app');
 var server = ccxtServer.app;
@@ -12,6 +14,8 @@ var exchangeToMarket = {}
 describe('> exploratory', function() {
 
     const EXCHANGES_ROOT_PATH = './out/exchanges/';
+
+    const REPORT_ONLY = process.env.REPORT_ONLY
 
     const PUBLIC_API_LABEL = '<img src="https://img.shields.io/badge/Public%20API-green.svg" alt="Public API" />'
     const PRIVATE_API_LABEL = '<img src="https://img.shields.io/badge/Private%20API-blue.svg" alt="Private API" />'
@@ -94,8 +98,14 @@ describe('> exploratory', function() {
 
         const summary = util.format(HTML_TEMPLATE, lastExecutionDate, headers, rows)
 
-        
-        fs.writeFileSync(EXCHANGES_ROOT_PATH + 'index.html', summary);
+        const exchangeSummaryReportPath = EXCHANGES_ROOT_PATH + 'index.html'
+        fs.writeFileSync(exchangeSummaryReportPath, summary);
+
+        const message = `* Exchange Summary Report generated in '${exchangeSummaryReportPath}' *`
+        const border = message.split('').map(_ => '*').join('')
+        console.info(border)
+        console.info(message)
+        console.info(border)
         
         resolve()
     })
@@ -136,6 +146,10 @@ describe('> exploratory', function() {
                 .set('Accept', 'application/json')
                 .expect('Content-Type', /json/)
                 .end((err, res) => {
+                    if (!REPORT_ONLY) {
+                        should.not.exist(err);
+                        expect(res.status).to.be.within(200, 299);
+                    }
                     done();
                 });
         });
@@ -162,12 +176,20 @@ describe('> exploratory', function() {
                                 config.successCallback(_ctx, res)
                             }
 
+                            if (!REPORT_ONLY) {
+                                should.not.exist(err);
+                                expect(res.status).to.be.within(200, 299);
+                            }
+
                             done();
                         });
                 } else {
                     logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
                         exchangeDetail[property] = 'n/a'
                     })
+                    if (!REPORT_ONLY) {
+                        this.skip()
+                    }
                     done()
                 }
             })
@@ -207,6 +229,11 @@ describe('> exploratory', function() {
 
                                 if (res.status == 200) {
                                     _ctx.exchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
+                                }
+
+                                if (!REPORT_ONLY) {
+                                    should.not.exist(err);
+                                    expect(res.status).to.be.within(200, 299);
                                 }
                 
                                 done();

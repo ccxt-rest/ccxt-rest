@@ -1,3 +1,4 @@
+
 language: node_js
 node_js:
   - "10.15.1"
@@ -8,7 +9,7 @@ before_install:
 script:
   - npm install
   - npm test
-  - npm run generate:exchangeSummary
+  - REPORT_ONLY=1 npm run generate:exchangeSummary
   - npm pack
   - npm run test:dockerbuild
   
