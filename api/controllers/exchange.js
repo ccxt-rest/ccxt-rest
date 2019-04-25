@@ -1,21 +1,22 @@
 'use strict';
 
 const ccxt = require('ccxt')
+    , jwt = require('jsonwebtoken')
     , ccxtRestConfig = require('../config')
     , db = require('../helpers/db')
     , exchange_response = require('../models/exchange-response')
     , controller_helper = require('../helpers/controller-helper')
+    , jwtHelper = require('../helpers/jwt-helper')
     , genericHandleError = controller_helper.genericHandleError
     , execute = controller_helper.execute
-    , getExchange = controller_helper.getExchange
+    , getExchangeFromRequest = controller_helper.getExchangeFromRequest
     , renderExchange = controller_helper.renderExchange
 ;
 
 module.exports = {
   list: list,
-  listIds: listIds,
   createExchange: createExchange,
-  getOne : getOne,
+  getExchange : getExchange,
   deleteExchange : deleteExchange,
   markets: markets,
   orderBook: orderBook,
@@ -43,24 +44,6 @@ function list(req, res) {
   }
 }
 
-
-function listIds(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'listIds', (req, res) => {
-    try {
-      const exchangeName = req.swagger.params.exchangeName.value;
-  
-      if (ccxt[exchangeName]) {
-        const exchangeIds = db.getExchangeIds(exchangeName);
-        res.send(exchangeIds);
-      } else {
-        res.status(404).send()
-      }
-    } catch(error) {
-      genericHandleError(res, 'listIds', error)
-    }
-  })
-}
-
 function createExchange(req, res) {
   _doExchangeSpecificOrDefault(req, res, 'createExchange', (req, res) => {
     try {
@@ -71,8 +54,14 @@ function createExchange(req, res) {
         const exchange = new ccxt[exchangeName](ccxtParam);
   
         db.saveExchange(exchangeName, exchange);
-        
-        renderExchange(exchange, res);
+
+        jwt.sign(
+            { iss: jwtHelper.issuer, sub: ccxtParam.id }, 
+            jwtHelper.secretKey, 
+            { algorithm: jwtHelper.algorithm }, 
+            (err, token) => {
+              res.send(new exchange_response.AccessToken(token))
+            });
       } else {
         res.status(404).send()
       }
@@ -82,14 +71,14 @@ function createExchange(req, res) {
   })
 }
 
-function getOne(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'getOne', (req, res) => {
+function getExchange(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'getExchange', (req, res) => {
     try {
-      const exchange = getExchange(req)
+      const exchange = getExchangeFromRequest(req)
   
       renderExchange(exchange, res);
     } catch (error) {
-      genericHandleError(res, 'getOne', error)
+      genericHandleError(res, 'getExchange', error)
     }
   })
 }

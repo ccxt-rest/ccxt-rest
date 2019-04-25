@@ -4,6 +4,8 @@ var fs = require('fs'),
     http = require('http'),
     path = require('path');
 
+var jwtHelper = require('./api/helpers/jwt-helper')
+
 var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');
@@ -28,8 +30,18 @@ var options_object = {
     apiDocsPrefix: '',
     swaggerUi: '/explorer',
     swaggerUiPrefix: ''
+  },
+  oasSecurity: true,
+  securityFile: {
+    bearerAuth: {
+      issuer: jwtHelper.issuer,
+      algorithms: [jwtHelper.algorithm],
+      key: jwtHelper.secretKey
+    }
   }
 };
+
+console.log(`options_object.securityFile.bearerAuth.key = ${options_object.securityFile.bearerAuth.key}`)
 
 oasTools.configure(options_object);
 

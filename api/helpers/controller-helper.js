@@ -2,7 +2,10 @@
 
 const db = require('../helpers/db')
     , ccxt = require('ccxt')
+    , jwt = require('jsonwebtoken')
     , exchange_response = require('../models/exchange-response')
+    , jwtHelper = require('./jwt-helper')
+;
 
 
 function logError(req, functionName, error) {
@@ -43,7 +46,7 @@ function execute(req, res, parameterNamesOrParameterValuesExtractor, functionNam
     try {
       let context = {}
   
-      const exchange = getExchange(req)
+      const exchange = getExchangeFromRequest(req)
       let parameterValues
       if (typeof(parameterNamesOrParameterValuesExtractor) === 'function') {
         parameterValues = parameterNamesOrParameterValuesExtractor(req, context)
@@ -85,13 +88,31 @@ function execute(req, res, parameterNamesOrParameterValuesExtractor, functionNam
     }
 }
   
-function getExchange(req) {
+function getExchangeFromRequest(req) {
     var exchangeName = req.swagger.params.exchangeName.value;
-    var exchangeId = req.swagger.params.exchangeId.value;
-  
-    return db.getExchange(exchangeName, exchangeId);
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      var token = req.headers.authorization.split('Bearer ')[1]
+      var decoded = jwt.verify(token, jwtHelper.secretKey);
+    
+      return db.getExchange(exchangeName, decoded.sub);        
+    } else {
+      return getPublicExchange(exchangeName)
+    }
 }
-  
+
+var getPublicExchange = function(exchangeName) {
+  const existingPublicExchange = db.getExchange(exchangeName, '');
+  if (existingPublicExchange) {
+      existingPublicExchange.id = ''
+      return existingPublicExchange
+  } else {
+      const newPublicExchange = new ccxt[exchangeName]({enableRateLimit:true})
+      newPublicExchange.id = ''
+      db.saveExchange(exchangeName, newPublicExchange);
+      return newPublicExchange
+  }
+}
+
 function renderExchange(exchange, res) {
     if (exchange) {
       res.send(new exchange_response.ExchangeResponse(exchange));
@@ -103,7 +124,7 @@ function renderExchange(exchange, res) {
 module.exports = {
     execute : execute,
     genericHandleError : genericHandleError, 
-    getExchange : getExchange, 
+    getExchangeFromRequest : getExchangeFromRequest, 
     handleError : handleError,
     logError : logError,
     renderExchange : renderExchange

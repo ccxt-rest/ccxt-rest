@@ -13,7 +13,8 @@ var getExchange = function(exchangeName, exchangeId) {
     if (!inMemoryExchangeDatabase[exchangeName]) {
         inMemoryExchangeDatabase[exchangeName] = {};
     }
-    return inMemoryExchangeDatabase[exchangeName][exchangeId];
+    const exchange = inMemoryExchangeDatabase[exchangeName][exchangeId];
+    return exchange
 };
 
 var getExchangeIds = function(exchangeName) {

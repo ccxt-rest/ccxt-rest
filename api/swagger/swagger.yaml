@@ -54,11 +54,11 @@ paths:
           description: If an unexpected error occurred
   /exchange/{exchangeName}:
     get:
-      description: List all exchange instance ids for this exchange
+      description: Get the exchange details given the exchangeName and access token in the header
       tags:
         - Exchange Management API
       x-swagger-router-controller: exchange
-      operationId: listIds
+      operationId: getExchange
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
       responses:
@@ -67,12 +67,9 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                example: ['myBitsoInstance', 'myBinanceInstance', 'someRandomNameIGaveToAnInstance']
-                items:
-                  type: string
+                $ref: '#/components/schemas/ExchangeResponse'
         "404":
-          description: Exchange with that name is NOT supported
+          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
         "500":
           description: If an unexpected error occurred
     post:
@@ -95,7 +92,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExchangeResponse'
+                $ref: '#/components/schemas/AccessToken'
         "404":
           description: Exchange with that name is NOT supported
         "500":
@@ -103,36 +100,16 @@ paths:
         "503":
           description: Support for exchange is currently broken
       x-swagger-router-controller: exchange
-  '/exchange/{exchangeName}/{exchangeId}':
-    get:
-      description: Get the exchange details given the exchangeName and exchangeId
-      tags:
-        - Exchange Management API
-      x-swagger-router-controller: exchange
-      operationId: getOne
-      parameters:
-        - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExchangeResponse'
-        "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
-        "500":
-          description: If an unexpected error occurred
     delete:
-      description: Delete the exchange details referenced by the exchangeName and exchangeId
+      description: Delete the exchange details referenced by access token in the header
+      security:
+        - bearerAuth: []
       tags:
         - Exchange Management API
       x-swagger-router-controller: exchange
       operationId: deleteExchange
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
       responses:
         "200":
           description: Success
@@ -141,7 +118,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExchangeResponse'
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
   '/exchange/{exchangeName}/{exchangeId}/markets':
@@ -1077,19 +1054,38 @@ components:
             The allowable precision of the amount when placing an order. For
             example, given 2, then a price of 0.123 must be made either 0.12 (or
             0.13)
+    AccessToken:
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: >- 
+            The JWT token that needs to be added into the 'Authorization'
+            header with the 'Bearer ' prefix. For example, given a token of xyz,
+            do a secured request with 'Authorization: Bearer xyz'
     ExchangeResponse:
       required:
+        - id
         - countries
         - enableRateLimit
         - name
+        - private
       type: object
       properties:
+        id:
+          type: string
+          description: >-
+            The id of the exchange. When you created the exchange (via
+            POST:/exchanges/{exhangeName}), the 'id' parameter there becomes the
+            name here
         name:
           type: string
           description: >-
-            The name of the exchange. When you created the exchange (via
-            POST:/exchanges/{exhangeName}), the 'id' parameter there becomes the
-            name here
+            The name of the exchange. 
+        private:
+          type: boolean
+          description: Whether this exchange is private (has apiKey) or public (no apiKey)
         enableRateLimit:
           type: boolean
           description: >-
@@ -1347,6 +1343,11 @@ components:
           type: object
           properties: {}
           description: Exchange specific parameters
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  
   parameters:
     orderIdParam:
       name: orderId
