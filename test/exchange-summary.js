@@ -149,7 +149,7 @@ describe('> exploratory', function() {
         }
 
         it('warm up server', function(done) {
-            this.timeout(10000)
+            this.timeout('10s')
             request(server)
                 .get('/exchanges/')
                 .set('Accept', 'application/json')
@@ -163,15 +163,14 @@ describe('> exploratory', function() {
         function generateTest(_ctx, property, config) {
             config = config || {}
             config.canExecute = config.canExecute || (_ctx => true)
-            return it('> [' + _ctx.exchangeName + '] ' + property, function(done) {
-                this.timeout(10000)
+            return it(`> [${_ctx.exchangeName}] ${property}`, function(done) {
+                this.timeout('10s')
                 if (_ctx.exchange && config.canExecute(_ctx)) {
                     const query = config.queryBuilder ? config.queryBuilder(_ctx) : undefined
                     request(server)
-                        .get('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId + '/' + property)
+                        .get(`/exchange/${_ctx.exchangeName}/${property}`)
                         .query(query)
                         .retry(3)
-                        .set('Accept', 'application/json')
                         .expect('Content-Type', /json/)
                         .end((err, res) => {
                             logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
@@ -203,13 +202,12 @@ describe('> exploratory', function() {
                 'exchangeName': exchangeName,
                 'exchangeId': exchangeName + '1'
             }}).forEach(_ctx => {
-                describe('> ' + _ctx.exchangeName + ' without API keys', function() {
+                describe(`> ${_ctx.exchangeName} without API keys`, function() {
                     after(function() {
-                        this.timeout(10000)
+                        this.timeout('10s')
                         return new Promise((resolve) => {
                             request(server)
-                                .delete('/exchange/' + _ctx.exchangeName + '/' + _ctx.exchangeId)
-                                .set('Accept', 'application/json')
+                                .delete(`/exchange/${_ctx.exchangeName}`)
                                 .expect('Content-Type', /json/)
                                 .end((err, res) => {
                                     resolve();
@@ -217,10 +215,10 @@ describe('> exploratory', function() {
                         });
                     });
 
-                    it('> [' + _ctx.exchangeName + '] Instance creation', function(done) {
-                        this.timeout(10000)
+                    it(`> [${_ctx.exchangeName}] Connect`, function(done) {
+                        this.timeout('10s')
                         request(server)
-                            .post('/exchange/' + _ctx.exchangeName)
+                            .post(`/exchange/${_ctx.exchangeName}`)
                             .send({'id':_ctx.exchangeId})
                             .retry(3)
                             .set('Accept', 'application/json')
