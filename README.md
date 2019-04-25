@@ -166,7 +166,7 @@ For a complete list of API, see https://ccxt-rest.io
 
 For a full list of supported exchanges and as to which of their APIs are public, private or even broken, checkout https://ccxt-rest.io/#exchange-summmary. The format there looks something like this
 
-_**Note: The table below is just an example. This does NOT represent the curren state of these API statuses**_
+_**Note: The table below is just an example. This does NOT represent the current state of these API statuses**_
 
 | Exchange | Connect | Market | Ticker | Tickers | Order Book | Trades |
 | -------- | ------- | ------ | ------ | ------- | ---------- | ------ |
@@ -181,7 +181,7 @@ _**Note: The table below is just an example. This does NOT represent the curren 
 | _(sample only)_ | _(sample only)_ | _(sample only)_ | _(sample only)_ | _(sample only)_ | _(sample only)_ | _(sample only)_ |
 | ...      | ...     | ...    | ...    | ...     | ...        | ...    | 
 
-_**Note: The table above is just an example. This does NOT represent the curren state of these API statuses**_
+_**Note: The table above is just an example. This does NOT represent the current state of these API statuses**_
 
 For full list of the current statuses, see https://ccxt-rest.io/#exchange-summmary
 
