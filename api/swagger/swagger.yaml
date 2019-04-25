@@ -11,7 +11,6 @@ info:
     url: "https://github.com/franz-see/ccxt-rest/blob/master/LICENSE.txt"
 servers:
   - url: 'http://localhost:3000/'
-  - url: 'https://localhost:3000/'
 tags:
   - name: Exchange Management API
     description: >-
@@ -47,9 +46,9 @@ paths:
             application/json:
               schema:
                 type: array
-                example: ["_1btcxe","acx","allcoin","anxpro","anybits","bcex","bequant","bibox","bigone","binance","binanceje","bit2c","bitbank","bitbay","bitfinex","bitfinex2","bitflyer","bitforex","bithumb","bitibu","bitkk","bitlish","bitmarket","bitmex","bitsane","bitso","bitstamp","bitstamp1","bittrex","bitz","bl3p","bleutrade","braziliex","btcalpha","btcbox","btcchina","btcexchange","btcmarkets","btctradeim","btctradeua","btcturk","buda","bxinth","ccex","cex","chbtc","chilebit","cobinhood","coinbase","coinbaseprime","coinbasepro","coincheck","coinegg","coinex","coinexchange","coinfalcon","coinfloor","coingi","coinmarketcap","coinmate","coinnest","coinone","coinspot","cointiger","coolcoin","coss","crex24","crypton","cryptopia","deribit","dsx","ethfinex","exmo","exx","fcoin","fcoinjp","flowbtc","foxbit","fybse","fybsg","gateio","gdax","gemini","getbtc","hadax","hitbtc","hitbtc2","huobipro","huobiru","ice3x","independentreserve","indodax","itbit","jubi","kkex","kraken","kucoin","kucoin2","kuna","lakebtc","lbank","liqui","liquid","livecoin","luno","lykke","mandala","mercado","mixcoins","negociecoins","nova","okcoincny","okcoinusd","okex","paymium","poloniex","quadrigacx","rightbtc","southxchange","stronghold","surbitcoin","theocean","therock","tidebit","tidex","uex","upbit","urdubit","vaultoro","vbtc","virwox","xbtce","yobit","zaif","zb"]
                 items:
-                  type: string
+                  $ref : "#/components/schemas/Exchange"
+                example: ["_1btcxe","acx","allcoin","anxpro","anybits","bcex","bequant","bibox","bigone","binance","binanceje","bit2c","bitbank","bitbay","bitfinex","bitfinex2","bitflyer","bitforex","bithumb","bitibu","bitkk","bitlish","bitmarket","bitmex","bitsane","bitso","bitstamp","bitstamp1","bittrex","bitz","bl3p","bleutrade","braziliex","btcalpha","btcbox","btcchina","btcexchange","btcmarkets","btctradeim","btctradeua","btcturk","buda","bxinth","ccex","cex","chbtc","chilebit","cobinhood","coinbase","coinbaseprime","coinbasepro","coincheck","coinegg","coinex","coinexchange","coinfalcon","coinfloor","coingi","coinmarketcap","coinmate","coinnest","coinone","coinspot","cointiger","coolcoin","coss","crex24","crypton","cryptopia","deribit","dsx","ethfinex","exmo","exx","fcoin","fcoinjp","flowbtc","foxbit","fybse","fybsg","gateio","gdax","gemini","getbtc","hadax","hitbtc","hitbtc2","huobipro","huobiru","ice3x","independentreserve","indodax","itbit","jubi","kkex","kraken","kucoin","kucoin2","kuna","lakebtc","lbank","liqui","liquid","livecoin","luno","lykke","mandala","mercado","mixcoins","negociecoins","nova","okcoincny","okcoinusd","okex","paymium","poloniex","quadrigacx","rightbtc","southxchange","stronghold","surbitcoin","theocean","therock","tidebit","tidex","uex","upbit","urdubit","vaultoro","vbtc","virwox","xbtce","yobit","zaif","zb"]
                 x-content-type: application/json
         "500":
           description: If an unexpected error occurred
@@ -932,11 +931,7 @@ components:
           type: string
           description: The currency pair of this trade
         side:
-          type: string
-          description: Whether this trade was a bid or ask (i.e. buy or sell)
-          enum:
-            - buy
-            - sell
+          $ref : "#/components/schemas/Side"
         price:
           type: number
           description: The price of this trade
@@ -962,17 +957,9 @@ components:
           type: string
           description: The currency pair of this order
         type:
-          type: string
-          description: Wether this is a market order or a limit order
-          enum:
-            - market
-            - limit
+          $ref : "#/components/schemas/OrderType"
         side:
-          type: string
-          description: Wether this is a bid or ask (i.e. buy or sell) order
-          enum:
-            - buy
-            - sell
+          $ref : "#/components/schemas/Side"
         price:
           type: number
           description: The price of this order
@@ -993,22 +980,20 @@ components:
             The amount of this order that is still yet to be filled (i.e. this
             can be less than or equal to 'amount')
         status:
-          type: string
-          description: The current status of this order
-          enum:
-            - open
-            - closed
-            - canceled
-            - canceling
+          $ref : "#/components/schemas/OrderStatus"
         info:
           type: object
           properties: {}
           description: Raw order response gotten from the exchange site's API
     Side:
       type: string
+      description: Wether this is a bid or ask (i.e. buy or sell) order
       enum:
         - buy
         - sell
+    Exchange:
+      type: string
+      enum: ["_1btcxe","acx","allcoin","anxpro","anybits","bcex","bequant","bibox","bigone","binance","binanceje","bit2c","bitbank","bitbay","bitfinex","bitfinex2","bitflyer","bitforex","bithumb","bitibu","bitkk","bitlish","bitmarket","bitmex","bitsane","bitso","bitstamp","bitstamp1","bittrex","bitz","bl3p","bleutrade","braziliex","btcalpha","btcbox","btcchina","btcexchange","btcmarkets","btctradeim","btctradeua","btcturk","buda","bxinth","ccex","cex","chbtc","chilebit","cobinhood","coinbase","coinbaseprime","coinbasepro","coincheck","coinegg","coinex","coinexchange","coinfalcon","coinfloor","coingi","coinmarketcap","coinmate","coinnest","coinone","coinspot","cointiger","coolcoin","coss","crex24","crypton","cryptopia","deribit","dsx","ethfinex","exmo","exx","fcoin","fcoinjp","flowbtc","foxbit","fybse","fybsg","gateio","gdax","gemini","getbtc","hadax","hitbtc","hitbtc2","huobipro","huobiru","ice3x","independentreserve","indodax","itbit","jubi","kkex","kraken","kucoin","kucoin2","kuna","lakebtc","lbank","liqui","liquid","livecoin","luno","lykke","mandala","mercado","mixcoins","negociecoins","nova","okcoincny","okcoinusd","okex","paymium","poloniex","quadrigacx","rightbtc","southxchange","stronghold","surbitcoin","theocean","therock","tidebit","tidex","uex","upbit","urdubit","vaultoro","vbtc","virwox","xbtce","yobit","zaif","zb"]      
     OrderBookResponse:
       required:
         - asks
@@ -1034,6 +1019,7 @@ components:
           format: date-time
     OrderStatus:
       type: string
+      description: The current status of this order
       enum:
         - open
         - closed
@@ -1041,6 +1027,7 @@ components:
         - canceling
     OrderType:
       type: string
+      description: Whether this is a 'market' order or a 'limit' order
       enum:
         - market
         - limit
@@ -1244,191 +1231,67 @@ components:
       type: object
       properties:
         CORS:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         publicAPI:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         privateAPI:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         cancelOrder:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         cancelOrders:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         createDepositAddress:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         createOrder:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         createMarketOrder:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         createLimitOrder:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         editOrder:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchBalance:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchBidsAsks:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchClosedOrders:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchCurrencies:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchDepositAddress:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchFundingFees:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchL2OrderBook:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchMarkets:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchMyTrades:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchOHLCV:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchOpenOrders:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchOrder:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchOrderBook:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchOrderBooks:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchOrders:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchTicker:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchTickers:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchTrades:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchTradingFees:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         fetchTradingLimits:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
         withdraw:
-          type: string
-          enum:
-            - 'true'
-            - 'false'
-            - emulated
+          $ref : "#/components/schemas/ExchangeCapability"
     exchangeConfig:
       required:
         - id
@@ -1469,17 +1332,9 @@ components:
           type: string
           description: The currency pair (base/quote) of the order to be created
         type:
-          type: string
-          description: Whether this is a 'market' order or a 'limit' order
-          enum:
-            - market
-            - limit
+          $ref : "#/components/schemas/OrderType"
         side:
-          type: string
-          description: whether we are buying or selling the base
-          enum:
-            - buy
-            - sell
+          $ref : "#/components/schemas/Side"
         amount:
           type: number
           description: The amount of currency pair's base that we want to buy or sell
@@ -1547,4 +1402,4 @@ components:
       style: simple
       explode: false
       schema:
-        type: string
+        $ref : "#/components/schemas/Exchange"
