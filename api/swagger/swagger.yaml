@@ -440,20 +440,21 @@ paths:
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  '/exchange/{exchangeName}/{exchangeId}/orders':
+  /exchange/{exchangeName}/orders:
     get:
       description: >-
-        Get the orders of the exchange referenced by the exchangeName and exchangeId. 
+        Get the orders of the exchange referenced by the exchangeName. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: fetchOrders
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
         - name: since
           in: query
