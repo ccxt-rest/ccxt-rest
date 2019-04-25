@@ -30,7 +30,6 @@ function decode(token) {
         if (decoded.iss != ISSUER) {
             throw new ccxtRestErrors.AuthError(`Invalid issuer ${decoded.iss}`)
         }
-        console.log(`decoded to ${JSON.stringify(decoded)}`)
         return decoded      
     } catch (error) {
         console.trace(error)
