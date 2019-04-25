@@ -89,15 +89,29 @@ function execute(req, res, parameterNamesOrParameterValuesExtractor, functionNam
 }
   
 function getExchangeFromRequest(req) {
-    var exchangeName = req.swagger.params.exchangeName.value;
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-      var token = req.headers.authorization.split('Bearer ')[1]
-      var decoded = jwt.verify(token, jwtHelper.secretKey);
-    
-      return db.getExchange(exchangeName, decoded.sub);        
+    let exchangeName = getExchangeName(req)
+    let exchangeId = getExchangeId(req)
+    let exchange
+    if (exchangeId) {
+      exchange = db.getExchange(exchangeName, exchangeId);
     } else {
-      return getPublicExchange(exchangeName)
+      exchange = getPublicExchange(exchangeName)
     }
+    return exchange
+}
+
+function getExchangeName(req) {
+  return req.swagger.params.exchangeName && req.swagger.params.exchangeName.value;
+}
+
+function getExchangeId(req) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    var token = req.headers.authorization.split('Bearer ')[1]
+    var decoded = jwt.verify(token, jwtHelper.secretKey);
+  
+    return decoded.sub
+  }
+  return ''
 }
 
 var getPublicExchange = function(exchangeName) {
@@ -125,6 +139,8 @@ module.exports = {
     execute : execute,
     genericHandleError : genericHandleError, 
     getExchangeFromRequest : getExchangeFromRequest, 
+    getExchangeId : getExchangeId,
+    getExchangeName : getExchangeName,
     handleError : handleError,
     logError : logError,
     renderExchange : renderExchange

@@ -10,6 +10,8 @@ const ccxt = require('ccxt')
     , genericHandleError = controller_helper.genericHandleError
     , execute = controller_helper.execute
     , getExchangeFromRequest = controller_helper.getExchangeFromRequest
+    , getExchangeName = controller_helper.getExchangeName
+    , getExchangeId = controller_helper.getExchangeId
     , renderExchange = controller_helper.renderExchange
 ;
 
@@ -86,11 +88,11 @@ function getExchange(req, res) {
 function deleteExchange(req, res) {
   _doExchangeSpecificOrDefault(req, res, 'deleteExchange', (req, res) => {
     try {
-      const exchangeName = req.swagger.params.exchangeName.value;
-      const exchangeId = req.swagger.params.exchangeId.value;
-    
+      const exchangeId = getExchangeId(req)
+      const exchangeName = getExchangeName(req)
+
       const exchange = db.deleteExchange(exchangeName, exchangeId);
-      
+
       renderExchange(exchange, res);  
     } catch (error) {
       genericHandleError(res, 'deleteExchange', error)
