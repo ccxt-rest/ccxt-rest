@@ -42,6 +42,7 @@ config/runtime.yaml
 ## ccxt-rest specifics
 clients
 out
+.secret_key
 
 # After npm pack
 ccxt-rest-*.tgz

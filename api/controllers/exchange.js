@@ -1,22 +1,26 @@
 'use strict';
 
 const ccxt = require('ccxt')
+    , jwt = require('jsonwebtoken')
     , ccxtRestConfig = require('../config')
+    , ccxtRestErrors = require('../errors')
     , db = require('../helpers/db')
     , exchange_response = require('../models/exchange-response')
     , controller_helper = require('../helpers/controller-helper')
-    , genericHandleError = controller_helper.genericHandleError
+    , jwtHelper = require('../helpers/jwt-helper')
+    , handleError = controller_helper.handleError
     , execute = controller_helper.execute
-    , getExchange = controller_helper.getExchange
+    , getExchangeFromRequest = controller_helper.getExchangeFromRequest
+    , getExchangeName = controller_helper.getExchangeName
+    , getExchangeId = controller_helper.getExchangeId
     , renderExchange = controller_helper.renderExchange
 ;
 
 module.exports = {
   list: list,
-  listIds: listIds,
-  createExchange: createExchange,
-  getOne : getOne,
-  deleteExchange : deleteExchange,
+  createPrivateConnection: createPrivateConnection,
+  getConnection : getConnection,
+  deletePrivateConnection : deletePrivateConnection,
   markets: markets,
   orderBook: orderBook,
   l2OrderBook: l2OrderBook,
@@ -43,68 +47,56 @@ function list(req, res) {
   }
 }
 
-
-function listIds(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'listIds', (req, res) => {
+function createPrivateConnection(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'createPrivateConnection', (req, res) => {
     try {
-      const exchangeName = req.swagger.params.exchangeName.value;
-  
-      if (ccxt[exchangeName]) {
-        const exchangeIds = db.getExchangeIds(exchangeName);
-        res.send(exchangeIds);
-      } else {
-        res.status(404).send()
-      }
-    } catch(error) {
-      genericHandleError(res, 'listIds', error)
-    }
-  })
-}
-
-function createExchange(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'createExchange', (req, res) => {
-    try {
-      const exchangeName = req.swagger.params.exchangeName.value;
+      const exchangeName = getExchangeName(req)
   
       if (ccxt[exchangeName]) {
         const ccxtParam = req.body;
         const exchange = new ccxt[exchangeName](ccxtParam);
   
         db.saveExchange(exchangeName, exchange);
-        
-        renderExchange(exchange, res);
+
+        jwtHelper.sign(
+          exchangeName, 
+          ccxtParam.id, 
+          (err, token) => res.send(new exchange_response.AccessToken(token)))
       } else {
         res.status(404).send()
       }
     } catch (error) {
-      genericHandleError(res, 'createExchange', error)
+      handleError(req, res, 'createPrivateConnection', error)
     }
   })
 }
 
-function getOne(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'getOne', (req, res) => {
+function getConnection(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'getConnection', (req, res) => {
     try {
-      const exchange = getExchange(req)
-  
+      const exchange = getExchangeFromRequest(req)
+      
       renderExchange(exchange, res);
     } catch (error) {
-      genericHandleError(res, 'getOne', error)
+      handleError(req, res, 'getConnection', error)
     }
   })
 }
 
-function deleteExchange(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'deleteExchange', (req, res) => {
+function deletePrivateConnection(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'deletePrivateConnection', (req, res) => {
     try {
-      const exchangeName = req.swagger.params.exchangeName.value;
-      const exchangeId = req.swagger.params.exchangeId.value;
-    
+      const exchangeId = getExchangeId(req)
+      if (!exchangeId) {
+        throw new ccxtRestErrors.MissingRequiredTokenError(`Required valid token but did not get any`)
+      }
+      const exchangeName = getExchangeName(req)
+
       const exchange = db.deleteExchange(exchangeName, exchangeId);
-      
+
       renderExchange(exchange, res);  
     } catch (error) {
-      genericHandleError(res, 'deleteExchange', error)
+      handleError(req, res, 'deletePrivateConnection', error)
     }
   })
 }
@@ -294,13 +286,17 @@ function directCall(req, res) {
 }
 
 function _doExchangeSpecificOrDefault(req, res, overrideFunctionName, defaultBehaviour) {
-  const exchangeName = req.swagger.params.exchangeName && req.swagger.params.exchangeName.value
-  if (exchangeName && ccxtRestConfig[exchangeName] 
-      && ccxtRestConfig[exchangeName].override 
-      && ccxtRestConfig[exchangeName].override[overrideFunctionName]) {
-    ccxtRestConfig[exchangeName].override[overrideFunctionName](req, res, defaultBehaviour)
-  } else {
-    defaultBehaviour(req, res)
+  try {
+    const exchangeName = getExchangeName(req)
+    if (exchangeName && ccxtRestConfig[exchangeName] 
+        && ccxtRestConfig[exchangeName].override 
+        && ccxtRestConfig[exchangeName].override[overrideFunctionName]) {
+      ccxtRestConfig[exchangeName].override[overrideFunctionName](req, res, defaultBehaviour)
+    } else {
+      defaultBehaviour(req, res)
+    }
+  } catch (error) {
+    handleError(req, res, overrideFunctionName, error)
   }
 }
 

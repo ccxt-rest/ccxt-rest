@@ -4,6 +4,8 @@ var fs = require('fs'),
     http = require('http'),
     path = require('path');
 
+var jwtHelper = require('./api/helpers/jwt-helper')
+
 var express = require("express");
 var app = express();
 var bodyParser = require('body-parser');

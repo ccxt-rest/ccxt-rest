@@ -12,19 +12,34 @@ info:
 servers:
   - url: 'http://localhost:3000/'
 tags:
-  - name: Exchange Management API
+  - name: Authentication API
     description: >-
-      APIs that manage [creation](#createexchange) / [deletion](#deleteexchange) / [listing](#listids) / [retrieving](#getone) of exchange instances. 
+      APIs that manage [creation](/#createPrivateConnection) / [deletion](/#deletePrivateConnection) / [retrieving](/#getone) of exchange connections. 
       
 
-      Before you start using the [Public](#ccxt-rest-public-data-api) and [Private](#ccxt-rest-private-data-api) Data APIs, you would need to create first an exchange instance. 
-      You do this by selecting which exchange you want to create an exchange instance of (you can see the list of supported from [`GET:/exchanges`](#list)), and then using that 
-      exchange name as part of the path of [`POST:/exchange/{exchangeName}`](#createexchange) in order to create an exchange instance. The body to the API call contains 
-      `exchangeId` (_any name you want to use to identify this exchange instance of_), the `apiKey` and `secret` that you got from that exchange's website.
+      Most [Public Data APIs](/#ccxt-rest-public-data-api) by most exchanges can be used without providing the API Key and Secret. 
+      
+      
+      For example, you get retrieve the market of binance by doing `GET:/exchange/binance/market` directly and would be able to get
+      the markets of binance. 
+      
+      
+      But some exchanges though would require you to use an API Key and Secret even when accessing their Public Data API. For 
+      example, for cointiger, if you want to retrieve its market and you do `GET:/exchange/cointiger/market`, you will a `403` error
+      (_i.e. meaning you were unauthorized to access it_). Thus, to use that api of continger, you would first have to provide your
+      API Key and Secret to continger via `POST:/exchange/continger -d {"id":"myCoinTiger","apiKey":"My-COINTIGER-KEY","secret":"s3cret"}`.
+      From there, you will get a response `{"token":"xxx.yyy.zzz"}`. That `"xxx.yyy.zzz"` would then what you will use to connect to
+      coiniger - i.e. `GET:/exchange/cointiger/market -H "Authorization: Bearer xxx.yyy.zzz"` and this time, your request will push 
+      through and would be able to get cointiger's market.
 
-
-      Once you have an exchange instance, you can then start using that exchange instance to invoke the [Public](#ccxt-rest-public-data-api) and 
-      [Private](#ccxt-rest-private-data-api) Data API calls which roughly has a format of `/exchange/{exchangeName}/{exchangeId}/X/Y/Z`.
+      
+      Furthemore, all [Private Data APIs](/#ccxt-rest-private-data-api) of all exchanges would require API Key and Secret. Thus,
+      although `GET:/exchange/binance/market` would work, doing `GET:/exchange/binance/balances` will not. You'd have to provide first
+      binance your API Key and Secret like `POST:/exchange/binance -d {"id":"myBinance","apiKey":"binance-key","secret":"s3cret"}`, to
+      get something like `{"token":"aaa.bbb.ccc"}`, which you can then use to execute 
+      `GET:/exchange/binance/balances -H "Authorization: Bearer aaa.bbb.ccc"` which would finally get your balances.
+  - name: Exchange Management API
+    description: APIs for retrieving supported exchanges
   - name: Public Data API
     description: APIs that retrieve public data (like ticker, order books, trades, etc)
   - name: Private Data API
@@ -54,11 +69,13 @@ paths:
           description: If an unexpected error occurred
   /exchange/{exchangeName}:
     get:
-      description: List all exchange instance ids for this exchange
+      description: Retreives the current exchange connection details given the {exchangeName} and access token in the header
+      security:
+        - bearerAuth: []
       tags:
-        - Exchange Management API
+        - Authentication API
       x-swagger-router-controller: exchange
-      operationId: listIds
+      operationId: getConnection
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
       responses:
@@ -67,19 +84,18 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                example: ['myBitsoInstance', 'myBinanceInstance', 'someRandomNameIGaveToAnInstance']
-                items:
-                  type: string
+                $ref: '#/components/schemas/ExchangeResponse'
         "404":
           description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
     post:
-      description: Creates an instance of the exchange
+      description: Creates a private connection to the exchange referenced in {exchangeName}
+      security:
+        - bearerAuth: []
       tags:
-        - Exchange Management API
-      operationId: createExchange
+        - Authentication API
+      operationId: createPrivateConnection
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
       requestBody:
@@ -95,7 +111,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ExchangeResponse'
+                $ref: '#/components/schemas/AccessToken'
         "404":
           description: Exchange with that name is NOT supported
         "500":
@@ -103,36 +119,16 @@ paths:
         "503":
           description: Support for exchange is currently broken
       x-swagger-router-controller: exchange
-  '/exchange/{exchangeName}/{exchangeId}':
-    get:
-      description: Get the exchange details given the exchangeName and exchangeId
-      tags:
-        - Exchange Management API
-      x-swagger-router-controller: exchange
-      operationId: getOne
-      parameters:
-        - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExchangeResponse'
-        "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
-        "500":
-          description: If an unexpected error occurred
     delete:
-      description: Delete the exchange details referenced by the exchangeName and exchangeId
+      description: Delete the exchange connection referenced by access token in the header
+      security:
+        - bearerAuth: []
       tags:
-        - Exchange Management API
+        - Authentication API
       x-swagger-router-controller: exchange
-      operationId: deleteExchange
+      operationId: deletePrivateConnection
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
       responses:
         "200":
           description: Success
@@ -141,22 +137,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExchangeResponse'
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
-  '/exchange/{exchangeName}/{exchangeId}/markets':
+  /exchange/{exchangeName}/markets:
     get:
       description: >-
-        Get the markets of the exchange referenced by the exchangeName and exchangeId. 
+        Get the markets of the exchange referenced by the {exchangeName}.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
+      x-swagger-router-controller: exchange
       operationId: markets
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
       responses:
         "200":
           description: Success
@@ -174,30 +172,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
-          description: >-
-            If the exchange itself could not be reached because of some network
-            error
-      x-swagger-router-controller: exchange
-  '/exchange/{exchangeName}/{exchangeId}/orderBook':
+          description: If the exchange itself could not be reached because of some network error
+  /exchange/{exchangeName}/orderBook:
     get:
       description: >-
-        Get the order book of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        Get the order book of the exchange referenced by the {exchangeName} and `?symbol=`. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
       operationId: orderBook
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/requiredExchangeSymbolParam"
         - name: limit
           in: query
@@ -224,27 +220,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  '/exchange/{exchangeName}/{exchangeId}/l2OrderBook':
+  /exchange/{exchangeName}/l2OrderBook:
     get:
       description: >-
-        Get the Level 2 Order Book of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        Get the Level 2 Order Book of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
       operationId: l2OrderBook
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/requiredExchangeSymbolParam"
         - name: limit
           in: query
@@ -271,27 +268,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  '/exchange/{exchangeName}/{exchangeId}/trades':
+  /exchange/{exchangeName}/trades:
     get:
       description: >- 
-        Get the trades of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        Get the trades of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
       operationId: trades
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/requiredExchangeSymbolParam"
         - name: since
           in: query
@@ -326,34 +324,35 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  '/exchange/{exchangeName}/{exchangeId}/ticker':
+  /exchange/{exchangeName}/ticker:
     get:
       description: >-
-        Get the ticker of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        Get the ticker of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
       operationId: ticker
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/requiredExchangeSymbolParam"
         - name: symbol
           in: query
           description: >-
             The symbol of the exchange's data to be retrieved. Possible values
             are any of symbols in
-            GET:/exchange/{exchangeName}/{exchangeId}/markets
+            GET:/exchange/{exchangeName}/markets
           required: true
           style: form
           explode: true
@@ -373,27 +372,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  '/exchange/{exchangeName}/{exchangeId}/tickers':
+  /exchange/{exchangeName}/tickers:
     get:
       description: >-
-        Get the tickers of the exchange referenced by the exchangeName, exchangeId and symbol. 
+        Get the tickers of the exchange referenced by the {exchangeName} and `?symbol=`.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Public Data API
       x-swagger-router-controller: exchange
       operationId: tickers
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
       responses:
         "200":
@@ -412,27 +412,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/balances:
+  /exchange/{exchangeName}/balances:
     get:
       description: >-
-        Get the balances of the exchange referenced by the exchangeName and exchangeId. 
+        Get the balances of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: balances
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
       responses:
         "200":
           description: Success
@@ -447,27 +448,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  '/exchange/{exchangeName}/{exchangeId}/orders':
+  /exchange/{exchangeName}/orders:
     get:
       description: >-
-        Get the orders of the exchange referenced by the exchangeName and exchangeId. 
+        Get the orders of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: fetchOrders
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
         - name: since
           in: query
@@ -502,27 +504,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/orders/open:
+  /exchange/{exchangeName}/orders/open:
     get:
       description: >-
-        Get the open orders of the exchange referenced by the exchangeName and exchangeId. 
+        Get the open orders of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: fetchOpenOrders
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
         - name: since
           in: query
@@ -557,27 +560,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/orders/closed:
+  /exchange/{exchangeName}/orders/closed:
     get:
       description: >-
-        Get the closed orders of the exchange referenced by the exchangeName and exchangeId. 
+        Get the closed orders of the exchange referenced by the {exchangeName}.
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: fetchClosedOrders
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
         - name: since
           in: query
@@ -612,27 +616,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/trades/mine:
+  /exchange/{exchangeName}/trades/mine:
     get:
       description: >-
-        Get my trades of the exchange referenced by the exchangeName and exchangeId. 
+        Get my trades of the exchange referenced by the {exchangeName}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: fetchMyTrades
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
         - name: since
           in: query
@@ -667,23 +672,24 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/order:
+  /exchange/{exchangeName}/order:
     post:
-      description: Create an order on the exchange referenced by the exchangeName and exchangeId
+      description: Create an order on the exchange referenced by the {exchangeName}
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: createOrder
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
       requestBody:
         description: The order to place.
         content:
@@ -705,27 +711,28 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/order/{orderId}:
+  /exchange/{exchangeName}/order/{orderId}:
     get:
       description: >-
-        Retrieves the information of an order on the exchange referenced by the exchangeName, exchangeId and orderId. 
+        Retrieves the information of an order on the exchange referenced by the {exchangeName} and {orderId}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: fetchOrder
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/orderIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
       responses:
@@ -742,7 +749,7 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
@@ -751,17 +758,18 @@ paths:
           description: If the exchange itself could not be reached because of some network error
     delete:
       description: >- 
-        Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId. 
+        Cancel an open order on the exchange referenced by the {exchangeName} and {orderId}. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: cancelOrder
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/orderIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
       responses:
@@ -778,23 +786,24 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/_/{methodName}:
+  /exchange/{exchangeName}/_/{methodName}:
     post:
       description: Invokes a ccxt javascript object's method call directly
+      security:
+        - bearerAuth: []
       tags:
         - Experimental API
       x-swagger-router-controller: exchange
       operationId: directCall
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - name: methodName
           in: path
           description: The method name of the exchange that would be invoked directly
@@ -825,7 +834,7 @@ paths:
         "403":
           description: If the exchange integration had an authentication issue (most probably nonce error)
         "404":
-          description: Exchange with that name is NOT supported or Exchange with that id does NOT exist
+          description: Exchange with that name is NOT supported
         "500":
           description: If an unexpected error occurred
         "501":
@@ -1077,19 +1086,38 @@ components:
             The allowable precision of the amount when placing an order. For
             example, given 2, then a price of 0.123 must be made either 0.12 (or
             0.13)
+    AccessToken:
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: >- 
+            The JWT token that needs to be added into the 'Authorization'
+            header with the 'Bearer ' prefix. For example, given a token of xyz,
+            do a secured request with 'Authorization: Bearer xyz'
     ExchangeResponse:
       required:
+        - id
         - countries
         - enableRateLimit
         - name
+        - private
       type: object
       properties:
+        id:
+          type: string
+          description: >-
+            The id of the exchange. When you created the exchange (via
+            POST:/exchanges/{exhangeName}), the 'id' parameter there becomes the
+            name here
         name:
           type: string
           description: >-
-            The name of the exchange. When you created the exchange (via
-            POST:/exchanges/{exhangeName}), the 'id' parameter there becomes the
-            name here
+            The name of the exchange. 
+        private:
+          type: boolean
+          description: Whether this exchange is private (has apiKey) or public (no apiKey)
         enableRateLimit:
           type: boolean
           description: >-
@@ -1300,8 +1328,7 @@ components:
         id:
           type: string
           description: >-
-            The unique identifier for this exchange. This would be used as the
-            'exchangeId' of the other API calls
+            The unique identifier for this exchange. 
         apiKey:
           type: string
           description: >-
@@ -1347,13 +1374,18 @@ components:
           type: object
           properties: {}
           description: Exchange specific parameters
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  
   parameters:
     orderIdParam:
       name: orderId
       in: path
       description: >-
         The id of the order. Possible values are any of the result of
-        GET:/exchange/{exchangeName}/{exchangeId}/orders.
+        GET:/exchange/{exchangeName}/orders.
       required: true
       style: simple
       explode: false
@@ -1364,7 +1396,7 @@ components:
       in: query
       description: >-
         The symbol of the exchange's data to be retrieved. Possible values are
-        any of symbols in GET:/exchange/{exchangeName}/{exchangeId}/markets
+        any of symbols in GET:/exchange/{exchangeName}/markets
       required: true
       style: form
       explode: true
@@ -1375,21 +1407,10 @@ components:
       in: query
       description: >-
         The symbol of the exchange's data to be retrieved. Possible values are
-        any of symbols in GET:/exchange/{exchangeName}/{exchangeId}/markets
+        any of symbols in GET:/exchange/{exchangeName}/markets
       required: false
       style: form
       explode: true
-      schema:
-        type: string
-    exchangeIdParam:
-      name: exchangeId
-      in: path
-      description: >-
-        The id of the exchange instance. Possible values are any of the result
-        of GET:/exchange/{exchangeName}.
-      required: true
-      style: simple
-      explode: false
       schema:
         type: string
     exchangeNameParam:

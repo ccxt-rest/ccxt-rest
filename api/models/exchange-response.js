@@ -1,9 +1,17 @@
+class AccessToken {
+    constructor(token) {
+        this.token = token
+    }
+}
+
 class ExchangeResponse {
     constructor(config) {
         config = config || {};
         config.has = config.has || {};
-
+        
+        this.id = config.id;
         this.name = config.name;
+        this.private = !!config.apiKey
         this.enableRateLimit = config.enableRateLimit;
         this.countries = config.countries || []; 
         this.rateLimit = config.rateLimit
@@ -174,6 +182,7 @@ class OrderResponse {
 }
 
 module.exports = {
+    AccessToken: AccessToken,
     ExchangeResponse: ExchangeResponse,
     MarketResponse: MarketResponse,
     OrderBookResponse: OrderBookResponse,
