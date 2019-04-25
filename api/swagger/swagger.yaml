@@ -615,6 +615,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
@@ -665,6 +667,8 @@ paths:
   /exchange/{exchangeName}/order:
     post:
       description: Create an order on the exchange referenced by the exchangeName
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
@@ -706,6 +710,8 @@ paths:
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
