@@ -743,17 +743,18 @@ paths:
           description: If the exchange itself could not be reached because of some network error
     delete:
       description: >- 
-        Cancel an open order on the exchange referenced by the exchangeName, exchangeId and orderId. 
+        Cancel an open order on the exchange referenced by the exchangeName and orderId. 
         
         
         <br/> *Parameters listed here are common to all exchanges. But any other parameter passed would be forwarded as well into the exchange.*
+      security:
+        - bearerAuth: []
       tags:
         - Private Data API
       x-swagger-router-controller: exchange
       operationId: cancelOrder
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - $ref: "#/components/parameters/orderIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
       responses:
