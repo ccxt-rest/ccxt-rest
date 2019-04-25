@@ -778,16 +778,17 @@ paths:
           description: If the exchange integration does NOT support this function
         "504":
           description: If the exchange itself could not be reached because of some network error
-  /exchange/{exchangeName}/{exchangeId}/_/{methodName}:
+  /exchange/{exchangeName}/_/{methodName}:
     post:
       description: Invokes a ccxt javascript object's method call directly
+      security:
+        - bearerAuth: []
       tags:
         - Experimental API
       x-swagger-router-controller: exchange
       operationId: directCall
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - $ref: "#/components/parameters/exchangeIdParam"
         - name: methodName
           in: path
           description: The method name of the exchange that would be invoked directly
