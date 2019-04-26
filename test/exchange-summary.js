@@ -5,6 +5,8 @@ const request = require('supertest');
 var should = require('should');
 const util = require('util');
 
+process.env.PORT = 0
+
 var ccxtServer = require('../app');
 var server = ccxtServer.app;
 const db = require('../api/helpers/db');
@@ -203,18 +205,6 @@ describe('> exploratory', function() {
                 'exchangeId': exchangeName + '1'
             }}).forEach(_ctx => {
                 describe(`> ${_ctx.exchangeName} without API keys`, function() {
-                    after(function() {
-                        this.timeout('10s')
-                        return new Promise((resolve) => {
-                            request(server)
-                                .delete(`/exchange/${_ctx.exchangeName}`)
-                                .expect('Content-Type', /json/)
-                                .end((err, res) => {
-                                    resolve();
-                                });
-                        });
-                    });
-
                     it(`> [${_ctx.exchangeName}] Connect`, function(done) {
                         this.timeout('10s')
                         request(server)
