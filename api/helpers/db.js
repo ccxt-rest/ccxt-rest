@@ -1,3 +1,18 @@
+const path = require('path')
+    , Sequelize = require('sequelize');
+
+const dbname = process.ENV.DB_NAME || 'ccxtrest'
+const dbconnection = process.ENV.DB_CONN = `sqlite:./../../${dbname}.db`
+const sequelize = Sequelize(dbconnection)
+
+class JwtData extends Sequelize.Model {}
+JwtData.init({
+    token: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+}, { sequelize, modelName: 'jwtdata' });
+
 var inMemoryExchangeDatabase = {
 
 };
@@ -34,9 +49,30 @@ var deleteExchange = function(exchangeName, exchangeId) {
     return exchange;
 };
 
+var getSecretKey = async function() {
+    const existingJwtData = await JwtData.findAll({
+        where: {
+            token: {
+                [Op.ne]: null
+            }
+        }
+    });
+    
+    let secretKey
+    if (!existingJwtData.length) {
+        secretKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+         JwtData.create({ token: secretKey });
+    } else {
+        secretKey = existingJwtData[0].token
+    }
+    
+    return secretKey
+};
+
 module.exports = {
-    saveExchange   : saveExchange,
+    deleteExchange : deleteExchange,
     getExchange    : getExchange,
     getExchangeIds : getExchangeIds,
-    deleteExchange : deleteExchange
+    saveExchange   : saveExchange,
+    getSecretKey : getSecretKey
 };

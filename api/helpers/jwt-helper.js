@@ -1,17 +1,13 @@
-const jwt = require('jsonwebtoken')
+const fs = require('fs')
+    , jwt = require('jsonwebtoken')
     , path = require('path')
-    , fs = require('fs');
+;
+
+const db = require('./db')
 
 const ccxtRestErrors = require('../errors')
 
-// TODO : Move this to a database
-const secretKey = (function() {
-    const SECRET_KEY_PATH = path.join(__dirname, '../../.secret_key')
-    if (!fs.existsSync(SECRET_KEY_PATH)) {
-        fs.writeFileSync(SECRET_KEY_PATH, Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
-    }
-    return fs.readFileSync(SECRET_KEY_PATH);
-})()
+const secretKey = db.getSecretKey()
 
 const ISSUER = 'CCXT REST'
 const ALGORITHM = 'HS256'
