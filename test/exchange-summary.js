@@ -1,6 +1,7 @@
 const ccxt = require('ccxt');
 var expect = require('chai').expect;
 const fs = require('fs');
+const path = require('path');
 const request = require('supertest');
 var should = require('should');
 const util = require('util');
@@ -16,6 +17,7 @@ var exchangeToMarket = {}
 describe('> exploratory', function() {
 
     const EXCHANGES_ROOT_PATH = './out/exchanges/';
+    const MARKET_PER_EXCHANGE_FILENAME = 'test/market-per-exchange.json'
 
     const REPORT_ONLY = process.env.REPORT_ONLY
 
@@ -109,6 +111,29 @@ describe('> exploratory', function() {
         console.info(border)
         console.info(message)
         console.info(border)
+
+        if (!fs.existsSync(MARKET_PER_EXCHANGE_FILENAME)) {
+            fs.writeFileSync('market-per-exchange.json', '{}')
+        }
+        const existingMarketPerExchange = JSON.parse(fs.readFileSync(MARKET_PER_EXCHANGE_FILENAME))
+        const newMarketPerExchange = fs.readdirSync(EXCHANGES_ROOT_PATH)
+            .filter(filename => filename.endsWith('.json'))
+            .map(filename => path.join(EXCHANGES_ROOT_PATH, filename))
+            .map(filename => { 
+                const json = JSON.parse(fs.readFileSync(filename).toString()); 
+                json.exchange = filename.split('/').reverse()[0].split('.json')[0]; 
+                return json; 
+            })
+            .filter(json => json.markets && json.markets && json.markets.response && json.markets.response.length)
+            .map(json => { return {exchange:json.exchange, market:json.markets.response[0].symbol}; })
+            .reduce(
+                (obj, data) => { 
+                    obj[data.exchange] = data.market; 
+                    return obj; 
+                }, 
+                {})
+        const combinedMarketPerExchange = Object.assign(existingMarketPerExchange, newMarketPerExchange)
+        fs.writeFileSync(MARKET_PER_EXCHANGE_FILENAME, JSON.stringify(combinedMarketPerExchange, null, 2))
         
         resolve()
     })
@@ -123,7 +148,8 @@ describe('> exploratory', function() {
         fs.writeFileSync(filePath, JSON.stringify(exchangeDetail));
     }
 
-    function statusCodeToLabel(statusCode) {
+    function statusCodeToLabel(body) {
+        const statusCode = body && body.statusCode
         if (statusCode == 200) {
             return PUBLIC_API_LABEL
         } else if (statusCode == 401) {
@@ -171,11 +197,18 @@ describe('> exploratory', function() {
         function generateTest(_ctx, property, config) {
             config = config || {}
             config.canExecute = config.canExecute || (_ctx => true)
+            let subPath
+            if (typeof(config.subPath) === 'string') {
+                subPath = config.subPath
+            } else {
+                subPath = property
+            }
             return it(`> [${_ctx.exchangeName}] ${property}`, function(done) {
-                if (_ctx.exchange && config.canExecute(_ctx)) {
+                if (config.canExecute(_ctx)) {
                     this.timeout(0)
                     const query = config.queryBuilder ? config.queryBuilder(_ctx) : undefined
-                    const url = `/exchange/${_ctx.exchangeName}/${property}`
+                    const url = `/exchange/${_ctx.exchangeName}/${subPath}`
+                    console.log(`connecting to GET:${url}`)
                     request(server)
                         .get(url)
                         .query(query)
@@ -184,7 +217,9 @@ describe('> exploratory', function() {
                         .expect('Content-Type', /json/)
                         .end((err, res) => {
                             logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
-                                exchangeDetail[property] = (res && res.status) || 408
+                                exchangeDetail[property] = exchangeDetail[property] || {}
+                                exchangeDetail[property].statusCode = (res && res.status) || 408
+                                exchangeDetail[property].response = res && res.body
                             })
 
                             if (config.successCallback) {
@@ -197,7 +232,8 @@ describe('> exploratory', function() {
                         });
                 } else {
                     logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
-                        exchangeDetail[property] = 'n/a'
+                        exchangeDetail[property] = exchangeDetail[property] || {}
+                        exchangeDetail[property].statusCode = 'n/a'
                     })
                     if (!REPORT_ONLY) {
                         this.skip()
@@ -207,36 +243,17 @@ describe('> exploratory', function() {
             })
         }
 
+        const marketPerExchange = JSON.parse(fs.readFileSync(MARKET_PER_EXCHANGE_FILENAME))
+
         ccxt.exchanges.map(exchangeName => {
             return {
                 'exchangeName': exchangeName,
-                'exchangeId': exchangeName + '1'
+                'exchangeId': exchangeName + '1',
+                'symbol':marketPerExchange[exchangeName]
             }}).forEach(_ctx => {
                 describe(`> [${_ctx.exchangeName}] without API keys`, function() {
-                    it(`> [${_ctx.exchangeName}] Connect`, function(done) {
-                        this.timeout(0)
-                        request(server)
-                            .post(`/exchange/${_ctx.exchangeName}`)
-                            .send({'id':_ctx.exchangeId})
-                            .retry(3)
-                            .set('Accept', 'application/json')
-                            .timeout(TIMEOUT_MS)
-                            .expect('Content-Type', /json/)
-                            .end((err, res) => {
-                                logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
-                                    exchangeDetail.connect = res.status
-                                })
-
-                                if (res.status == 200) {
-                                    _ctx.exchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
-                                }
-
-                                assertResponse(err, res)
-                
-                                if (!this.isDone) {
-                                    done();
-                                }
-                            });
+                    generateTest(_ctx, 'connect', {
+                        subPath: ''
                     })
 
                     generateTest(_ctx, 'markets', {

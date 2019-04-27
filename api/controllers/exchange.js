@@ -288,10 +288,11 @@ function directCall(req, res) {
 function _doExchangeSpecificOrDefault(req, res, overrideFunctionName, defaultBehaviour) {
   try {
     const exchangeName = getExchangeName(req)
-    if (exchangeName && ccxtRestConfig[exchangeName] 
-        && ccxtRestConfig[exchangeName].override 
-        && ccxtRestConfig[exchangeName].override[overrideFunctionName]) {
-      ccxtRestConfig[exchangeName].override[overrideFunctionName](req, res, defaultBehaviour)
+    const override = exchangeName && ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].override
+    if (override && typeof(override) === 'function') {
+      override(overrideFunctionName, req, res, defaultBehaviour)
+    } else if (override && override[overrideFunctionName] && typeof(override[overrideFunctionName]) === 'function') {
+      override[overrideFunctionName](req, res, defaultBehaviour)
     } else {
       defaultBehaviour(req, res)
     }

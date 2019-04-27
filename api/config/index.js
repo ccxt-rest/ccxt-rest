@@ -7,10 +7,8 @@ const ccxt = require('ccxt')
 
 module.exports = {
     allcoin: {
-        override : {
-            createPrivateConnection : (req, res) => {
-                throw new ccxtRestErrors.BrokenExchangeError('[allcoin] is broken and not supported right now')
-            }
+        override : (functionName, req, res, defaultBehaviour) => {
+            throw new ccxtRestErrors.BrokenExchangeError('[allcoin] is broken and not supported right now')
         }
     }, 
     bitso: {
