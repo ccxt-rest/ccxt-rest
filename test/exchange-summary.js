@@ -21,10 +21,11 @@ describe('> exploratory', function() {
 
     const PUBLIC_API_LABEL = '<img src="https://img.shields.io/badge/Public%20API-green.svg" alt="Public API" />'
     const PRIVATE_API_LABEL = '<img src="https://img.shields.io/badge/Private%20API-blue.svg" alt="Private API" />'
+    const NOT_SUPPORTED_LABEL = '<img src="https://img.shields.io/badge/Not%20Supported-yellow.svg" alt="Not Supported" />'
     const UNEXPECTED_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Unexpected-red.svg" alt="Unexpected Error" />'
     const BROKEN_INTEGRATION_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Broken%20Integration-red.svg" alt="Broken Integration Error" />'
-    const NOT_SUPPORTED_LABEL = '<img src="https://img.shields.io/badge/Not%20Supported-yellow.svg" alt="Not Supported" />'
     const NETWORK_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Network-red.svg" alt="Network Error" />'
+    const REQUEST_TIMEOUT_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Timeout-red.svg" alt="Request Timeout Error" />'
 
     before(function(resolve) {
         if (!fs.existsSync(EXCHANGES_ROOT_PATH)) {
@@ -127,6 +128,8 @@ describe('> exploratory', function() {
             return PUBLIC_API_LABEL
         } else if (statusCode == 401) {
             return PRIVATE_API_LABEL
+        } else if (statusCode == 408) {
+            return REQUEST_TIMEOUT_ERROR_LABEL
         } else if (statusCode == 500) {
             return UNEXPECTED_ERROR_LABEL
         } else if (statusCode == 501) {
@@ -172,15 +175,16 @@ describe('> exploratory', function() {
                 if (_ctx.exchange && config.canExecute(_ctx)) {
                     this.timeout(0)
                     const query = config.queryBuilder ? config.queryBuilder(_ctx) : undefined
+                    const url = `/exchange/${_ctx.exchangeName}/${property}`
                     request(server)
-                        .get(`/exchange/${_ctx.exchangeName}/${property}`)
+                        .get(url)
                         .query(query)
                         .retry(3)
                         .timeout(TIMEOUT_MS)
                         .expect('Content-Type', /json/)
                         .end((err, res) => {
                             logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
-                                exchangeDetail[property] = res.status
+                                exchangeDetail[property] = (res && res.status) || 408
                             })
 
                             if (config.successCallback) {
