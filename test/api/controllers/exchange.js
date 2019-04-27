@@ -13,6 +13,8 @@ var jwtHelper = require('../../../api/helpers/jwt-helper')
 var ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
 var exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 
+const TIMEOUT_MS = process.env.TIMEOUT_MS || 10000
+
 describe('> controllers', function() {
 
   describe('> exchanges', function() {
@@ -80,7 +82,7 @@ describe('> controllers', function() {
         });
 
         it('> GET:/exchange/nonExistentExchangeName/orderBook then return 404', function(done) {
-          this.timeout('10s');
+          this.timeout(TIMEOUT_MS);
           request(server)
               .get('/exchange/nonExistentExchangeName/orderBook')
               .query({ symbol: 'BTC/ETH' })
@@ -94,7 +96,7 @@ describe('> controllers', function() {
         })
 
         it('> GET:/exchange/nonExistentExchangeName/l2OrderBook then return 404', function(done) {
-          this.timeout('10s');
+          this.timeout(TIMEOUT_MS);
           request(server)
               .get('/exchange/nonExistentExchangeName/l2OrderBook')
               .query({ symbol: 'BTC/ETH' })
@@ -107,7 +109,7 @@ describe('> controllers', function() {
         })
 
         it('> GET:/exchange/nonExistentExchangeName/trades then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
               .get('/exchange/nonExistentExchangeName/trades')
               .query({ symbol: 'BTC/ETH' })
@@ -120,7 +122,7 @@ describe('> controllers', function() {
         })
 
         it('> GET:/exchange/nonExistentExchangeName/ticker then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
               .get('/exchange/nonExistentExchangeName/ticker')
               .query({ symbol: 'BTC/ETH' })
@@ -133,7 +135,7 @@ describe('> controllers', function() {
         })
 
         it('> GET:/exchange/nonExistentExchangeName/tickers then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
               .get('/exchange/nonExistentExchangeName/tickers')
               .expect('Content-Type', /json/)
@@ -145,7 +147,7 @@ describe('> controllers', function() {
         })
 
         it('> POST:/exchange/nonExistentExchangeName/_/loadMarkets then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
               .post('/exchange/nonExistentExchangeName/_/loadMarkets')
               .type('text')
@@ -161,7 +163,7 @@ describe('> controllers', function() {
 
       describe('> [Unsupported Exchange Name] Private Data APIs', function() {
         it('> GET:/exchange/nonExistentExchangeName/balances then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
               .get('/exchange/nonExistentExchangeName/balances')
               .expect('Content-Type', /json/)
@@ -198,7 +200,7 @@ describe('> controllers', function() {
         })
 
         it('> [Unsupported Exchange Name] Get order then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
             .get('/exchange/nonExistentExchangeName/order/dummy')
             .query({symbol : 'BTC/ETH'})
@@ -211,7 +213,7 @@ describe('> controllers', function() {
         })
 
         it('> [Unsupported Exchange Name] Get orders then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
             .get('/exchange/nonExistentExchangeName/orders')
             .query({symbol : 'BTC/ETH'})
@@ -224,7 +226,7 @@ describe('> controllers', function() {
         })
 
         it('> [Unsupported Exchange Name] Get open orders then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
             .get('/exchange/nonExistentExchangeName/orders/open')
             .query({symbol : 'BTC/ETH'})
@@ -237,7 +239,7 @@ describe('> controllers', function() {
         })
 
         it('> [Unsupported Exchange Name] Get closed orders then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
             .get('/exchange/nonExistentExchangeName/orders/closed')
             .query({symbol : 'BTC/ETH'})
@@ -250,7 +252,7 @@ describe('> controllers', function() {
         })
 
         it('> [Unsupported Exchange Name] Get my trades then return 404', function(done) {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           request(server)
             .get('/exchange/nonExistentExchangeName/trades/mine')
             .query({symbol : 'BTC/ETH'})
@@ -297,7 +299,7 @@ describe('> controllers', function() {
       describe(`> [${_ctx.exchangeName}] Given no saved exchanges`, function() {
         describe(`> [${_ctx.exchangeName}] Using no Saved Instance's Exchange Management API`, function() {
           it(`> When GET:/exchange/${_ctx.exchangeName} then return public ${_ctx.exchangeName}`, function(done) {
-  
+            this.timeout(TIMEOUT_MS);
             request(server)
               .get(`/exchange/${_ctx.exchangeName}`)
               .expect('Content-Type', /json/)
@@ -312,7 +314,7 @@ describe('> controllers', function() {
           });
     
           it(`> When GET:/exchange/${_ctx.exchangeName} with invalid jwt token, then return 403`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             const token = 'xxx.yyy.zzz'
             request(server)
                   .get(`/exchange/${_ctx.exchangeName}`)
@@ -326,7 +328,7 @@ describe('> controllers', function() {
           });
 
           it(`> When GET:/exchange/${_ctx.exchangeName} with valid jwt token but referencing non-existent exchange, then return 404`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             jwtHelper.sign(
               _ctx.exchangeName, 
               `${_ctx.exchangeName}_dummy`, 
@@ -345,7 +347,7 @@ describe('> controllers', function() {
           });
   
           it(`> When DELETE:/exchange/${_ctx.exchangeName} with no jwt token then return 403`, function(done) {
-    
+            this.timeout(TIMEOUT_MS);
             request(server)
               .delete(`/exchange/${_ctx.exchangeName}`)
               .expect('Content-Type', /json/)
@@ -358,6 +360,7 @@ describe('> controllers', function() {
         });
 
         describe(`> [${_ctx.exchangeName}] Using no Saved Instance\'s Public Data API`, function() {
+          this.timeout(TIMEOUT_MS);
           it(`> GET:/exchange/${_ctx.exchangeName}/markets then use public ${_ctx.exchangeName} and return 200`, function(done) {
   
             request(server)
@@ -371,7 +374,7 @@ describe('> controllers', function() {
           });
   
           it(`> GET:/exchange/${_ctx.exchangeName}/orderBook?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return 200`, function(done) {
-            this.timeout('10s');
+            this.timeout(TIMEOUT_MS);
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/orderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -384,7 +387,7 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/l2OrderBook?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return 200`, function(done) {
-            this.timeout('10s');
+            this.timeout(TIMEOUT_MS);
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/l2OrderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -397,10 +400,11 @@ describe('> controllers', function() {
           })
 
           it(`> GET:/exchange/${_ctx.exchangeName}/trades?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return 200`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/trades`)
                 .query({ symbol: _ctx.targetCurrencyPair })
+                .retry(3)
                 .expect('Content-Type', /json/)
                 .expect(200)
                 .end((err, res) => {
@@ -410,10 +414,11 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/ticker?symbol=${_ctx.targetCurrencyPair} then use public ${_ctx.exchangeName} and return ${_ctx.expectedStatusCodes['fetchTicker']}`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/ticker`)
                 .query({ symbol: _ctx.targetCurrencyPair })
+                .retry(3)
                 .expect('Content-Type', /json/)
                 .expect(_ctx.expectedStatusCodes['fetchTicker'])
                 .end((err, res) => {
@@ -423,7 +428,7 @@ describe('> controllers', function() {
           })
 
           it(`> GET:/exchange/${_ctx.exchangeName}/tickers then return use public ${_ctx.exchangeName} and return ${_ctx.expectedStatusCodes['fetchTickers']}`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/tickers`)
                 .expect('Content-Type', /json/)
@@ -435,7 +440,7 @@ describe('> controllers', function() {
           })
   
           it(`> POST:/exchange/${_ctx.exchangeName}/_/loadMarkets then use public ${_ctx.exchangeName} and return 200`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .post(`/exchange/${_ctx.exchangeName}/_/loadMarkets`)
                 .type('text')
@@ -454,7 +459,7 @@ describe('> controllers', function() {
         var token
 
         before(function() {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           return new Promise((resolve) => {
             request(server)
               .post(`/exchange/${_ctx.exchangeName}`)
@@ -477,7 +482,7 @@ describe('> controllers', function() {
         });
 
         after(function() {
-          this.timeout('10s')
+          this.timeout(TIMEOUT_MS)
           return new Promise((resolve) => {
             var beforeDeleteExchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
   
@@ -500,6 +505,7 @@ describe('> controllers', function() {
 
         describe(`> [${_ctx.exchangeName}] Using Saved Instance's Exchange Management APIs`, function() {
           it(`> GET:/exchange/${_ctx.exchangeName} then return id of new exchange`, function(done) {
+            this.timeout(TIMEOUT_MS);
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}`)
                 .set('Authorization', `Bearer ${token}`)
@@ -515,7 +521,7 @@ describe('> controllers', function() {
           });
     
           it(`> GET:/exchange/${_ctx.exchangeName} then get exchange`, function(done) {
-    
+            this.timeout(TIMEOUT_MS);
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}`)
                 .set('Authorization', `Bearer ${token}`)
@@ -537,7 +543,7 @@ describe('> controllers', function() {
 
         describe(`> [${_ctx.exchangeName}] Using Saved Instance's Public Data APIs`, function() {
           it(`> GET:/exchange/${_ctx.exchangeName}/markets then get exchange's markets`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/markets`)
                 .set('Authorization', `Bearer ${token}`)
@@ -554,7 +560,7 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/orderBook then get exchange's Order Book`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/orderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -572,7 +578,7 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/orderBook with limit then get exchange's Order Book`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/orderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair, limit: 50 })
@@ -590,7 +596,7 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/l2OrderBook then get exchange's L2 Order Book`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/l2OrderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -608,7 +614,7 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/l2OrderBook with limit then get exchange's L2 Order Book`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/l2OrderBook`)
                 .query({ symbol: _ctx.targetCurrencyPair, limit: 50 })
@@ -626,7 +632,7 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/trades then get exchange's trades`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/trades`)
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -643,7 +649,7 @@ describe('> controllers', function() {
           })
   
           it(`> GET:/exchange/${_ctx.exchangeName}/ticker then return ' + ${_ctx.expectedStatusCodes['fetchTicker']}`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/ticker`)
                 .query({ symbol: _ctx.targetCurrencyPair })
@@ -653,7 +659,7 @@ describe('> controllers', function() {
           })
 
           it(`> GET:/exchange/${_ctx.exchangeName}/tickers then ${_ctx.expectedStatusCodes['fetchTickers']}`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/tickers`)
                 .set('Authorization', `Bearer ${token}`)
@@ -662,7 +668,7 @@ describe('> controllers', function() {
           })
   
           it(`> POST:/exchange/${_ctx.exchangeName}/_/loadMarkets then get exchange's direct method`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .post(`/exchange/${_ctx.exchangeName}/_/loadMarkets`)
                 .type('text')
@@ -687,7 +693,7 @@ describe('> controllers', function() {
             }
           })
           it(`> GET:/exchange/${_ctx.exchangeName}/balances then get exchange's balances`, function(done) {
-            this.timeout('10s')
+            this.timeout(TIMEOUT_MS)
             request(server)
                 .get(`/exchange/${_ctx.exchangeName}/balances`)
                 .set('Authorization', `Bearer ${token}`)
@@ -706,10 +712,9 @@ describe('> controllers', function() {
           for (var type of ['limit']) {
             for (var side of ['buy', 'sell']) {
               describe(`> [${_ctx.exchangeName}] Given with open ${type} ${side} order`, function() {
-                var exchange
                 var orderId
                 before(function() {
-                  this.timeout('10s')
+                  this.timeout(TIMEOUT_MS)
                   return new Promise((resolve) => {
 
                     const path = `/exchange/${_ctx.exchangeName}`
@@ -720,8 +725,6 @@ describe('> controllers', function() {
                       .expect(200)
                       .end((err, res) => {
                         should.not.exist(err);
-
-                        exchange = res.body
 
                         request(server)
                           .get(`${path}/markets`)
@@ -780,7 +783,7 @@ describe('> controllers', function() {
                 })
 
                 after(function() {
-                  this.timeout('10s')
+                  this.timeout(TIMEOUT_MS)
                   return new Promise((resolve) => {
                     if (orderId) {
                       request(server)
@@ -799,7 +802,7 @@ describe('> controllers', function() {
                 });
 
                 it(`> [${_ctx.exchangeName}] Given with open ${type} ${side} order, get order`, function(done) {
-                  this.timeout('10s')
+                  this.timeout(TIMEOUT_MS)
                   request(server)
                         .get(`/exchange/${_ctx.exchangeName}/order/${orderId}`)
                         .query({symbol : _ctx.targetCurrencyPair})
@@ -814,7 +817,7 @@ describe('> controllers', function() {
                 })
 
                 it(`> [${_ctx.exchangeName}] Given with open ${type} ${side} order, get orders, then ${_ctx.expectedStatusCodes['fetchOrders']}`, function(done) {
-                  this.timeout('10s')
+                  this.timeout(TIMEOUT_MS)
                   request(server)
                     .get(`/exchange/${_ctx.exchangeName}/orders`)
                     .query({symbol : _ctx.targetCurrencyPair})
@@ -829,7 +832,7 @@ describe('> controllers', function() {
                 })
 
                 it(`> [${_ctx.exchangeName}] Given with open ${type} ${side} order, get open orders`, function(done) {
-                  this.timeout('10s')
+                  this.timeout(TIMEOUT_MS)
                   request(server)
                         .get(`/exchange/${_ctx.exchangeName}/orders/open`)
                         .query({symbol : _ctx.targetCurrencyPair})
@@ -844,7 +847,7 @@ describe('> controllers', function() {
                 })
 
                 it(`> [${_ctx.exchangeName}] Given with open ${type} ${side} order, get closed orders, then ${_ctx.expectedStatusCodes['fetchClosedOrders']}`, function(done) {
-                  this.timeout('10s')
+                  this.timeout(TIMEOUT_MS)
                   request(server)
                     .get(`/exchange/${_ctx.exchangeName}/orders/closed`)
                     .query({symbol : _ctx.targetCurrencyPair})
@@ -859,7 +862,7 @@ describe('> controllers', function() {
                 })
 
                 it(`> [${_ctx.exchangeName}] Given with open ${type} ${side} order, get my trades, then ${_ctx.expectedStatusCodes['fetchMyTrades']}`, function(done) {
-                  this.timeout('10s')
+                  this.timeout(TIMEOUT_MS)
                   request(server)
                     .get(`/exchange/${_ctx.exchangeName}/trades/mine`)
                     .query({symbol : _ctx.targetCurrencyPair})

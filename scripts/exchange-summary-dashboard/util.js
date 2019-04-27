@@ -8,7 +8,7 @@ const EXCHANGES_ROOT_PATH = require('./common').EXCHANGES_ROOT_PATH
 
 const REPORT_ONLY = process.env.REPORT_ONLY
 
-const TIMEOUT_MS = 10000
+const TIMEOUT_MS = process.env.TIMEOUT_MS || 10000
 
 function logExchangeDetail(exchangeName, modifyExchangeDetailFunc) {
     const filePath = EXCHANGES_ROOT_PATH + exchangeName + '.json'
