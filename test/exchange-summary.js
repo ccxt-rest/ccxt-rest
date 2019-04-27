@@ -150,11 +150,14 @@ describe('> exploratory', function() {
             }
         }
 
+        const TIMEOUT_MS = 10000
+
         it('warm up server', function(done) {
-            this.timeout('10s')
+            this.timeout(0)
             request(server)
                 .get('/exchanges/')
                 .set('Accept', 'application/json')
+                .timeout(TIMEOUT_MS)
                 .expect('Content-Type', /json/)
                 .end((err, res) => {
                     assertResponse(err, res)
@@ -166,13 +169,14 @@ describe('> exploratory', function() {
             config = config || {}
             config.canExecute = config.canExecute || (_ctx => true)
             return it(`> [${_ctx.exchangeName}] ${property}`, function(done) {
-                this.timeout('10s')
                 if (_ctx.exchange && config.canExecute(_ctx)) {
+                    this.timeout(0)
                     const query = config.queryBuilder ? config.queryBuilder(_ctx) : undefined
                     request(server)
                         .get(`/exchange/${_ctx.exchangeName}/${property}`)
                         .query(query)
                         .retry(3)
+                        .timeout(TIMEOUT_MS)
                         .expect('Content-Type', /json/)
                         .end((err, res) => {
                             logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
@@ -204,14 +208,15 @@ describe('> exploratory', function() {
                 'exchangeName': exchangeName,
                 'exchangeId': exchangeName + '1'
             }}).forEach(_ctx => {
-                describe(`> ${_ctx.exchangeName} without API keys`, function() {
+                describe(`> [${_ctx.exchangeName}] without API keys`, function() {
                     it(`> [${_ctx.exchangeName}] Connect`, function(done) {
-                        this.timeout('10s')
+                        this.timeout(0)
                         request(server)
                             .post(`/exchange/${_ctx.exchangeName}`)
                             .send({'id':_ctx.exchangeId})
                             .retry(3)
                             .set('Accept', 'application/json')
+                            .timeout(TIMEOUT_MS)
                             .expect('Content-Type', /json/)
                             .end((err, res) => {
                                 logExchangeDetail(_ctx.exchangeName, exchangeDetail => {
@@ -224,7 +229,9 @@ describe('> exploratory', function() {
 
                                 assertResponse(err, res)
                 
-                                done();
+                                if (!this.isDone) {
+                                    done();
+                                }
                             });
                     })
 

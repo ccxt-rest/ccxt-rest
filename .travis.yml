@@ -9,7 +9,7 @@ before_install:
 script:
   - npm install
   - npm test
-  - REPORT_ONLY=1 npm run generate:exchangeSummary || echo "Ignore errors and timeouts"
+  - REPORT_ONLY=1 npm run generate:exchangeSummary
   - npm pack
   - npm run test:dockerbuild
   
