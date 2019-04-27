@@ -16,6 +16,9 @@ var exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 const TIMEOUT_MS = process.env.TIMEOUT_MS || 10000
 const SKIPPED_EXCHANGES = JSON.parse(process.env.SKIPPED_EXCHANGES || '[]')
 
+console.info('Test Configuration: ')
+console.info({TIMEOUT_MS:TIMEOUT_MS, SKIPPED_EXCHANGES:SKIPPED_EXCHANGES})
+
 describe('> controllers', function() {
 
   describe('> exchanges', function() {
