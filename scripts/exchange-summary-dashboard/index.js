@@ -177,7 +177,7 @@ fs.readdirSync(TEST_DIR)
 
 beforeAll()
 
-const maxParallel = os.cpus().length
+const maxParallel = process.env.MAX_PARALLEL_TESTS || os.cpus().length
 console.info(`Setting max parallel run to ${maxParallel}`)
 mocha.setMaxParallel(maxParallel)
 
