@@ -77,6 +77,9 @@ oasTools.initialize(oasDoc, app, function() {
 // for testing
 module.exports = {
   app : app,
+  getPort : function() {
+    return server.address().port
+  },
   shutdown : function() {
     server.close()
   }

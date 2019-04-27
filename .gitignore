@@ -43,6 +43,7 @@ config/runtime.yaml
 clients
 out
 .secret_key
+scripts/exchange-summary-dashboard/generated/**
 
 # After npm pack
 ccxt-rest-*.tgz
