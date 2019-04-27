@@ -151,6 +151,9 @@ function statusCodeToLabel(body) {
 const marketPerExchange = JSON.parse(fs.readFileSync(MARKET_PER_EXCHANGE_FILENAME))
 
 const TEST_DIR = `${__dirname}/generated`
+if (!fs.existsSync(TEST_DIR)) {
+    fs.mkdirSync(TEST_DIR, {recursive:true});
+}
 fs.readdirSync(TEST_DIR).forEach(fileName => {
     fs.unlinkSync(path.join(TEST_DIR, fileName))
 })
