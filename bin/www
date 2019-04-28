@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-require('../app');
+const ccxtRest = require('../app');
+
+ccxtRest.start()

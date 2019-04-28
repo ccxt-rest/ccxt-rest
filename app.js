@@ -1,10 +1,11 @@
 'use strict';
 
-var fs = require('fs'),
-    http = require('http'),
-    path = require('path');
-
-var jwtHelper = require('./api/helpers/jwt-helper')
+const fs = require('fs')
+  , http = require('http')
+  , path = require('path')
+  , db = require('./api/models')
+  , jwtHelper = require('./api/helpers/jwt-helper')
+;
 
 var express = require("express");
 var app = express();
@@ -62,25 +63,32 @@ app.use('/info', function(req, res) {
 })
 
 var server
-oasTools.initialize(oasDoc, app, function() {
-  server = http.createServer(app);
-  server.listen(serverPort, function() {
-    console.log("App running at http://localhost:" + server.address().port);
-    console.log("________________________________________________________________");
-    if (options_object.docs !== false) {
-      console.log('API docs (Swagger UI) available on http://localhost:' + server.address().port + '/explorer');
-      console.log("________________________________________________________________");
-    }
-  });
-});
+function start(callback) {
+  db.migrate()
+    .then(() => {
+      jwtHelper.initialize()
+        .then(() => {
+          oasTools.initialize(oasDoc, app, function() {
+            server = http.createServer(app);
+            server.listen(serverPort, function() {
+              console.log("App running at http://localhost:" + server.address().port);
+              console.log("________________________________________________________________");
+              if (options_object.docs !== false) {
+                console.log('API docs (Swagger UI) available on http://localhost:' + server.address().port + '/explorer');
+                console.log("________________________________________________________________");
+              }
+              if (callback) {
+                console.log('Server started. Invoking callback')
+                callback(server);
+              }
+            });
+          });
+        })
+    })
+}
+
 
 // for testing
 module.exports = {
-  app : app,
-  getPort : function() {
-    return server.address().port
-  },
-  shutdown : function() {
-    server.close()
-  }
+  start: start
 } 

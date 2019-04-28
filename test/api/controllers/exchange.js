@@ -6,8 +6,7 @@ var request = require('supertest');
 process.env.PORT = 0
 
 var ccxtServer = require('../../../app')
-var server = ccxtServer.app;
-var db = require('../../../api/helpers/db');
+var db = require('../../../api/models');
 var jwtHelper = require('../../../api/helpers/jwt-helper')
 
 var ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
@@ -20,8 +19,23 @@ console.info('Test Configuration: ')
 console.info({TIMEOUT_MS:TIMEOUT_MS, SKIPPED_EXCHANGES:SKIPPED_EXCHANGES})
 
 describe('> controllers', function() {
+    var server = server
+    before(function() {
+      return new Promise((resolve) => {
+        ccxtServer.start(_server => {
+          server = _server
+          resolve();
+        })  
+      })
+    })
 
-  describe('> exchanges', function() {
+    after(function() {
+      if (server) {
+        server.close()
+      }
+    })
+
+    describe('> exchanges', function() {
 
     describe('> GET /exchanges', function() {
 
@@ -482,14 +496,18 @@ describe('> controllers', function() {
                 .expect(200)
                 .end((err, res) => {
                   should.not.exist(err);
-    
-                  var exchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
-                  should.exist(exchange);
 
-                  should.exist(res.body.token)
-                  token = res.body.token
-
-                  resolve();
+                  db.Exchange.findOne({
+                    exchangeName:_ctx.exchangeName, 
+                    exchangeId:_ctx.exchangeId
+                  }).then(exchange => {
+                    should.exist(exchange);
+  
+                    should.exist(res.body.token)
+                    token = res.body.token
+  
+                    resolve();
+                  }).catch(resolve)
                 });
             });
           });
@@ -497,9 +515,11 @@ describe('> controllers', function() {
           after(function() {
             this.timeout(TIMEOUT_MS)
             return new Promise((resolve) => {
-              var beforeDeleteExchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
-    
-              request(server)
+              db.Exchange.findOne({
+                exchangeName:_ctx.exchangeName, 
+                exchangeId:_ctx.exchangeId
+              }).then(beforeDeleteExchange => {
+                request(server)
                   .delete(`/exchange/${_ctx.exchangeName}`)
                   .set('Authorization', `Bearer ${token}`)
                   .expect('Content-Type', /json/)
@@ -507,12 +527,17 @@ describe('> controllers', function() {
                   .end((err, res) => {
                     should.not.exist(err);
       
-                    res.body.name.should.eql(beforeDeleteExchange.name);
-      
-                    should.not.exist(db.getExchange(_ctx.exchangeName, _ctx.exchangeId));
-      
-                    resolve();
+                    expect(res.body.name).to.be.eql(beforeDeleteExchange.name)
+
+                    db.Exchange.findOne({
+                      exchangeName:_ctx.exchangeName, 
+                      exchangeId:_ctx.exchangeId
+                    }).then(exchangeAfterDeletion => {
+                      should.not.exist(exchangeAfterDeletion)
+                      resolve()
+                    }).catch(resolve)
                   });
+              }).catch(resolve)
             });
           });
 
@@ -542,13 +567,16 @@ describe('> controllers', function() {
                   .expect(200)
                   .end((err, res) => {
                     should.not.exist(err);
-      
-                    var exchange = db.getExchange(_ctx.exchangeName, _ctx.exchangeId);
-                    should.exist(exchange);
+
+                    db.Exchange.findOne({
+                      exchangeName:_ctx.exchangeName, 
+                      exchangeId:_ctx.exchangeId
+                    }).then(exchange => {
+                      should.exist(exchange);
     
-                    res.body.id.should.eql(_ctx.exchangeId);
-      
-                    done();
+                      res.body.id.should.eql(_ctx.exchangeId);
+                      done()
+                    }).catch(done)
                   });
             });
     
@@ -900,5 +928,4 @@ describe('> controllers', function() {
 
   });
 
-  after(ccxtServer.shutdown)
 });

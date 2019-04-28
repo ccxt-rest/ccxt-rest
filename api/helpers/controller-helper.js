@@ -1,9 +1,8 @@
 'use strict';
 
-const db = require('../helpers/db')
+const db = require('../models')
     , ccxt = require('ccxt')
-    , jwt = require('jsonwebtoken')
-    , exchange_response = require('../models/exchange-response')
+    , exchange_response = require('../dto/exchange-response')
     , ccxtRestErrors = require('../errors')
     , jwtHelper = require('./jwt-helper')
 ;
@@ -37,11 +36,11 @@ function handleError(req, res, label, error) {
     }
 }
   
-function execute(req, res, parameterNamesOrParameterValuesExtractor, functionName, responseTransformer) {
+async function execute(req, res, parameterNamesOrParameterValuesExtractor, functionName, responseTransformer) {
     try {
       let context = {}
   
-      const exchange = getExchangeFromRequest(req)
+      const exchange = await getExchangeFromRequest(req)
       let parameterValues
       if (typeof(parameterNamesOrParameterValuesExtractor) === 'function') {
         parameterValues = parameterNamesOrParameterValuesExtractor(req, context)
@@ -66,7 +65,17 @@ function execute(req, res, parameterNamesOrParameterValuesExtractor, functionNam
         exchange[functionName].apply(exchange, parameterValues)
           .then(response => {
             try {
-              res.send(responseTransformer(response, context));
+              db.Exchange.update(
+                {params:JSON.stringify(exchange)},
+                {where: {
+                  exchangeName:exchange.name,
+                  exchangeId:exchange.id
+                }}
+              ).then(() => {
+                res.send(responseTransformer(response, context));
+              }).catch(error => {
+                handleError(req, res, functionName, error)
+              })
             } catch (error) {
               handleError(req, res, functionName, error)
             }
@@ -79,14 +88,18 @@ function execute(req, res, parameterNamesOrParameterValuesExtractor, functionNam
     }
 }
   
-function getExchangeFromRequest(req) {
+async function getExchangeFromRequest(req) {
     let exchangeName = getExchangeName(req)
     let exchangeId = getExchangeId(req)
     let exchange
     if (exchangeId) {
-      exchange = db.getExchange(exchangeName, exchangeId);
+      let exchangeFromDb = await getExchangeFromDb(exchangeName, exchangeId)
+      if (exchangeFromDb) {
+        const params = JSON.parse(exchangeFromDb.params.toString())
+        exchange = new ccxt[exchangeName](params)
+      }
     } else {
-      exchange = getPublicExchange(exchangeName)
+      exchange = await getPublicExchange(exchangeName)
     }
     return exchange
 }
@@ -110,15 +123,21 @@ function getExchangeId(req) {
   return null
 }
 
-var getPublicExchange = function(exchangeName) {
-  const existingPublicExchange = db.getExchange(exchangeName, '');
+async function getPublicExchange(exchangeName) {
+  const exchangeFromDb = await getExchangeFromDb(exchangeName, '');
+  let existingPublicExchange
+  if (exchangeFromDb) {
+    const params = JSON.parse(exchangeFromDb.params.toString())
+    existingPublicExchange = new ccxt[exchangeName](params)
+  }
+  
   if (existingPublicExchange) {
       existingPublicExchange.id = ''
       return existingPublicExchange
   } else {
       const newPublicExchange = new ccxt[exchangeName]({enableRateLimit:true})
       newPublicExchange.id = ''
-      db.saveExchange(exchangeName, newPublicExchange);
+      await createExchangeUntoDb(exchangeName, '', newPublicExchange)
       return newPublicExchange
   }
 }
@@ -129,6 +148,17 @@ function renderExchange(exchange, res) {
     } else {
       res.status(404).send();
     }
+}
+
+async function getExchangeFromDb(exchangeName, exchangeId) {
+  return await db.Exchange.findOne({where: {
+    exchangeName:exchangeName,
+    exchangeId:exchangeId
+  }})
+}
+
+async function createExchangeUntoDb(exchangeName, exchangeId, exchange) {
+  await db.Exchange.create({exchangeName:exchangeName, exchangeId:exchangeId, params:JSON.stringify(exchange)})
 }
 
 module.exports = {

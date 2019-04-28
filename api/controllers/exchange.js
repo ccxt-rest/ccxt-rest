@@ -1,11 +1,10 @@
 'use strict';
 
 const ccxt = require('ccxt')
-    , jwt = require('jsonwebtoken')
     , ccxtRestConfig = require('../config')
     , ccxtRestErrors = require('../errors')
-    , db = require('../helpers/db')
-    , exchange_response = require('../models/exchange-response')
+    , db = require('../models')
+    , exchange_response = require('../dto/exchange-response')
     , controller_helper = require('../helpers/controller-helper')
     , jwtHelper = require('../helpers/jwt-helper')
     , handleError = controller_helper.handleError
@@ -49,6 +48,9 @@ function list(req, res) {
 
 function createPrivateConnection(req, res) {
   _doExchangeSpecificOrDefault(req, res, 'createPrivateConnection', (req, res) => {
+    const createPrivateConnectionErrorHandler = (error) => {
+      handleError(req, res, 'createPrivateConnection', error)
+    }
     try {
       const exchangeName = getExchangeName(req)
   
@@ -56,25 +58,32 @@ function createPrivateConnection(req, res) {
         const ccxtParam = req.body;
         const exchange = new ccxt[exchangeName](ccxtParam);
   
-        db.saveExchange(exchangeName, exchange);
-
-        jwtHelper.sign(
-          exchangeName, 
-          ccxtParam.id, 
-          (err, token) => res.send(new exchange_response.AccessToken(token)))
+        db.Exchange.create({exchangeName:exchangeName, exchangeId:ccxtParam.id, params:JSON.stringify(exchange)})
+          .then(exchange => {
+            jwtHelper.sign(
+              exchange.exchangeName, 
+              exchange.exchangeId, 
+              (err, token) => {
+                if (err) {
+                  createPrivateConnectionErrorHandler(error)
+                } else {
+                  res.send(new exchange_response.AccessToken(token))
+                }
+              })
+          }).catch(createPrivateConnectionErrorHandler);
       } else {
-        res.status(404).send()
+        throw new ccxtRestErrors.UnknownExchangeNameError(`${exchangeName} is not supported`)
       }
     } catch (error) {
-      handleError(req, res, 'createPrivateConnection', error)
+      createPrivateConnectionErrorHandler(error)
     }
   })
 }
 
 function getConnection(req, res) {
-  _doExchangeSpecificOrDefault(req, res, 'getConnection', (req, res) => {
+  _doExchangeSpecificOrDefault(req, res, 'getConnection', async (req, res) => {
     try {
-      const exchange = getExchangeFromRequest(req)
+      const exchange = await getExchangeFromRequest(req)
       
       renderExchange(exchange, res);
     } catch (error) {
@@ -85,6 +94,10 @@ function getConnection(req, res) {
 
 function deletePrivateConnection(req, res) {
   _doExchangeSpecificOrDefault(req, res, 'deletePrivateConnection', (req, res) => {
+    const deletePrivateConnectionErrorHandler = (error) => {
+      handleError(req, res, 'deletePrivateConnection', error)
+    }
+
     try {
       const exchangeId = getExchangeId(req)
       if (!exchangeId) {
@@ -92,11 +105,21 @@ function deletePrivateConnection(req, res) {
       }
       const exchangeName = getExchangeName(req)
 
-      const exchange = db.deleteExchange(exchangeName, exchangeId);
-
-      renderExchange(exchange, res);  
+      const whereClause = {
+        where: {
+          exchangeId: exchangeId,
+          exchangeName : exchangeName
+        }
+      }
+      db.Exchange.findOne(whereClause)
+        .then(exchange => {
+          db.Exchange.destroy(whereClause)
+            .then(() => {
+              renderExchange(exchange, res);  
+            }).catch(deletePrivateConnectionErrorHandler)
+        }).catch(deletePrivateConnectionErrorHandler)
     } catch (error) {
-      handleError(req, res, 'deletePrivateConnection', error)
+      deletePrivateConnectionErrorHandler(error)
     }
   })
 }

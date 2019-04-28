@@ -1,13 +1,31 @@
-const fs = require('fs')
-    , jwt = require('jsonwebtoken')
-    , path = require('path')
+const jwt = require('jsonwebtoken')
 ;
 
-const db = require('./db')
+const db = require('../models')
 
 const ccxtRestErrors = require('../errors')
 
-const secretKey = db.getSecretKey()
+let secretKey;
+function initialize() {
+    const jwtDataErrorHandler = (error) => {
+        console.error('Error finding JWT Data')
+        console.trace(error)
+        process.exit(1)
+    }
+    return db.JwtData.findOne()
+        .then(jwtData => {
+            if (!jwtData) {
+                const secret = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+                return db.JwtData.create({
+                    secret:secret
+                }).then(jwtData => {
+                    secretKey = jwtData.secret
+                }).catch(jwtDataErrorHandler)
+            } else {
+                secretKey = jwtData.secret
+            }
+        }).catch(jwtDataErrorHandler)
+}
 
 const ISSUER = 'CCXT REST'
 const ALGORITHM = 'HS256'
@@ -34,6 +52,7 @@ function decode(token) {
 }
 
 module.exports = {
+    initialize: initialize,
     decode : decode,
     sign : sign
 }

@@ -1,15 +1,21 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('JwtData', {
+    return queryInterface.createTable('Exchanges', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      token: {
+      exchangeName: {
         type: Sequelize.STRING
+      },
+      exchangeId: {
+        type: Sequelize.STRING
+      },
+      params: {
+        type: Sequelize.BLOB
       },
       createdAt: {
         allowNull: false,
@@ -22,6 +28,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('JwtData');
+    return queryInterface.dropTable('Exchanges');
   }
 };

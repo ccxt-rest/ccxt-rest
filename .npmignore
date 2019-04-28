@@ -41,7 +41,8 @@ config/runtime.yaml
 
 ## ccxt-rest specifics
 clients
-.secret_key
+scripts/exchange-summary-dashboard/generated/**
+database.sqlite3
 
 # After npm pack
 ccxt-rest-*.tgz

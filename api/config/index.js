@@ -1,6 +1,6 @@
 const ccxt = require('ccxt')
     , controller_helper = require('../helpers/controller-helper')
-    , exchange_response = require('../models/exchange-response')
+    , exchange_response = require('../dto/exchange-response')
     , ccxtRestErrors = require('../errors')
     , execute = controller_helper.execute
 ;
