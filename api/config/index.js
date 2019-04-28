@@ -8,7 +8,8 @@ const ccxt = require('ccxt')
 module.exports = {
     allcoin: {
         override : (functionName, req, res, defaultBehaviour) => {
-            throw new ccxtRestErrors.BrokenExchangeError('[allcoin] is broken and not supported right now')
+            const message = '[allcoin] is currently broken and not supported right now (https://github.com/ccxt/ccxt/issues/2962).'
+            throw new ccxtRestErrors.BrokenExchangeError(message)
         }
     }, 
     bitso: {
