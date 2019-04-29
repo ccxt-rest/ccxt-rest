@@ -6,7 +6,7 @@ const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'production';
-const config = require(__dirname + '/../config/database.js')[env];
+const config = process.env.DB_CONFIG ? require(process.env.DB_CONFIG) : require(`${__dirname}/../config/database/${env}.js`);
 const db = {};
 
 if (config.dialect && config.dialect.toLowerCase() == 'sqlite' 
