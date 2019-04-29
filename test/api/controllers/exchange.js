@@ -2,6 +2,7 @@ var ccxt = require('ccxt');
 var expect = require('chai').expect;
 var should = require('should');
 var request = require('supertest');
+var fs = require('fs')
 
 process.env.PORT = 0
 
@@ -21,6 +22,9 @@ console.info({TIMEOUT_MS:TIMEOUT_MS, SKIPPED_EXCHANGES:SKIPPED_EXCHANGES})
 describe('> controllers', function() {
     var server = server
     before(function() {
+      if (fs.existsSync('./out/database.sqlite3')) {
+        fs.unlinkSync('./out/database.sqlite3')
+      }
       return new Promise((resolve) => {
         ccxtServer.start(_server => {
           server = _server
@@ -32,6 +36,9 @@ describe('> controllers', function() {
     after(function() {
       if (server) {
         server.close()
+      }
+      if (fs.existsSync('./out/database.sqlite3')) {
+        fs.unlinkSync('./out/database.sqlite3')
       }
     })
 

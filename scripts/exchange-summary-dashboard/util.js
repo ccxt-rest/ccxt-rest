@@ -22,6 +22,7 @@ function logExchangeDetail(exchangeName, modifyExchangeDetailFunc) {
 
 function assertResponse(res) {
     if (!REPORT_ONLY) {
+        expect(res).to.exist
         expect(res.type).to.be.eql('application/json');
         expect(res.status).to.satisfy(statusCode => {
             return (200 <= statusCode && statusCode < 300) || statusCode == 501

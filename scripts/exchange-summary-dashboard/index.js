@@ -21,6 +21,51 @@ const BROKEN_INTEGRATION_ERROR_LABEL = '<img src="https://img.shields.io/badge/E
 const NETWORK_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Network-red.svg" alt="Network Error" />'
 const REQUEST_TIMEOUT_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Timeout-red.svg" alt="Request Timeout Error" />'
 
+
+const mochaParamObject = (function(){
+    const additionalMochaArgs = process.argv.slice(2)
+
+    const getMethods = (obj) => {
+        let properties = new Set()
+        let currentObj = obj
+        do {
+          Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
+        } while ((currentObj = Object.getPrototypeOf(currentObj)))
+        return [...properties.keys()].filter(item => typeof obj[item] === 'function')
+    }
+    
+    const mochaFunctionNames = getMethods(new Mocha()).filter(methodName => !methodName.startsWith('_')).sort()
+
+    let mochaParamObject = {}
+    let i = 0;
+    let mochaParameterName
+    while (i < additionalMochaArgs.length) {
+        const optionName = additionalMochaArgs[i]
+        if (optionName.startsWith('--')) {
+            mochaParameterName = optionName.slice(2)
+
+            if (!mochaFunctionNames.includes(mochaParameterName)) {
+                console.error(`'${optionName}' is not supported. Try one of the followings intead: 
+                ${mochaFunctionNames.map(name => '--' + name).join('\n * ')} 
+                
+                (Note: note all of these are supported.)`)
+                process.exit(1)
+            }
+            mochaParamObject[mochaParameterName] = [] 
+        } else if (optionName.startsWith('-')) {
+            console.error(`Single dash options like '${optionName}' are not supported. Use double dash arguments instead.`)
+            process.exit(1)
+            continue;
+        } else {
+            mochaParamObject[mochaParameterName].push(optionName)
+        }
+
+        i++;
+    }
+
+    return mochaParamObject
+})()
+
 const beforeAll = function() {
     if (!fs.existsSync(EXCHANGES_ROOT_PATH)) {
         fs.mkdirSync(EXCHANGES_ROOT_PATH, {recursive:true});
@@ -158,52 +203,66 @@ fs.readdirSync(TEST_DIR).forEach(fileName => {
     fs.unlinkSync(path.join(TEST_DIR, fileName))
 })
 
-const template = fs.readFileSync(`${__dirname}/_template-test.js`).toString()
-    .replace('%%baseUrl%%', `http://localhost:${app.getPort()}`);
-ccxt.exchanges.forEach(exchangeName => {
-    const market = marketPerExchange[exchangeName]
-    const testContent = template
-        .replace(new RegExp('%%exchangeName%%', 'g'), exchangeName)
-        .replace(new RegExp('%%market%%', 'g'), market);
-    fs.writeFileSync(`${TEST_DIR}/${exchangeName}.js`, testContent)
-})
+if (fs.existsSync('./out/database.sqlite3')) {
+    fs.unlinkSync('./out/database.sqlite3')
+}
+app.start(server => {
+    const template = fs.readFileSync(`${__dirname}/_template-test.js`).toString()
+        .replace('%%baseUrl%%', `http://localhost:${server.address().port}`);
+    ccxt.exchanges.forEach(exchangeName => {
+        const market = marketPerExchange[exchangeName]
+        const testContent = template
+            .replace(new RegExp('%%exchangeName%%', 'g'), exchangeName)
+            .replace(new RegExp('%%market%%', 'g'), market);
+        fs.writeFileSync(`${TEST_DIR}/${exchangeName}.js`, testContent)
+    })
 
-const mocha = new Mocha();
+    const mocha = new Mocha()
+    fs.readdirSync(TEST_DIR)
+        .filter(filename => filename.endsWith('.js'))
+        .map(filename => path.join(TEST_DIR, filename))
+        .forEach(filename => {
+            console.info(`Adding ${filename} to mocha`)
+            mocha.addFile(filename)
+        });
 
-fs.readdirSync(TEST_DIR)
-    .filter(filename => filename.endsWith('.js'))
-    .map(filename => path.join(TEST_DIR, filename))
-    .forEach(filename => {
-        console.info(`Adding ${filename} to mocha`)
-        mocha.addFile(filename)
+    beforeAll()
+
+    Object.keys(mochaParamObject).forEach(paramName => {
+        mocha[paramName].apply(mocha, mochaParamObject[paramName])
+    })
+
+    const numberOfCpus = os.cpus().length
+    let maxParallel = process.env.MAX_PARALLEL_TESTS || numberOfCpus
+    if (maxParallel === 0) {
+        maxParallel = numberOfCpus
+    }
+    console.info(`
+    Max Parallel Configuration:
+    * numberOfCpus : ${numberOfCpus}
+    * process.env.MAX_PARALLEL_TESTS : ${process.env.MAX_PARALLEL_TESTS}
+    * effective maxParallel : ${maxParallel}
+    `)
+    mocha.setMaxParallel(maxParallel)
+    
+    mocha.reporter('mochawesome', {
+        reportDir : './out/exchange-summary-dashboard',
+        reportTitle: 'CCXT-REST Exchange Summary Dashboard',
+        reportPageTitle: 'CCXT-REST Exchange Summary Dashboard'
+    })
+    const start = new Date()
+    mocha.run(function() {
+        afterAll()
+        if (server) {
+            server.close()
+        }
+        if (fs.existsSync('./out/database.sqlite3')) {
+            fs.unlinkSync('./out/database.sqlite3')
+        }
+        const end = new Date()
+        console.info(`Started execution at ${start.toUTCString()}`)
+        console.info(`Ended execution at ${end.toUTCString()}`)
+        console.info(`Finished execution after ${(end - start) / 1000.0 / 60.0 } minutes`)
     });
 
-beforeAll()
-
-const numberOfCpus = os.cpus().length
-let maxParallel = process.env.MAX_PARALLEL_TESTS || numberOfCpus
-if (maxParallel === 0) {
-    maxParallel = numberOfCpus
-}
-console.info(`
-Max Parallel Configuration:
- * numberOfCpus : ${numberOfCpus}
- * process.env.MAX_PARALLEL_TESTS : ${process.env.MAX_PARALLEL_TESTS}
- * effective maxParallel : ${maxParallel}
-`)
-mocha.setMaxParallel(maxParallel)
-
-mocha.reporter('mochawesome', {
-    reportDir : './out/exchange-summary-dashboard',
-    reportTitle: 'CCXT-REST Exchange Summary Dashboard',
-    reportPageTitle: 'CCXT-REST Exchange Summary Dashboard'
 })
-const start = new Date()
-mocha.run(function() {
-    afterAll()
-    app.shutdown()
-    const end = new Date()
-    console.info(`Started execution at ${start.toUTCString()}`)
-    console.info(`Ended execution at ${end.toUTCString()}`)
-    console.info(`Finished execution after ${(end - start) / 1000.0 / 60.0 } minutes`)
-});
