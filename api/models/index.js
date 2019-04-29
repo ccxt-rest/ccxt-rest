@@ -5,21 +5,17 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'production';
-const config = process.env.DB_CONFIG ? require(process.env.DB_CONFIG) : require(`${__dirname}/../config/database/${env}.js`);
+const ccxtConfig = require('../config')
+const env = ccxtConfig.env || 'production';
+const dbConfig = ccxtConfig.dbConfigPath ? require(ccxtConfig.dbConfigPath) : require(`${__dirname}/../config/database/${env}.js`);
 const db = {};
 
-if (config.dialect && config.dialect.toLowerCase() == 'sqlite' 
-    && (config.storage && !config.storage.toLowerCase().includes('memory'))) {
-      fs.mkdirSync(path.dirname(path.resolve(config.storage)), {recursive:true});
+if (dbConfig.dialect && dbConfig.dialect.toLowerCase() == 'sqlite' 
+    && (dbConfig.storage && !dbConfig.storage.toLowerCase().includes('memory'))) {
+      fs.mkdirSync(path.dirname(path.resolve(dbConfig.storage)), {recursive:true});
 }
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+let sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, dbConfig);
 
 fs
   .readdirSync(__dirname)
@@ -41,7 +37,7 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 db.migrate = function() {
-  const sequelize = new Sequelize(config);
+  const sequelize = new Sequelize(dbConfig);
   const umzug     = new Umzug({
     storage: "sequelize",
   

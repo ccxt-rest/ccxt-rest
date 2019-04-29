@@ -1,10 +1,11 @@
 'use strict';
 
-const fs = require('fs')
+const db = require('./api/models')
+  , config = require('./api/config')
+  , fs = require('fs')
   , http = require('http')
-  , path = require('path')
-  , db = require('./api/models')
   , jwtHelper = require('./api/helpers/jwt-helper')
+  , path = require('path')
 ;
 
 var express = require("express");
@@ -15,14 +16,14 @@ app.use(bodyParser.json({
 }));
 var oasTools = require('oas-tools');
 var jsyaml = require('js-yaml');
-var serverPort = process.env.PORT || 3000;
+var serverPort = config.port;
 
 var spec = fs.readFileSync(path.join(__dirname, '/api/swagger/swagger.yaml'), 'utf8');
 var oasDoc = jsyaml.safeLoad(spec);
 
 var options_object = {
   controllers: path.join(__dirname, './api/controllers'),
-  loglevel: process.env.LOG_LEVEL || 'info',
+  loglevel: config.logLevel,
   strict: false,
   router: true,
   validator: true,
