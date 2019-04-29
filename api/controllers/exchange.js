@@ -1,7 +1,7 @@
 'use strict';
 
 const ccxt = require('ccxt')
-    , ccxtRestConfig = require('../config')
+    , exchangeConfig = require('../config/exchange')
     , ccxtRestErrors = require('../errors')
     , exchangeService = require('../services/exchange-service.js')
     , exchange_response = require('../dto/exchange-response')
@@ -302,7 +302,7 @@ function directCall(req, res) {
 function _doExchangeSpecificOrDefault(req, res, overrideFunctionName, defaultBehaviour) {
   try {
     const exchangeName = getExchangeName(req)
-    const override = exchangeName && ccxtRestConfig[exchangeName] && ccxtRestConfig[exchangeName].override
+    const override = exchangeName && exchangeConfig[exchangeName] && exchangeConfig[exchangeName].override
     if (override && typeof(override) === 'function') {
       override(overrideFunctionName, req, res, defaultBehaviour)
     } else if (override && override[overrideFunctionName] && typeof(override[overrideFunctionName]) === 'function') {
