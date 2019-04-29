@@ -5,9 +5,14 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const Umzug = require('umzug');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/database.json')[env];
+const env = process.env.NODE_ENV || 'production';
+const config = require(__dirname + '/../config/database.js')[env];
 const db = {};
+
+if (config.dialect && config.dialect.toLowerCase() == 'sqlite' 
+    && (config.storage && !config.storage.toLowerCase().includes('memory'))) {
+      fs.mkdirSync(path.dirname(path.resolve(config.storage)), {recursive:true});
+}
 
 let sequelize;
 if (config.use_env_variable) {

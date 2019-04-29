@@ -1,4 +1,6 @@
-{
+const homedir = require('os').homedir();
+
+module.exports = {
   "development": {
     "dialect": "sqlite",
     "storage": "./database.sqlite3"
@@ -9,6 +11,6 @@
   },
   "production": {
     "dialect": "sqlite",
-    "storage": "./database.sqlite3"
+    "storage": `${homedir}/.ccxt-rest/database.sqlite3`
   }
 }
