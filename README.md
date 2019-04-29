@@ -14,7 +14,7 @@ Connect to 100+ <span style="font-style:bold;text-decoration:underline;font-size
 [![npm](https://img.shields.io/npm/v/ccxt-rest.svg)](https://npmjs.com/package/ccxt-rest)
 [![NPM Downloads](https://img.shields.io/npm/dm/ccxt-rest.svg)](https://www.npmjs.com/package/ccxt-rest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svgt)
-[![Supported Exchanges](https://img.shields.io/badge/exchanges-134-blue.svg)](https://github.com/ccxt/ccxt/wiki/Exchange-Markets)
+[![Supported Exchanges](https://img.shields.io/badge/exchanges-135-blue.svg)](https://github.com/ccxt/ccxt/wiki/Exchange-Markets)
 
 [![Gitter](https://img.shields.io/gitter/room/ccxt-rest/community.svg)](https://gitter.im/ccxt-rest/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
