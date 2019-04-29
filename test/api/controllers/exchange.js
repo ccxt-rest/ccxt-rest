@@ -534,7 +534,7 @@ describe('> controllers', function() {
                   .end((err, res) => {
                     should.not.exist(err);
       
-                    expect(res.body.name).to.be.eql(beforeDeleteExchange.name)
+                    expect(res.body.name).to.be.match(new RegExp(_ctx.exchangeName, 'i'))
 
                     db.Exchange.findOne({
                       exchangeName:_ctx.exchangeName, 
