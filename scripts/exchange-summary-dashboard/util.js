@@ -26,7 +26,7 @@ function assertResponse(res) {
         expect(res.type).to.be.eql('application/json');
         expect(res.status).to.satisfy(statusCode => {
             return (200 <= statusCode && statusCode < 300) || statusCode == 501
-        }, 'Should have been a success (status code between 200 and 299), or "Not Supported" (status code 501)')
+        }, `Status code (actual : ${res.status}) should have been a success (expected between 200 and 299), or "Not Supported" (expected 501)`)
     }
 }
 

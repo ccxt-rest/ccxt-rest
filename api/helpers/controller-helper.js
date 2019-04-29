@@ -1,12 +1,11 @@
 'use strict';
 
-const db = require('../models')
-    , ccxt = require('ccxt')
-    , exchange_response = require('../dto/exchange-response')
+const ccxt = require('ccxt')
     , ccxtRestErrors = require('../errors')
+    , exchangeService = require('../services/exchange-service')
+    , exchange_response = require('../dto/exchange-response')
     , jwtHelper = require('./jwt-helper')
 ;
-
 
 function handleError(req, res, label, error) {
     let exchangeId;
@@ -64,21 +63,7 @@ async function execute(req, res, parameterNamesOrParameterValuesExtractor, funct
       } else {
         exchange[functionName].apply(exchange, parameterValues)
           .then(response => {
-            try {
-              db.Exchange.update(
-                {params:JSON.stringify(exchange)},
-                {where: {
-                  exchangeName:exchange.name,
-                  exchangeId:exchange.id
-                }}
-              ).then(() => {
-                res.send(responseTransformer(response, context));
-              }).catch(error => {
-                handleError(req, res, functionName, error)
-              })
-            } catch (error) {
-              handleError(req, res, functionName, error)
-            }
+            res.send(responseTransformer(response, context));
           }).catch((error) => {
             handleError(req, res, functionName, error)
           });
@@ -93,13 +78,9 @@ async function getExchangeFromRequest(req) {
     let exchangeId = getExchangeId(req)
     let exchange
     if (exchangeId) {
-      let exchangeFromDb = await getExchangeFromDb(exchangeName, exchangeId)
-      if (exchangeFromDb) {
-        const params = JSON.parse(exchangeFromDb.params.toString())
-        exchange = new ccxt[exchangeName](params)
-      }
+      exchange = await exchangeService.findByExchangeNameAndExchangeId(exchangeName, exchangeId)
     } else {
-      exchange = await getPublicExchange(exchangeName)
+      exchange = await exchangeService.getPublicExchange(exchangeName)
     }
     return exchange
 }
@@ -123,42 +104,12 @@ function getExchangeId(req) {
   return null
 }
 
-async function getPublicExchange(exchangeName) {
-  const exchangeFromDb = await getExchangeFromDb(exchangeName, '');
-  let existingPublicExchange
-  if (exchangeFromDb) {
-    const params = JSON.parse(exchangeFromDb.params.toString())
-    existingPublicExchange = new ccxt[exchangeName](params)
-  }
-  
-  if (existingPublicExchange) {
-      existingPublicExchange.id = ''
-      return existingPublicExchange
-  } else {
-      const newPublicExchange = new ccxt[exchangeName]({enableRateLimit:true})
-      newPublicExchange.id = ''
-      await createExchangeUntoDb(exchangeName, '', newPublicExchange)
-      return newPublicExchange
-  }
-}
-
 function renderExchange(exchange, res) {
     if (exchange) {
       res.send(new exchange_response.ExchangeResponse(exchange));
     } else {
       res.status(404).send();
     }
-}
-
-async function getExchangeFromDb(exchangeName, exchangeId) {
-  return await db.Exchange.findOne({where: {
-    exchangeName:exchangeName,
-    exchangeId:exchangeId
-  }})
-}
-
-async function createExchangeUntoDb(exchangeName, exchangeId, exchange) {
-  await db.Exchange.create({exchangeName:exchangeName, exchangeId:exchangeId, params:JSON.stringify(exchange)})
 }
 
 module.exports = {

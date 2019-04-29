@@ -3,7 +3,7 @@
 const ccxt = require('ccxt')
     , ccxtRestConfig = require('../config')
     , ccxtRestErrors = require('../errors')
-    , db = require('../models')
+    , exchangeService = require('../services/exchange-service.js')
     , exchange_response = require('../dto/exchange-response')
     , controller_helper = require('../helpers/controller-helper')
     , jwtHelper = require('../helpers/jwt-helper')
@@ -58,7 +58,7 @@ function createPrivateConnection(req, res) {
         const ccxtParam = req.body;
         const exchange = new ccxt[exchangeName](ccxtParam);
   
-        db.Exchange.create({exchangeName:exchangeName, exchangeId:ccxtParam.id, params:JSON.stringify(exchange)})
+        exchangeService.saveOrUpdate(exchangeName, ccxtParam.id, ccxtParam, exchange)
           .then(exchange => {
             jwtHelper.sign(
               exchange.exchangeName, 
@@ -105,18 +105,9 @@ function deletePrivateConnection(req, res) {
       }
       const exchangeName = getExchangeName(req)
 
-      const whereClause = {
-        where: {
-          exchangeId: exchangeId,
-          exchangeName : exchangeName
-        }
-      }
-      db.Exchange.findOne(whereClause)
+      exchangeService.destroy(exchangeName, exchangeId)
         .then(exchange => {
-          db.Exchange.destroy(whereClause)
-            .then(() => {
-              renderExchange(exchange, res);  
-            }).catch(deletePrivateConnectionErrorHandler)
+          renderExchange(exchange, res);  
         }).catch(deletePrivateConnectionErrorHandler)
     } catch (error) {
       deletePrivateConnectionErrorHandler(error)
