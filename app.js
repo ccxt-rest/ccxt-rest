@@ -14,6 +14,11 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.json({
   strict: false
 }));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", config.cors);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
 var oasTools = require('oas-tools');
 var jsyaml = require('js-yaml');
 var serverPort = config.port;
