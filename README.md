@@ -164,7 +164,7 @@ For a complete list of API, see https://ccxt-rest.io
 
 # Exchange Summary 
 
-For a full list of supported exchanges and as to which of their APIs are public, private or even broken, checkout https://ccxt-rest.io/#exchange-api-statuses. The format there looks something like this
+For a full list of supported exchanges and as to which of their APIs are public, private or even broken, checkout https://ccxt-rest.io/docs/exchange_api_status. The format there looks something like this
 
 _**Note: The table below is just an example. This does NOT represent the current state of these API statuses**_
 
@@ -183,7 +183,7 @@ _**Note: The table below is just an example. This does NOT represent the current
 
 _**Note: The table above is just an example. This does NOT represent the current state of these API statuses**_
 
-For full list of the current statuses, see https://ccxt-rest.io/#exchange-api-statuses
+For full list of the current statuses, see https://ccxt-rest.io/docs/exchange_api_status
 
 # Feature / Support Request 
 
