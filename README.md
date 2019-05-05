@@ -88,7 +88,7 @@ However, some exchanges though require you to have an API Key and Secret even wh
 
 Lastly, for private data like your user orders, trades, balances and for actions like placing and cancelling orders, you would definitely need to provide the API Key and Secret for your exchange to `ccxt-rest`.
 
-![CCXT-REST Overview](https://ccxt-rest.io/images/ccxt-rest-overview.png)
+![CCXT-REST Overview](https://ccxt-rest.io/img/ccxt-rest-overview.png)
 
 *****
 _**Note: The API listing below is now comprehensive. For a full list of APIs supported, see https://ccxt-rest.io**_
@@ -160,7 +160,7 @@ $ curl -X DELETE http://localhost:3000/exchange/binance/order/12345 \
 
 For a complete list of API, see https://ccxt-rest.io
 
-![CCXT-REST API Documentation](https://ccxt-rest.io/images/ccxt-rest-docs.png)
+![CCXT-REST API Documentation](https://ccxt-rest.io/img/ccxt-rest-docs.png)
 
 # Exchange Summary 
 
