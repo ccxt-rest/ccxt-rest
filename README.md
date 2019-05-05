@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://ccxt-rest.io" alt="CCXT-REST"><img src="https://ccxt-rest.io/images/logo.png" width=700 alt="CCXT-REST"></a>
+<a href="https://ccxt-rest.io" alt="CCXT-REST"><img src="https://ccxt-rest.io/img/ccxt-rest-signature.png" width=700 alt="CCXT-REST"></a>
 </p>
 
 <div align="center" style="font-size:2em;font-style:bold;margin:-0.5em 0 -0.5em 0">
@@ -88,7 +88,7 @@ However, some exchanges though require you to have an API Key and Secret even wh
 
 Lastly, for private data like your user orders, trades, balances and for actions like placing and cancelling orders, you would definitely need to provide the API Key and Secret for your exchange to `ccxt-rest`.
 
-![CCXT-REST Overview](https://ccxt-rest.io/images/ccxt-rest-overview.png)
+![CCXT-REST Overview](https://ccxt-rest.io/img/ccxt-rest-overview.png)
 
 *****
 _**Note: The API listing below is now comprehensive. For a full list of APIs supported, see https://ccxt-rest.io**_
@@ -160,11 +160,11 @@ $ curl -X DELETE http://localhost:3000/exchange/binance/order/12345 \
 
 For a complete list of API, see https://ccxt-rest.io
 
-![CCXT-REST API Documentation](https://ccxt-rest.io/images/ccxt-rest-docs.png)
+![CCXT-REST API Documentation](https://ccxt-rest.io/img/ccxt-rest-docs.png)
 
 # Exchange Summary 
 
-For a full list of supported exchanges and as to which of their APIs are public, private or even broken, checkout https://ccxt-rest.io/#exchange-api-statuses. The format there looks something like this
+For a full list of supported exchanges and as to which of their APIs are public, private or even broken, checkout https://ccxt-rest.io/docs/exchange_api_status. The format there looks something like this
 
 _**Note: The table below is just an example. This does NOT represent the current state of these API statuses**_
 
@@ -183,7 +183,7 @@ _**Note: The table below is just an example. This does NOT represent the current
 
 _**Note: The table above is just an example. This does NOT represent the current state of these API statuses**_
 
-For full list of the current statuses, see https://ccxt-rest.io/#exchange-api-statuses
+For full list of the current statuses, see https://ccxt-rest.io/docs/exchange_api_status
 
 # Feature / Support Request 
 
