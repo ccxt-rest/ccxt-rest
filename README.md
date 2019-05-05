@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://ccxt-rest.io" alt="CCXT-REST"><img src="https://ccxt-rest.io/images/logo.png" width=700 alt="CCXT-REST"></a>
+<a href="https://ccxt-rest.io" alt="CCXT-REST"><img src="https://ccxt-rest.io/img/ccxt-rest-signature.png" width=700 alt="CCXT-REST"></a>
 </p>
 
 <div align="center" style="font-size:2em;font-style:bold;margin:-0.5em 0 -0.5em 0">
