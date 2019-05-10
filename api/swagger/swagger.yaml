@@ -203,6 +203,11 @@ paths:
           explode: true
           schema:
             type: number
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -251,6 +256,11 @@ paths:
           explode: true
           schema:
             type: number
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -307,6 +317,11 @@ paths:
           explode: true
           schema:
             type: number
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -358,6 +373,11 @@ paths:
           explode: true
           schema:
             type: string
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -395,6 +415,11 @@ paths:
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -434,6 +459,11 @@ paths:
       operationId: balances
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -487,6 +517,11 @@ paths:
           explode: true
           schema:
             type: number
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -543,6 +578,11 @@ paths:
           explode: true
           schema:
             type: number
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -599,6 +639,11 @@ paths:
           explode: true
           schema:
             type: number
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -655,6 +700,11 @@ paths:
           explode: true
           schema:
             type: number
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -735,6 +785,11 @@ paths:
         - $ref: "#/components/parameters/exchangeNameParam"
         - $ref: "#/components/parameters/orderIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
@@ -772,6 +827,11 @@ paths:
         - $ref: "#/components/parameters/exchangeNameParam"
         - $ref: "#/components/parameters/orderIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
+        - name: exchangeSpecifcParams
+          in: query
+          description: Any exchange specific parameters you want to pass in
+          schema:
+            type: object
       responses:
         "200":
           description: Success
