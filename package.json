@@ -438,7 +438,7 @@
   "scripts": {
     "postinstall": "npm run swagger:verify_version && rm -rf ./node_modules/oas-tools/.git",
     "prestart": "npm run swagger:verify_version",
-    "start": "node ./bin/www",
+    "start": "NODE_ENV=development node ./bin/www",
     "prpestart": "npm run swagger:verify_version",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha test/ --recursive --reporter mochawesome --reporter-options reportDir=./out/mochawesome-report,reportTitle='CCXT-REST Test Results',reportPageTitle='CCXT-REST Test Results'",
     "posttest": "mkdir -p ./out/publish; cp -R ./out/mochawesome-report ./out/publish/test-results; cp ./out/publish/test-results/mochawesome.html ./out/publish/test-results/index.html",
