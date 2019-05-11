@@ -7,12 +7,8 @@ const jwtHelper = require('../../../api/helpers/jwt-helper')
 
 const TIMEOUT_MS = process.env.TIMEOUT_MS || 10000
 
-const baseUrl = '%%baseUrl%%'
-const exchangeName = '%%exchangeName%%'
-const exchangeId = '%%exchangeId%%'
 const creds = JSON.parse('%%creds%%')
 const knownCurrencyPairs = JSON.parse('%%knownCurrencyPairs%%')
-const targetCurrencyPair = '%%targetCurrencyPair%%'
 
 let expectedStatusCodes = {
     fetchTicker : parseInt("%%expectedStatusCodesFetchTicker%%"),
@@ -23,10 +19,10 @@ let expectedStatusCodes = {
     fetchClosedOrders : parseInt("%%expectedStatusCodesFetchClosedOrders%%")
 }
 
-describe(`> [${exchangeName}]`, function() {
+describe(`> [%%exchangeName%%]`, function() {
 
-    describe(`> [${exchangeName}] Given no saved exchanges`, function() {
-      describe(`> [${exchangeName}] Using no Saved Instance's Exchange Management API`, function() {
+    describe(`> [%%exchangeName%%] Given no saved exchanges`, function() {
+      describe(`> [%%exchangeName%%] Using no Saved Instance's Exchange Management API`, function() {
 
         before(function() {
             return new Promise((resolve) => {
@@ -37,10 +33,10 @@ describe(`> [${exchangeName}]`, function() {
             })
         })
 
-        it(`> When GET:/exchange/${exchangeName} then return public ${exchangeName}`, function(done) {
+        it(`> When GET:/exchange/%%exchangeName%% then return public %%exchangeName%%`, function(done) {
           this.timeout(TIMEOUT_MS);
           superagent
-            .get(`${baseUrl}/exchange/${exchangeName}`)
+            .get(`%%baseUrl%%/exchange/%%exchangeName%%`)
             .end((err, res) => {
               expect(err).to.not.exist
               expect(res.type).to.eql('application/json')
@@ -52,11 +48,11 @@ describe(`> [${exchangeName}]`, function() {
             });
         });
   
-        it(`> When GET:/exchange/${exchangeName} with invalid jwt token, then return 403`, function(done) {
+        it(`> When GET:/exchange/%%exchangeName%% with invalid jwt token, then return 403`, function(done) {
           this.timeout(TIMEOUT_MS)
           const token = 'xxx.yyy.zzz'
           superagent
-            .get(`${baseUrl}/exchange/${exchangeName}`)
+            .get(`%%baseUrl%%/exchange/%%exchangeName%%`)
             .set('Authorization', `Bearer ${token}`)
             .end((err, res) => {
                 expect(res.type).to.eql('application/json')
@@ -65,15 +61,15 @@ describe(`> [${exchangeName}]`, function() {
             })
         });
 
-        it(`> When GET:/exchange/${exchangeName} with valid jwt token but referencing non-existent exchange, then return 404`, function(done) {
+        it(`> When GET:/exchange/%%exchangeName%% with valid jwt token but referencing non-existent exchange, then return 404`, function(done) {
           this.timeout(TIMEOUT_MS)
           jwtHelper.sign(
-            exchangeName, 
-            `${exchangeName}_dummy`, 
+            `%%exchangeName%%`, 
+            `%%exchangeName%%_dummy`, 
             function(err, token) {
               expect(err).to.not.exist
               superagent
-                .get(`${baseUrl}/exchange/${exchangeName}`)
+                .get(`%%baseUrl%%/exchange/%%exchangeName%%`)
                 .set('Authorization', `Bearer ${token}`)
                 .end((err, res) => {
                   expect(res.type).to.eql('application/json')
@@ -84,10 +80,10 @@ describe(`> [${exchangeName}]`, function() {
             })
         });
 
-        it(`> When DELETE:/exchange/${exchangeName} with no jwt token then return 403`, function(done) {
+        it(`> When DELETE:/exchange/%%exchangeName%% with no jwt token then return 403`, function(done) {
           this.timeout(TIMEOUT_MS);
           superagent
-            .delete(`${baseUrl}/exchange/${exchangeName}`)
+            .delete(`%%baseUrl%%/exchange/%%exchangeName%%`)
             .end((err, res) => {
               expect(res.type).to.eql('application/json')
               expect(res.status).to.eql(403)
@@ -96,12 +92,12 @@ describe(`> [${exchangeName}]`, function() {
         });
       });
 
-      describe(`> [${exchangeName}] Using no Saved Instance\'s Public Data API`, function() {
+      describe(`> [%%exchangeName%%] Using no Saved Instance\'s Public Data API`, function() {
         this.timeout(TIMEOUT_MS);
-        it(`> GET:/exchange/${exchangeName}/markets then use public ${exchangeName} and return 200`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/markets then use public %%exchangeName%% and return 200`, function(done) {
 
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/markets`)
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/markets`)
               .end((err, res) => {
                 expect(err).to.not.exist
                 expect(res.type).to.eql('application/json')
@@ -110,11 +106,11 @@ describe(`> [${exchangeName}]`, function() {
               })
         });
 
-        it(`> GET:/exchange/${exchangeName}/orderBook?symbol=${targetCurrencyPair} then use public ${exchangeName} and return 200`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/orderBook?symbol=%%targetCurrencyPair%% then use public %%exchangeName%% and return 200`, function(done) {
           this.timeout(TIMEOUT_MS);
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/orderBook`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/orderBook`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .end((err, res) => {
                 expect(err).to.not.exist
                 expect(res.type).to.eql('application/json')
@@ -123,11 +119,11 @@ describe(`> [${exchangeName}]`, function() {
               })
         })
 
-        it(`> GET:/exchange/${exchangeName}/l2OrderBook?symbol=${targetCurrencyPair} then use public ${exchangeName} and return 200`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/l2OrderBook?symbol=%%targetCurrencyPair%% then use public %%exchangeName%% and return 200`, function(done) {
           this.timeout(TIMEOUT_MS);
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/l2OrderBook`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/l2OrderBook`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .end((err, res) => {
                 expect(err).to.not.exist
                 expect(res.type).to.eql('application/json')
@@ -136,11 +132,11 @@ describe(`> [${exchangeName}]`, function() {
               })
         })
 
-        it(`> GET:/exchange/${exchangeName}/trades?symbol=${targetCurrencyPair} then use public ${exchangeName} and return 200`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/trades?symbol=%%targetCurrencyPair%% then use public %%exchangeName%% and return 200`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/trades`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/trades`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .retry(3)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -150,11 +146,11 @@ describe(`> [${exchangeName}]`, function() {
               })
         })
 
-        it(`> GET:/exchange/${exchangeName}/ticker?symbol=${targetCurrencyPair} then use public ${exchangeName} and return ${expectedStatusCodes['fetchTicker']}`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/ticker?symbol=%%targetCurrencyPair%% then use public %%exchangeName%% and return ${expectedStatusCodes['fetchTicker']}`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/ticker`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/ticker`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .retry(3)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -164,10 +160,10 @@ describe(`> [${exchangeName}]`, function() {
               })
         })
 
-        it(`> GET:/exchange/${exchangeName}/tickers then return use public ${exchangeName} and return ${expectedStatusCodes['fetchTickers']}`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/tickers then return use public %%exchangeName%% and return ${expectedStatusCodes['fetchTickers']}`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/tickers`)
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/tickers`)
               .end((err, res) => {
                 expect(res.type).to.eql('application/json')
                 expect(res.status).to.eql(expectedStatusCodes['fetchTickers'])
@@ -178,10 +174,10 @@ describe(`> [${exchangeName}]`, function() {
               })
         })
 
-        it(`> POST:/exchange/${exchangeName}/_/loadMarkets then use public ${exchangeName} and return 200`, function(done) {
+        it(`> POST:/exchange/%%exchangeName%%/_/loadMarkets then use public %%exchangeName%% and return 200`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .post(`${baseUrl}/exchange/${exchangeName}/_/loadMarkets`)
+              .post(`%%baseUrl%%/exchange/%%exchangeName%%/_/loadMarkets`)
               .send(JSON.stringify([true]))
               .set('Accept', 'application/json')
               .end((err, res) => {
@@ -194,14 +190,14 @@ describe(`> [${exchangeName}]`, function() {
       });
     });
 
-    describe(`> [${exchangeName}] Given with saved exchange`, function() {
+    describe(`> [%%exchangeName%%] Given with saved exchange`, function() {
       var token
 
       before(function() {
         this.timeout(TIMEOUT_MS)
         return new Promise((resolve) => {
           superagent
-            .post(`${baseUrl}/exchange/${exchangeName}`)
+            .post(`%%baseUrl%%/exchange/%%exchangeName%%`)
             .send(creds)
             .set('Accept', 'application/json')
             .end((err, res) => {
@@ -211,8 +207,8 @@ describe(`> [${exchangeName}]`, function() {
               expect(res.status).to.eql(200)
 
               db.Exchange.findOne({
-                exchangeName:exchangeName, 
-                exchangeId:exchangeId
+                exchangeName:`%%exchangeName%%`, 
+                exchangeId:`%%exchangeId%%`
               }).then(exchange => {
                 should.exist(exchange);
 
@@ -229,11 +225,11 @@ describe(`> [${exchangeName}]`, function() {
         this.timeout(TIMEOUT_MS)
         return new Promise((resolve) => {
           db.Exchange.findOne({
-            exchangeName:exchangeName, 
-            exchangeId:exchangeId
+            exchangeName:`%%exchangeName%%`, 
+            exchangeId:`%%exchangeId%%`
           }).then(beforeDeleteExchange => {
             superagent
-              .delete(`${baseUrl}/exchange/${exchangeName}`)
+              .delete(`%%baseUrl%%/exchange/%%exchangeName%%`)
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -243,8 +239,8 @@ describe(`> [${exchangeName}]`, function() {
                 expect(res.body.name).to.be.match(new RegExp(exchangeName, 'i'))
 
                 db.Exchange.findOne({
-                  exchangeName:exchangeName, 
-                  exchangeId:exchangeId
+                  exchangeName:`%%exchangeName%%`, 
+                  exchangeId:`%%exchangeId%%`
                 }).then(exchangeAfterDeletion => {
                   should.not.exist(exchangeAfterDeletion)
                   resolve()
@@ -254,11 +250,11 @@ describe(`> [${exchangeName}]`, function() {
         });
       });
 
-      describe(`> [${exchangeName}] Using Saved Instance's Exchange Management APIs`, function() {
-        it(`> GET:/exchange/${exchangeName} then return id of new exchange`, function(done) {
+      describe(`> [%%exchangeName%%] Using Saved Instance's Exchange Management APIs`, function() {
+        it(`> GET:/exchange/%%exchangeName%% then return id of new exchange`, function(done) {
           this.timeout(TIMEOUT_MS);
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}`)
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%`)
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -271,10 +267,10 @@ describe(`> [${exchangeName}]`, function() {
               });
         });
   
-        it(`> GET:/exchange/${exchangeName} then get exchange`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%% then get exchange`, function(done) {
           this.timeout(TIMEOUT_MS);
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}`)
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%`)
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -282,12 +278,12 @@ describe(`> [${exchangeName}]`, function() {
                 expect(res.status).to.eql(200)
 
                 db.Exchange.findOne({
-                  exchangeName:exchangeName, 
-                  exchangeId:exchangeId
+                  exchangeName:`%%exchangeName%%`, 
+                  exchangeId:`%%exchangeId%%`
                 }).then(exchange => {
                   should.exist(exchange);
 
-                  res.body.id.should.eql(exchangeId);
+                  res.body.id.should.eql(`%%exchangeId%%`);
                   done()
                 }).catch(done)
               });
@@ -295,11 +291,11 @@ describe(`> [${exchangeName}]`, function() {
 
       })
 
-      describe(`> [${exchangeName}] Using Saved Instance's Public Data APIs`, function() {
-        it(`> GET:/exchange/${exchangeName}/markets then get exchange's markets`, function(done) {
+      describe(`> [%%exchangeName%%] Using Saved Instance's Public Data APIs`, function() {
+        it(`> GET:/exchange/%%exchangeName%%/markets then get exchange's markets`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/markets`)
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/markets`)
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -313,11 +309,11 @@ describe(`> [${exchangeName}]`, function() {
               });
         })
 
-        it(`> GET:/exchange/${exchangeName}/orderBook then get exchange's Order Book`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/orderBook then get exchange's Order Book`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/orderBook`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/orderBook`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -331,11 +327,11 @@ describe(`> [${exchangeName}]`, function() {
               });
         })
 
-        it(`> GET:/exchange/${exchangeName}/orderBook with limit then get exchange's Order Book`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/orderBook with limit then get exchange's Order Book`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/orderBook`)
-              .query({ symbol: targetCurrencyPair, limit: 50 })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/orderBook`)
+              .query({ symbol: `%%targetCurrencyPair%%`, limit: 50 })
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -349,11 +345,11 @@ describe(`> [${exchangeName}]`, function() {
               });
         })
 
-        it(`> GET:/exchange/${exchangeName}/l2OrderBook then get exchange's L2 Order Book`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/l2OrderBook then get exchange's L2 Order Book`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/l2OrderBook`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/l2OrderBook`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -367,11 +363,11 @@ describe(`> [${exchangeName}]`, function() {
               });
         })
 
-        it(`> GET:/exchange/${exchangeName}/l2OrderBook with limit then get exchange's L2 Order Book`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/l2OrderBook with limit then get exchange's L2 Order Book`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/l2OrderBook`)
-              .query({ symbol: targetCurrencyPair, limit: 50 })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/l2OrderBook`)
+              .query({ symbol: `%%targetCurrencyPair%%`, limit: 50 })
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -385,11 +381,11 @@ describe(`> [${exchangeName}]`, function() {
               });
         })
 
-        it(`> GET:/exchange/${exchangeName}/trades then get exchange's trades`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/trades then get exchange's trades`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/trades`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/trades`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -402,11 +398,11 @@ describe(`> [${exchangeName}]`, function() {
               });
         })
 
-        it(`> GET:/exchange/${exchangeName}/ticker then return ' + ${expectedStatusCodes['fetchTicker']}`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/ticker then return ' + ${expectedStatusCodes['fetchTicker']}`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/ticker`)
-              .query({ symbol: targetCurrencyPair })
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/ticker`)
+              .query({ symbol: `%%targetCurrencyPair%%` })
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(res.type).to.eql('application/json')
@@ -418,10 +414,10 @@ describe(`> [${exchangeName}]`, function() {
               })
         })
 
-        it(`> GET:/exchange/${exchangeName}/tickers then ${expectedStatusCodes['fetchTickers']}`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/tickers then ${expectedStatusCodes['fetchTickers']}`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/tickers`)
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/tickers`)
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(res.type).to.eql('application/json')
@@ -433,10 +429,10 @@ describe(`> [${exchangeName}]`, function() {
               })
         })
 
-        it(`> POST:/exchange/${exchangeName}/_/loadMarkets then get exchange's direct method`, function(done) {
+        it(`> POST:/exchange/%%exchangeName%%/_/loadMarkets then get exchange's direct method`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .post(`${baseUrl}/exchange/${exchangeName}/_/loadMarkets`)
+              .post(`%%baseUrl%%/exchange/%%exchangeName%%/_/loadMarkets`)
               .type('text')
               .send(JSON.stringify([true]))
               .set('Accept', 'application/json')
@@ -452,17 +448,17 @@ describe(`> [${exchangeName}]`, function() {
     
       });
 
-      describe(`> [${exchangeName}] Using Saved Instance's Private Data APIs`, function() {
+      describe(`> [%%exchangeName%%] Using Saved Instance's Private Data APIs`, function() {
         before(function() {
           if (!creds) {
-            console.info(`[SKIP REASON] No credentials found for ${exchangeName}`)
+            console.info(`[SKIP REASON] No credentials found for %%exchangeName%%`)
             this.skip()
           }
         })
-        it(`> GET:/exchange/${exchangeName}/balances then get exchange's balances`, function(done) {
+        it(`> GET:/exchange/%%exchangeName%%/balances then get exchange's balances`, function(done) {
           this.timeout(TIMEOUT_MS)
           superagent
-              .get(`${baseUrl}/exchange/${exchangeName}/balances`)
+              .get(`%%baseUrl%%/exchange/%%exchangeName%%/balances`)
               .set('Authorization', `Bearer ${token}`)
               .end((err, res) => {
                 expect(err).to.not.exist
@@ -478,13 +474,13 @@ describe(`> [${exchangeName}]`, function() {
 
         for (var type of ['limit']) {
           for (var side of ['buy', 'sell']) {
-            describe(`> [${exchangeName}] Given with open ${type} ${side} order`, function() {
+            describe(`> [%%exchangeName%%] Given with open ${type} ${side} order`, function() {
               var orderId
               before(function() {
                 this.timeout(TIMEOUT_MS)
                 return new Promise((resolve) => {
 
-                  const path = `${baseUrl}/exchange/${exchangeName}`
+                  const path = `%%baseUrl%%/exchange/%%exchangeName%%`
                   superagent
                     .get(path)
                     .set('Authorization', `Bearer ${token}`)
@@ -502,7 +498,7 @@ describe(`> [${exchangeName}]`, function() {
                           expect(res.status).to.eql(200)
   
                           var market = res.body.find((market) => {
-                            return market.symbol == targetCurrencyPair
+                            return market.symbol == `%%targetCurrencyPair%%`
                           })
 
                           var minimumAmount = market.limits.amount.min
@@ -511,7 +507,7 @@ describe(`> [${exchangeName}]`, function() {
   
                           superagent
                             .get(`${path}/orderBook`)
-                            .query({ symbol: targetCurrencyPair })
+                            .query({ symbol: `%%targetCurrencyPair%%` })
                             .set('Authorization', `Bearer ${token}`)
                             .end((err, res) => {
                               expect(err).to.not.exist
@@ -524,7 +520,7 @@ describe(`> [${exchangeName}]`, function() {
                               var computedAmount = parseFloat(((minimumCost / price) + Math.pow(10, -1 * precisionAmount)).toFixed(precisionAmount))
                               var amount = Math.max(minimumAmount, computedAmount)
       
-                              var orderPlacement = { symbol: targetCurrencyPair, type: type, side: side, amount:amount, price:price }
+                              var orderPlacement = { symbol: `%%targetCurrencyPair%%`, type: type, side: side, amount:amount, price:price }
                               
                               superagent
                                 .post(`${path}/order`)
@@ -554,8 +550,8 @@ describe(`> [${exchangeName}]`, function() {
                 return new Promise((resolve) => {
                   if (orderId) {
                     superagent
-                      .delete(`${baseUrl}/exchange/${exchangeName}/order/${orderId}`)
-                      .query({symbol : targetCurrencyPair})
+                      .delete(`%%baseUrl%%/exchange/%%exchangeName%%/order/${orderId}`)
+                      .query({symbol : `%%targetCurrencyPair%%`})
                       .set('Authorization', `Bearer ${token}`)
                       .end((err, res) => {
                         expect(err).to.not.exist
@@ -568,11 +564,11 @@ describe(`> [${exchangeName}]`, function() {
                 });
               });
 
-              it(`> [${exchangeName}] Given with open ${type} ${side} order, get order`, function(done) {
+              it(`> [%%exchangeName%%] Given with open ${type} ${side} order, get order`, function(done) {
                 this.timeout(TIMEOUT_MS)
                 superagent
-                      .get(`${baseUrl}/exchange/${exchangeName}/order/${orderId}`)
-                      .query({symbol : targetCurrencyPair})
+                      .get(`%%baseUrl%%/exchange/%%exchangeName%%/order/${orderId}`)
+                      .query({symbol : `%%targetCurrencyPair%%`})
                       .set('Authorization', `Bearer ${token}`)
                       .end((err, res) => {
                         expect(err).to.not.exist
@@ -583,11 +579,11 @@ describe(`> [${exchangeName}]`, function() {
                       });
               })
 
-              it(`> [${exchangeName}] Given with open ${type} ${side} order, get orders, then ${expectedStatusCodes['fetchOrders']}`, function(done) {
+              it(`> [%%exchangeName%%] Given with open ${type} ${side} order, get orders, then ${expectedStatusCodes['fetchOrders']}`, function(done) {
                 this.timeout(TIMEOUT_MS)
                 superagent
-                  .get(`${baseUrl}/exchange/${exchangeName}/orders`)
-                  .query({symbol : targetCurrencyPair})
+                  .get(`%%baseUrl%%/exchange/%%exchangeName%%/orders`)
+                  .query({symbol : `%%targetCurrencyPair%%`})
                   .set('Authorization', `Bearer ${token}`)
                   .end((err, res) => {
                     expect(res.type).to.eql('application/json')
@@ -600,11 +596,11 @@ describe(`> [${exchangeName}]`, function() {
                   });
               })
 
-              it(`> [${exchangeName}] Given with open ${type} ${side} order, get open orders`, function(done) {
+              it(`> [%%exchangeName%%] Given with open ${type} ${side} order, get open orders`, function(done) {
                 this.timeout(TIMEOUT_MS)
                 superagent
-                      .get(`${baseUrl}/exchange/${exchangeName}/orders/open`)
-                      .query({symbol : targetCurrencyPair})
+                      .get(`%%baseUrl%%/exchange/%%exchangeName%%/orders/open`)
+                      .query({symbol : `%%targetCurrencyPair%%`})
                       .set('Authorization', `Bearer ${token}`)
                       .end((err, res) => {
                         expect(err).to.not.exist
@@ -615,11 +611,11 @@ describe(`> [${exchangeName}]`, function() {
                       });
               })
 
-              it(`> [${exchangeName}] Given with open ${type} ${side} order, get closed orders, then ${expectedStatusCodes['fetchClosedOrders']}`, function(done) {
+              it(`> [%%exchangeName%%] Given with open ${type} ${side} order, get closed orders, then ${expectedStatusCodes['fetchClosedOrders']}`, function(done) {
                 this.timeout(TIMEOUT_MS)
                 superagent
-                  .get(`${baseUrl}/exchange/${exchangeName}/orders/closed`)
-                  .query({symbol : targetCurrencyPair})
+                  .get(`%%baseUrl%%/exchange/%%exchangeName%%/orders/closed`)
+                  .query({symbol : `%%targetCurrencyPair%%`})
                   .set('Authorization', `Bearer ${token}`)
                   .end((err, res) => {
                     expect(res.type).to.eql('application/json')
@@ -632,11 +628,11 @@ describe(`> [${exchangeName}]`, function() {
                   });
               })
 
-              it(`> [${exchangeName}] Given with open ${type} ${side} order, get my trades, then ${expectedStatusCodes['fetchMyTrades']}`, function(done) {
+              it(`> [%%exchangeName%%] Given with open ${type} ${side} order, get my trades, then ${expectedStatusCodes['fetchMyTrades']}`, function(done) {
                 this.timeout(TIMEOUT_MS)
                 superagent
-                  .get(`${baseUrl}/exchange/${exchangeName}/trades/mine`)
-                  .query({symbol : targetCurrencyPair})
+                  .get(`%%baseUrl%%/exchange/%%exchangeName%%/trades/mine`)
+                  .query({symbol : `%%targetCurrencyPair%%`})
                   .set('Authorization', `Bearer ${token}`)
                   .end((err, res) => {
                     expect(res.type).to.eql('application/json')
