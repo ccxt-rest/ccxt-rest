@@ -326,8 +326,10 @@ describe('> controllers', function() {
 
         before(function() {
           if (SKIPPED_EXCHANGES.includes(_ctx.exchangeName)) {
+            console.info(`Is '${_ctx.exchangeName}' in ${SKIPPED_EXCHANGES}? - Yes`)
             this.skip()
           }
+          console.info(`Is '${_ctx.exchangeName}' in ${SKIPPED_EXCHANGES}? - No`)
         })
 
         describe(`> [${_ctx.exchangeName}] Given no saved exchanges`, function() {
