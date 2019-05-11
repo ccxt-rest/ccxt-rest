@@ -19,9 +19,9 @@ var _deleteFolderRecursive = function(path) {
       });
       fs.rmdirSync(path);
     }
-  };
+};
   
-  function run_command(command, params) {
+function run_command(command, params) {
     console.info('[START] `' + command + '`...')
     if (params && !params.stdio) {
         params.stdio = 'inherit'
