@@ -51,7 +51,7 @@ const mochaParamObject = (function(){
     return mochaParamObject
 })()
 
-function generateTestFiles(exchangeList, testDir, templateFile, postTestFileGenerationProcessor) {
+function generateTestFiles(server, exchangeList, testDir, templateFile, postTestFileGenerationProcessor) {
     const template = fs.readFileSync(templateFile).toString()
     exchangeList.forEach(exchangeName => {
         let testContent = template
@@ -106,10 +106,13 @@ function runParallelTests(exchangeList, testDir, templateFile, postTestFileGener
 
     beforeAllTests()
 
+    if (fs.existsSync('./out/database.sqlite3')) {
+        fs.unlinkSync('./out/database.sqlite3')
+    }
     app.start(server => {
-        generateTestFiles(exchangeList, testDir, templateFile, postTestFileGenerationProcessor);
+        generateTestFiles(server, exchangeList, testDir, templateFile, postTestFileGenerationProcessor);
         
-        const mocha = createMochaObject(testDir, mochaParamObject)
+        let mocha = createMochaObject(testDir, mochaParamObject)
         mocha = postMochaCreationProcessor(mocha, mochaParamObject)
         
         const start = new Date()
@@ -126,4 +129,8 @@ function runParallelTests(exchangeList, testDir, templateFile, postTestFileGener
     
     })
     
+}
+
+module.exports = {
+    runParallelTests : runParallelTests
 }

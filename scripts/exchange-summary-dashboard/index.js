@@ -1,17 +1,13 @@
+const parallelTest = require('../_common/parallel-test');
+const ccxt = require('ccxt');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const Mocha = require('mocha-parallel-tests').default;
-
-const ccxt = require('ccxt')
-
-const os = require('os')
-
-process.env.PORT = 0
-const app = require('../../app')
 
 const EXCHANGES_ROOT_PATH = require('./common').EXCHANGES_ROOT_PATH
+
 const MARKET_PER_EXCHANGE_FILENAME = 'scripts/exchange-summary-dashboard/market-per-exchange.json'
+const marketPerExchange = JSON.parse(fs.readFileSync(MARKET_PER_EXCHANGE_FILENAME))
 
 const PUBLIC_API_LABEL = '<img src="https://img.shields.io/badge/Public%20API-green.svg" alt="Public API" />'
 const PRIVATE_API_LABEL = '<img src="https://img.shields.io/badge/Private%20API-blue.svg" alt="Private API" />'
@@ -20,51 +16,6 @@ const UNEXPECTED_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%
 const BROKEN_INTEGRATION_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Broken%20Integration-red.svg" alt="Broken Integration Error" />'
 const NETWORK_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Network-red.svg" alt="Network Error" />'
 const REQUEST_TIMEOUT_ERROR_LABEL = '<img src="https://img.shields.io/badge/Error%3A%20Timeout-red.svg" alt="Request Timeout Error" />'
-
-
-const mochaParamObject = (function(){
-    const additionalMochaArgs = process.argv.slice(2)
-
-    const getMethods = (obj) => {
-        let properties = new Set()
-        let currentObj = obj
-        do {
-          Object.getOwnPropertyNames(currentObj).map(item => properties.add(item))
-        } while ((currentObj = Object.getPrototypeOf(currentObj)))
-        return [...properties.keys()].filter(item => typeof obj[item] === 'function')
-    }
-    
-    const mochaFunctionNames = getMethods(new Mocha()).filter(methodName => !methodName.startsWith('_')).sort()
-
-    let mochaParamObject = {}
-    let i = 0;
-    let mochaParameterName
-    while (i < additionalMochaArgs.length) {
-        const optionName = additionalMochaArgs[i]
-        if (optionName.startsWith('--')) {
-            mochaParameterName = optionName.slice(2)
-
-            if (!mochaFunctionNames.includes(mochaParameterName)) {
-                console.error(`'${optionName}' is not supported. Try one of the followings intead: 
-                ${mochaFunctionNames.map(name => '--' + name).join('\n * ')} 
-                
-                (Note: note all of these are supported.)`)
-                process.exit(1)
-            }
-            mochaParamObject[mochaParameterName] = [] 
-        } else if (optionName.startsWith('-')) {
-            console.error(`Single dash options like '${optionName}' are not supported. Use double dash arguments instead.`)
-            process.exit(1)
-            continue;
-        } else {
-            mochaParamObject[mochaParameterName].push(optionName)
-        }
-
-        i++;
-    }
-
-    return mochaParamObject
-})()
 
 const beforeAll = function() {
     if (!fs.existsSync(EXCHANGES_ROOT_PATH)) {
@@ -87,7 +38,7 @@ const afterAll = function() {
     let exchangeNames = []
     exchangeNames = Object.keys(exchangeDetails).sort()
 
-    let toRow = function(array) {
+    const toRow = function(array) {
         return '<tr><td>' + array.join(table_delimiter) + '</td></tr>'
     }
 
@@ -124,6 +75,27 @@ const afterAll = function() {
 
     const lastExecutionDate = `<img src="https://img.shields.io/badge/Last%20Execution%20Date-${currentDate}-green.svg" alt="Last Execution Date: ${currentDate}" />`
     const headers = toRow(['Exchange', 'Connect', 'Market', 'Ticker', 'Tickers', 'Order Book', 'Trades'])
+
+    function statusCodeToLabel(body) {
+        const statusCode = body && body.statusCode
+        if (statusCode == 200) {
+            return PUBLIC_API_LABEL
+        } else if (statusCode == 401) {
+            return PRIVATE_API_LABEL
+        } else if (statusCode == 408) {
+            return REQUEST_TIMEOUT_ERROR_LABEL
+        } else if (statusCode == 500) {
+            return UNEXPECTED_ERROR_LABEL
+        } else if (statusCode == 501) {
+            return NOT_SUPPORTED_LABEL
+        } else if (statusCode == 503) {
+            return BROKEN_INTEGRATION_ERROR_LABEL
+        } else if (statusCode == 504) {
+            return NETWORK_ERROR_LABEL
+        } else {
+            return `<img src="https://img.shields.io/badge/${statusCode}-grey.svg" alt="${statusCode}" />`
+        }
+    }
 
     const rows = exchangeNames.map((exchangeName) => {
         return toRow([
@@ -172,97 +144,23 @@ const afterAll = function() {
     fs.writeFileSync(MARKET_PER_EXCHANGE_FILENAME, JSON.stringify(combinedMarketPerExchange, null, 2))
 }
 
-function statusCodeToLabel(body) {
-    const statusCode = body && body.statusCode
-    if (statusCode == 200) {
-        return PUBLIC_API_LABEL
-    } else if (statusCode == 401) {
-        return PRIVATE_API_LABEL
-    } else if (statusCode == 408) {
-        return REQUEST_TIMEOUT_ERROR_LABEL
-    } else if (statusCode == 500) {
-        return UNEXPECTED_ERROR_LABEL
-    } else if (statusCode == 501) {
-        return NOT_SUPPORTED_LABEL
-    } else if (statusCode == 503) {
-        return BROKEN_INTEGRATION_ERROR_LABEL
-    } else if (statusCode == 504) {
-        return NETWORK_ERROR_LABEL
-    } else {
-        return `<img src="https://img.shields.io/badge/${statusCode}-grey.svg" alt="${statusCode}" />`
-    }
-}
-
-const marketPerExchange = JSON.parse(fs.readFileSync(MARKET_PER_EXCHANGE_FILENAME))
-
-const TEST_DIR = `${__dirname}/generated`
-if (!fs.existsSync(TEST_DIR)) {
-    fs.mkdirSync(TEST_DIR, {recursive:true});
-}
-fs.readdirSync(TEST_DIR).forEach(fileName => {
-    fs.unlinkSync(path.join(TEST_DIR, fileName))
-})
-
-if (fs.existsSync('./out/database.sqlite3')) {
-    fs.unlinkSync('./out/database.sqlite3')
-}
-app.start(server => {
-    const template = fs.readFileSync(`${__dirname}/_template-test.js`).toString()
-        .replace('%%baseUrl%%', `http://localhost:${server.address().port}`);
-    ccxt.exchanges.forEach(exchangeName => {
+parallelTest.runParallelTests(
+    ccxt.exchanges, 
+    `${__dirname}/generated`, 
+    `${__dirname}/_template-test.js`, 
+    (testContent, exchangeName) => {
         const market = marketPerExchange[exchangeName]
-        const testContent = template
-            .replace(new RegExp('%%exchangeName%%', 'g'), exchangeName)
+        return testContent
             .replace(new RegExp('%%market%%', 'g'), market);
-        fs.writeFileSync(`${TEST_DIR}/${exchangeName}.js`, testContent)
-    })
-
-    const mocha = new Mocha()
-    fs.readdirSync(TEST_DIR)
-        .filter(filename => filename.endsWith('.js'))
-        .map(filename => path.join(TEST_DIR, filename))
-        .forEach(filename => {
-            console.info(`Adding ${filename} to mocha`)
-            mocha.addFile(filename)
-        });
-
-    beforeAll()
-
-    Object.keys(mochaParamObject).forEach(paramName => {
-        mocha[paramName].apply(mocha, mochaParamObject[paramName])
-    })
-
-    const numberOfCpus = os.cpus().length
-    let maxParallel = process.env.MAX_PARALLEL_TESTS || numberOfCpus
-    if (maxParallel === 0) {
-        maxParallel = numberOfCpus
-    }
-    console.info(`
-    Max Parallel Configuration:
-    * numberOfCpus : ${numberOfCpus}
-    * process.env.MAX_PARALLEL_TESTS : ${process.env.MAX_PARALLEL_TESTS}
-    * effective maxParallel : ${maxParallel}
-    `)
-    mocha.setMaxParallel(maxParallel)
-    
-    mocha.reporter('mochawesome', {
-        reportDir : './out/exchange-summary-dashboard',
-        reportTitle: 'CCXT-REST Exchange Summary Dashboard',
-        reportPageTitle: 'CCXT-REST Exchange Summary Dashboard'
-    })
-    const start = new Date()
-    mocha.run(function() {
-        afterAll()
-        if (server) {
-            server.close()
-        }
-        if (fs.existsSync('./out/database.sqlite3')) {
-            fs.unlinkSync('./out/database.sqlite3')
-        }
-        const end = new Date()
-        console.info(`Started execution at ${start.toUTCString()}`)
-        console.info(`Ended execution at ${end.toUTCString()}`)
-        console.info(`Finished execution after ${(end - start) / 1000.0 / 60.0 } minutes`)
-    });
-
-})
+    }, 
+    (mocha, mochaParamObject) => {
+        mocha.reporter('mochawesome', {
+            reportDir : './out/exchange-summary-dashboard',
+            reportTitle: 'CCXT-REST Exchange Summary Dashboard',
+            reportPageTitle: 'CCXT-REST Exchange Summary Dashboard'
+        })
+        return mocha
+    },
+    beforeAll,
+    afterAll
+    )
