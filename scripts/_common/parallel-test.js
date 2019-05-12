@@ -199,11 +199,11 @@ function runParallelProcessTests(exchangeList, testDir, templateFile, postTestFi
         const startCommand = `./bin/www`
         console.info(`Running ${startCommand}`)
         const ccxtProcess = spawn(process.execPath, ['./bin/www'], {
-            env: {
+            env: Object.assign(process.env, {
                 'NODE_ENV': 'test',
                 'LOG_LEVEL': 'error',
                 'PORT': port
-            },
+            }),
             stdio:'inherit'
         })
 
@@ -219,7 +219,7 @@ function runParallelProcessTests(exchangeList, testDir, templateFile, postTestFi
                     .map(filename => path.join(testDir, filename));
                 
                 const testCommandStrings = testFiles.map(testFile => {
-                    let command = [`NODE_ENV=test BASE_URL=${baseUrl}`, './node_modules/.bin/mocha', testFile, ...mochaDirectParameters]
+                    let command = ['./node_modules/.bin/mocha', testFile, ...mochaDirectParameters]
                     command = mochaCommandCreator(command)
                     return command.join(' ')
                 })
@@ -228,15 +228,23 @@ function runParallelProcessTests(exchangeList, testDir, templateFile, postTestFi
             
                 const start = new Date()
                 const promises = testCommandStrings.map(commandString => new Promise((resolve, reject) => {
-                    exec(commandString, {stdio:'inherit'}, error => {
-                        if (error) {
-                            console.error(`Error in ${commandString}`)
-                            console.trace(error)
-                            reject(error)
-                        } else {
-                            resolve()
-                        }
-                    });
+                    exec(commandString, 
+                        {
+                            env: Object.assign(process.env, {
+                                'NODE_ENV': 'test',
+                                'BASE_URL': baseUrl
+                            }),
+                            stdio:'inherit'
+                        }, 
+                        error => {
+                            if (error) {
+                                console.error(`Error in ${commandString}`)
+                                console.trace(error)
+                                reject(error)
+                            } else {
+                                resolve()
+                            }
+                        });
                 }))
             
                 let hasError = false
