@@ -43,6 +43,7 @@ config/runtime.yaml
 clients
 out
 scripts/exchange-summary-dashboard/generated/**
+scripts/integration-tests/generated/**
 database.sqlite3
 
 # After npm pack
