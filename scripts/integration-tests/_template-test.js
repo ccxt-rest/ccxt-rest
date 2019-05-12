@@ -522,6 +522,7 @@ describe(`> [%%exchangeName%%]`, function() {
                               var amount = Math.max(minimumAmount, computedAmount)
       
                               var orderPlacement = { symbol: `%%targetCurrencyPair%%`, type: type, side: side, amount:amount, price:price }
+                              console.info({orderPlacement:orderPlacement})
                               
                               superagent
                                 .post(`${path}/order`)

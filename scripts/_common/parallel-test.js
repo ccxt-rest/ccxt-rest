@@ -233,10 +233,15 @@ function runParallelProcessTests(exchangeList, testDir, templateFile, postTestFi
                             env: Object.assign(process.env, {
                                 'NODE_ENV': 'test',
                                 'BASE_URL': baseUrl
-                            }),
-                            stdio:'inherit'
+                            })
                         }, 
-                        error => {
+                        (error, stdout, stderr) => {
+                            if (stdout) {
+                                console.info(stdout)
+                            }
+                            if (stderr) {
+                                console.error(stderr)
+                            }
                             if (error) {
                                 console.error(`Error in ${commandString}`)
                                 console.trace(error)

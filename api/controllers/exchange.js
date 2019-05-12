@@ -190,8 +190,12 @@ function createOrder(req, res) {
     execute(req, res, 
       (req, context) => {
         const orderPlacement = req.body;
+        if (orderPlacement.exchangeSpecificParams) {
+          orderPlacement.params = orderPlacement.exchangeSpecificParams
+          delete orderPlacement.exchangeSpecificParams
+        }
         context.orderPlacement = orderPlacement
-        const parameterValues = [orderPlacement.symbol, orderPlacement.type, orderPlacement.side, orderPlacement.amount, orderPlacement.price]
+        const parameterValues = [orderPlacement.symbol, orderPlacement.type, orderPlacement.side, orderPlacement.amount, orderPlacement.price, orderPlacement.params]
         return parameterValues
       }, 
       'createOrder', 

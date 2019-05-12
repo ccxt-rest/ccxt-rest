@@ -203,7 +203,7 @@ paths:
           explode: true
           schema:
             type: number
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -256,7 +256,7 @@ paths:
           explode: true
           schema:
             type: number
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -317,7 +317,7 @@ paths:
           explode: true
           schema:
             type: number
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -373,7 +373,7 @@ paths:
           explode: true
           schema:
             type: string
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -415,7 +415,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -459,7 +459,7 @@ paths:
       operationId: balances
       parameters:
         - $ref: "#/components/parameters/exchangeNameParam"
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -517,7 +517,7 @@ paths:
           explode: true
           schema:
             type: number
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -578,7 +578,7 @@ paths:
           explode: true
           schema:
             type: number
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -639,7 +639,7 @@ paths:
           explode: true
           schema:
             type: number
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -700,7 +700,7 @@ paths:
           explode: true
           schema:
             type: number
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -785,7 +785,7 @@ paths:
         - $ref: "#/components/parameters/exchangeNameParam"
         - $ref: "#/components/parameters/orderIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -827,7 +827,7 @@ paths:
         - $ref: "#/components/parameters/exchangeNameParam"
         - $ref: "#/components/parameters/orderIdParam"
         - $ref: "#/components/parameters/optionalExchangeSymbolParam"
-        - name: exchangeSpecifcParams
+        - name: exchangeSpecificParams
           in: query
           description: Any exchange specific parameters you want to pass in
           schema:
@@ -1430,7 +1430,7 @@ components:
           description: >-
             The buying price or the selling price in terms of the quote. Price
             is needed for market orders and ignored in limit orders
-        params:
+        exchangeSpecificParams:
           type: object
           properties: {}
           description: Exchange specific parameters
