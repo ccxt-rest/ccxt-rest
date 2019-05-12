@@ -1,12 +1,15 @@
 const parallelTest = require('../_common/parallel-test')
 const ccxt = require('ccxt')
+const path = require('path')
 
 const ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
 const exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 
 const SKIPPED_EXCHANGES = JSON.parse(process.env.SKIPPED_EXCHANGES || '[]')
 
-parallelTest.runParallelTests(
+let testDirectories = []
+
+parallelTest.runParallelProcessTests(
     ccxt.exchanges
         .filter(exchangeName => exchangeDetailsMap[exchangeName])
         .filter(exchangeName => !SKIPPED_EXCHANGES.includes(exchangeName)), 
@@ -42,14 +45,16 @@ parallelTest.runParallelTests(
             .replace(new RegExp("%%expectedStatusCodesFetchTickers%%", 'g'), fetchTickers)
             ;
     }, 
-    (mocha, mochaParamObject) => {
-        mocha.reporter('mochawesome', {
-            reportDir : './out/integration-tests',
-            reportTitle: 'CCXT-REST Integration Tests',
-            reportPageTitle: 'CCXT-REST Integration Tests'
-        })
-        return mocha
+    (command) => {
+        const exchangeName = command.filter(candidate => candidate.endsWith('.js'))[0].split('/').reverse()[0].split('.')[0]
+        const title = `CCXT-REST ${exchangeName.toUpperCase()} Integration Tests Results`
+        const testDirectory = `./out/integration-tests/${exchangeName}`
+        testDirectories.push(path.resolve(testDirectory))
+        command = [...command, '--reporter', 'mochawesome', '--reporter-options', `reportDir=${testDirectory},reportTitle='${title}',reportPageTitle='${title}'`]
+        return command
     },
     () => {},
-    () => {}
+    () => {
+        console.info(`Generated reports in:\n * ${testDirectories.join('\n * ')}\n`)
+    }
     )

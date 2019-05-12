@@ -1,14 +1,18 @@
 const fs = require('fs');
+const net = require('net');
 const path = require('path');
 const Mocha = require('mocha-parallel-tests').default;
+const {exec, spawn} = require('child_process');
 
 const os = require('os')
 
 process.env.PORT = 0
 const app = require('../../app')
 
+const mochaDirectParameters = process.argv.slice(2)
+
 const mochaParamObject = (function(){
-    const additionalMochaArgs = process.argv.slice(2)
+    const additionalMochaArgs = mochaDirectParameters
 
     const getMethods = (obj) => {
         let properties = new Set()
@@ -51,11 +55,11 @@ const mochaParamObject = (function(){
     return mochaParamObject
 })()
 
-function generateTestFiles(server, exchangeList, testDir, templateFile, postTestFileGenerationProcessor) {
+function generateTestFiles(baseUrl, exchangeList, testDir, templateFile, postTestFileGenerationProcessor) {
     const template = fs.readFileSync(templateFile).toString()
     exchangeList.forEach(exchangeName => {
         let testContent = template
-            .replace(new RegExp('%%baseUrl%%', 'g'), `http://localhost:${server.address().port}`)
+            .replace(new RegExp('%%baseUrl%%', 'g'), baseUrl)
             .replace(new RegExp('%%exchangeName%%', 'g'), exchangeName);
 
         testContent = postTestFileGenerationProcessor(testContent, exchangeName)
@@ -110,7 +114,7 @@ function runParallelTests(exchangeList, testDir, templateFile, postTestFileGener
         fs.unlinkSync('./out/database.sqlite3')
     }
     app.start(server => {
-        generateTestFiles(server, exchangeList, testDir, templateFile, postTestFileGenerationProcessor);
+        generateTestFiles(`http://localhost:${server.address().port}`, exchangeList, testDir, templateFile, postTestFileGenerationProcessor);
         
         let mocha = createMochaObject(testDir, mochaParamObject)
         mocha = postMochaCreationProcessor(mocha, mochaParamObject)
@@ -131,6 +135,138 @@ function runParallelTests(exchangeList, testDir, templateFile, postTestFileGener
     
 }
 
+function getAvailablePort() {
+    return new Promise((resolve, reject) => {
+        const server = net.createServer();
+        server.unref();
+        server.on('error', reject);
+        server.listen(() => {
+            const {port} = server.address();
+            server.close(() => {
+                resolve(port);
+            });
+        });
+    });
+}
+
+function waitTillReachable(host, port) {
+    const start = new Date().getTime()
+    return new Promise((resolve, reject) => {
+        const innerWaitTillReachable = () => {
+            try {
+                const socket = new net.Socket();
+    
+                socket.setTimeout(10 * 1000);
+                socket.once('error', error => {
+                    const current = new Date().getTime()
+                    if (error.code === 'ECONNREFUSED' && (current - start) < (10 * 1000)) {
+                        setTimeout(innerWaitTillReachable, 1000)
+                    } else {
+                        reject()
+                    }
+                });
+                socket.once('timeout', () => {
+                    const current = new Date().getTime()
+                    if ((current - start) < (10 * 1000)) {
+                        setTimeout(innerWaitTillReachable, 1000)
+                    } else {
+                        reject()
+                    }
+                });
+        
+                socket.connect(port, host, () => {
+                    socket.end();
+                    resolve();
+                });
+            } catch (e) {
+                reject(e)
+            }
+        }
+        innerWaitTillReachable();
+	});
+}
+
+function runParallelProcessTests(exchangeList, testDir, templateFile, postTestFileGenerationProcessor, mochaCommandCreator, beforeAllTests, afterAllTests) {
+    prepareCleanTestDir(testDir)
+
+    beforeAllTests()
+
+    if (fs.existsSync('./out/database.sqlite3')) {
+        fs.unlinkSync('./out/database.sqlite3')
+    }
+
+    getAvailablePort().then(port => {
+        const startCommand = `./bin/www`
+        console.info(`Running ${startCommand}`)
+        const ccxtProcess = spawn(process.execPath, ['./bin/www'], {
+            env: {
+                'NODE_ENV': 'test',
+                'LOG_LEVEL': 'error',
+                'PORT': port
+            },
+            stdio:'inherit'
+        })
+
+        const baseUrl = `http://localhost:${port}`
+        console.info(`Waiting for ${baseUrl} to be recheable`)
+        waitTillReachable('localhost', port)
+            .then(() => {
+                console.info(`${baseUrl} is recheable!`)
+                generateTestFiles(baseUrl, exchangeList, testDir, templateFile, postTestFileGenerationProcessor);
+
+                const testFiles = fs.readdirSync(testDir)
+                    .filter(filename => filename.endsWith('.js'))
+                    .map(filename => path.join(testDir, filename));
+                
+                const testCommandStrings = testFiles.map(testFile => {
+                    let command = [`NODE_ENV=test BASE_URL=${baseUrl}`, './node_modules/.bin/mocha', testFile, ...mochaDirectParameters]
+                    command = mochaCommandCreator(command)
+                    return command.join(' ')
+                })
+                
+                console.info(`Executing:\n * ${testCommandStrings.join('\n * ')}\n`)
+            
+                const start = new Date()
+                const promises = testCommandStrings.map(commandString => new Promise((resolve, reject) => {
+                    exec(commandString, {stdio:'inherit'}, error => {
+                        if (error) {
+                            console.error(`Error in ${commandString}`)
+                            console.trace(error)
+                            reject(error)
+                        } else {
+                            resolve()
+                        }
+                    });
+                }))
+            
+                let hasError = false
+                Promise.all(promises)
+                    .catch(error => {
+                        hasError = true
+                    })
+                    .finally(() => {
+                        ccxtProcess.kill('SIGINT');
+                        afterAllTests()
+                        const end = new Date()
+                        console.info(`Started execution at ${start.toUTCString()}`)
+                        console.info(`Ended execution at ${end.toUTCString()}`)
+                        console.info(`Finished execution after ${(end - start) / 1000.0 / 60.0 } minutes`)
+                        process.exit(hasError ? 1 : 0)
+                    })
+            }).catch(error => {
+                console.error(`Could not wait for localhost:${port}`)
+                console.trace(error)
+                process.exit(1)
+            })
+    }).catch(error => {
+        console.error('Could not find available port')
+        console.trace(error)
+        process.exit(1)
+    })
+    
+}
+
 module.exports = {
-    runParallelTests : runParallelTests
+    runParallelTests : runParallelTests,
+    runParallelProcessTests : runParallelProcessTests
 }
