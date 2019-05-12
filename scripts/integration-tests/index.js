@@ -2,6 +2,8 @@ const parallelTest = require('../_common/parallel-test')
 const ccxt = require('ccxt')
 const path = require('path')
 
+const exchangeConfig = require('../../api/config/exchange')
+
 const ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
 const exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 
@@ -10,7 +12,7 @@ const SKIPPED_EXCHANGES = JSON.parse(process.env.SKIPPED_EXCHANGES || '[]')
 let testDirectories = []
 
 parallelTest.runParallelProcessTests(
-    ccxt.exchanges
+    exchangeConfig.exchanges
         .filter(exchangeName => exchangeDetailsMap[exchangeName])
         .filter(exchangeName => !SKIPPED_EXCHANGES.includes(exchangeName)), 
     `${__dirname}/generated`, 

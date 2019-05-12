@@ -5,13 +5,18 @@ const ccxt = require('ccxt')
     , execute = controller_helper.execute
 ;
 
-module.exports = {
-    allcoin: {
-        override : (functionName, req, res, defaultBehaviour) => {
-            const message = '[allcoin] is currently broken and not supported right now (https://github.com/ccxt/ccxt/issues/2962).'
-            throw new ccxtRestErrors.BrokenExchangeError(message)
-        }
-    }, 
+const UNSUPPORTED_EXCHANGES = {
+    'allcoin' : {
+        'status' : 'broken',
+        'moreInfo' : 'https://github.com/ccxt/ccxt/issues/2962'
+    },
+    'quadrigacx' : {
+        'status' : 'for delisting',
+        'moreInfo' : 'https://github.com/ccxt/ccxt/issues/4707'
+    }
+ }
+
+let exchangeConfigs = {
     bitso: {
         override: {
             createPrivateConnection : (req, res, defaultBehaviour) => {
@@ -26,3 +31,17 @@ module.exports = {
         }
     }
 };
+
+Object.keys(UNSUPPORTED_EXCHANGES).forEach(exchangeName => {
+    exchangeConfigs[exchangeName] = {
+        override : (functionName, req, res, defaultBehaviour) => {
+            const details = UNSUPPORTED_EXCHANGES[exchangeName]
+            const message = `[${exchangeName}] is currently ${details.status} and not supported right now (${details.moreInfo}).`
+            throw new ccxtRestErrors.BrokenExchangeError(message)
+        }
+    }
+})
+
+module.exports = Object.assign(exchangeConfigs, {
+    exchanges: ccxt.exchanges.filter(exchangeName => !UNSUPPORTED_EXCHANGES.hasOwnProperty(exchangeName)),
+})

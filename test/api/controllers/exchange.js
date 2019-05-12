@@ -1,5 +1,4 @@
 var ccxt = require('ccxt');
-var expect = require('chai').expect;
 var should = require('should');
 var request = require('supertest');
 var fs = require('fs')
@@ -7,11 +6,7 @@ var fs = require('fs')
 process.env.PORT = 0
 
 var ccxtServer = require('../../../app')
-var db = require('../../../api/models');
-var jwtHelper = require('../../../api/helpers/jwt-helper')
-
-var ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
-var exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
+var exchangeConfig = require('../../../api/config/exchange')
 
 const TIMEOUT_MS = process.env.TIMEOUT_MS || 10000
 const SKIPPED_EXCHANGES = JSON.parse(process.env.SKIPPED_EXCHANGES || '[]')
@@ -55,7 +50,7 @@ describe('> controllers', function() {
           .end(function(err, res) {
             should.not.exist(err);
 
-            res.body.should.eql(ccxt.exchanges.map(i => '' + i));
+            res.body.should.eql(exchangeConfig.exchanges.map(i => '' + i));
 
             done();
           });
@@ -293,7 +288,7 @@ describe('> controllers', function() {
     });
 
     describe('> Given broken exchanges', function() {
-      ['allcoin'].forEach(function(exchangeName) {
+      ['allcoin', 'quadrigacx'].forEach(function(exchangeName) {
         it(`> [${exchangeName}] When trying to instantiate, then 503`, function(done) {
           request(server)
             .post('/exchange/' + exchangeName)

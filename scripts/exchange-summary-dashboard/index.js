@@ -1,10 +1,10 @@
 const parallelTest = require('../_common/parallel-test');
-const ccxt = require('ccxt');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
 
 const EXCHANGES_ROOT_PATH = require('./common').EXCHANGES_ROOT_PATH
+const exchangeConfig = require('../../api/config/exchange')
 
 const MARKET_PER_EXCHANGE_FILENAME = 'scripts/exchange-summary-dashboard/market-per-exchange.json'
 const marketPerExchange = JSON.parse(fs.readFileSync(MARKET_PER_EXCHANGE_FILENAME))
@@ -145,7 +145,7 @@ const afterAll = function() {
 }
 
 parallelTest.runParallelTests(
-    ccxt.exchanges, 
+    exchangeConfig.exchanges, 
     `${__dirname}/generated`, 
     `${__dirname}/_template-test.js`, 
     (testContent, exchangeName) => {
