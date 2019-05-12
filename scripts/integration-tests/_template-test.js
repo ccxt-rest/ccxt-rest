@@ -3,6 +3,7 @@ const should = require('should');
 const superagent = require('superagent');
 
 const db = require('../../../api/models');
+const getUnattractiveOrderPlacement = require('../../_common/get-unattractive-order-placement').getUnattractiveOrderPlacement
 const jwtHelper = require('../../../api/helpers/jwt-helper')
 
 const TIMEOUT_MS = process.env.TIMEOUT_MS || 10000
@@ -479,71 +480,34 @@ describe(`> [%%exchangeName%%]`, function() {
               var orderId
               before(function() {
                 this.timeout(TIMEOUT_MS)
-                return new Promise((resolve) => {
+                return new Promise(resolve => {
 
-                  const path = `${BASE_URL}/exchange/%%exchangeName%%`
-                  superagent
-                    .get(path)
-                    .set('Authorization', `Bearer ${token}`)
-                    .end((err, res) => {
-                      expect(err).to.not.exist
-                      expect(res.type).to.eql('application/json')
-                      expect(res.status).to.eql(200)
-
+                  console.info(`Getting unattractive order placement for ${BASE_URL}, %%exchangeName%%, ${token}, %%targetCurrencyPair%%, ${side}`)
+                  getUnattractiveOrderPlacement(BASE_URL, `%%exchangeName%%`, token, `%%targetCurrencyPair%%`, side)
+                    .then(orderPlacement => {
+                      console.info(`Got unattractive order placement ${JSON.stringify(orderPlacement)}`)
                       superagent
-                        .get(`${path}/markets`)
+                        .post(`${BASE_URL}/exchange/%%exchangeName%%/order`)
+                        .send(orderPlacement)
+                        .set('Accept', 'application/json')
                         .set('Authorization', `Bearer ${token}`)
                         .end((err, res) => {
+                          if (err) {
+                            console.info([orderPlacement, err])
+                          }
                           expect(err).to.not.exist
                           expect(res.type).to.eql('application/json')
                           expect(res.status).to.eql(200)
-  
-                          var market = res.body.find((market) => {
-                            return market.symbol == `%%targetCurrencyPair%%`
-                          })
 
-                          var minimumAmount = market.limits.amount.min
-                          var minimumCost = market.limits.cost.min
-                          var precisionAmount = market.precision.amount
-  
-                          superagent
-                            .get(`${path}/orderBook`)
-                            .query({ symbol: `%%targetCurrencyPair%%` })
-                            .set('Authorization', `Bearer ${token}`)
-                            .end((err, res) => {
-                              expect(err).to.not.exist
-                              expect(res.type).to.eql('application/json')
-                              expect(res.status).to.eql(200)
-      
-                              var farLevel = (side == 'buy' ? res.body.bids : res.body.asks)[10]
-  
-                              var price = farLevel.price
-                              var computedAmount = parseFloat(((minimumCost / price) + Math.pow(10, -1 * precisionAmount)).toFixed(precisionAmount))
-                              var amount = Math.max(minimumAmount, computedAmount)
-      
-                              var orderPlacement = { symbol: `%%targetCurrencyPair%%`, type: type, side: side, amount:amount, price:price }
-                              console.info({orderPlacement:orderPlacement})
-                              
-                              superagent
-                                .post(`${path}/order`)
-                                .send(orderPlacement)
-                                .set('Accept', 'application/json')
-                                .set('Authorization', `Bearer ${token}`)
-                                .end((err, res) => {
-                                  if (err) {
-                                    console.info([orderPlacement, err])
-                                  }
-                                  expect(err).to.not.exist
-                                  expect(res.type).to.eql('application/json')
-                                  expect(res.status).to.eql(200)
-      
-                                  orderId = res.body.id
-                    
-                                  resolve();
-                                });
-                            });
+                          orderId = res.body.id
+            
+                          resolve();
                         });
-                    });
+                    }).catch(error => {
+                      console.info(`Got error while trying to get unattractive order placement ${error}`)
+                      expect(error).to.not.exist
+                      resolve()
+                    })
                 });
               })
 
