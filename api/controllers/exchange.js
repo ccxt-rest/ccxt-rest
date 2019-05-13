@@ -39,7 +39,7 @@ module.exports = {
 
 function list(req, res) {
   try {
-    res.send(ccxt.exchanges)
+    res.send(exchangeConfig.exchanges)
   } catch (error) {
     console.error('Error in list\n' + error)
     res.status(500).send()

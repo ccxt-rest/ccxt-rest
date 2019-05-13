@@ -1,6 +1,6 @@
 {
   "name": "ccxt-rest",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Open Source Unified REST API of 100+ Crypto Exchange Sites",
   "homepage": "https://ccxt-rest.io",
   "repository": {
