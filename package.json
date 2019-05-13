@@ -5,7 +5,7 @@
   "homepage": "https://ccxt-rest.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/franz-see/ccxt-rest.git"
+    "url": "https://github.com/ccxt-rest/ccxt-rest.git"
   },
   "keywords": [
     "algorithmic",
@@ -397,7 +397,7 @@
   "author": {
     "name": "Franz See",
     "email": "franz@see.net.ph",
-    "url": "https://github.com/franz-see"
+    "url": "https://github.com/ccxt-rest"
   },
   "license": "MIT",
   "readme": "README.md",
@@ -443,11 +443,11 @@
     "test": "NODE_ENV=test ./node_modules/.bin/mocha test/ --recursive --reporter mochawesome --reporter-options reportDir=./out/mochawesome-report,reportTitle='CCXT-REST Test Results',reportPageTitle='CCXT-REST Test Results'",
     "test:integration": "NODE_ENV=test node ./scripts/integration-tests",
     "posttest": "mkdir -p ./out/publish; cp -R ./out/mochawesome-report ./out/publish/test-results; cp ./out/publish/test-results/mochawesome.html ./out/publish/test-results/index.html",
-    "test:dockerbuild": "docker build -t franzsee/ccxt-rest:testing .",
+    "test:dockerbuild": "docker build -t ccxtrest/ccxt-rest:testing .",
     "generate:exchangeSummary": "NODE_ENV=test node ./scripts/exchange-summary-dashboard",
     "postgenerate:exchangeSummary": "mkdir -p ./out/publish; cp -R ./out/exchanges/ ./out/publish/exchanges",
     "prepack": "npm run swagger:verify_version && npm run generate:docs",
-    "generate:client": "rm -rf ./clients/$lang && docker run --rm -v ${PWD}:/local swaggerapi/swagger-codegen-cli generate --api-package ph.adroit.ccxtrest.api --model-package ph.adroit.ccxtrest.model --invoker-package ph.adroit.ccxtrest.invoker --group-id ph.adoit.ccxtrest --artifact-id ccxt-rest-$lang-client --artifact-version $npm_package_version -c /local/config.json --additional-properties scmConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmDeveloperConnection=\"scm:git:git@github.com:franz-see/ccxt-rest-$lang-client.git\" --additional-properties scmUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactUrl=\"https://github.com/franz-see/ccxt-rest-$lang-client\" --additional-properties artifactDescription=\"ccxt-rest $lang client\" -i /local/api/swagger/swagger.yaml -l $lang -o /local/clients/$lang",
+    "generate:client": "rm -rf ./clients/$lang && docker run --rm -v ${PWD}:/local swaggerapi/swagger-codegen-cli generate --api-package ph.adroit.ccxtrest.api --model-package ph.adroit.ccxtrest.model --invoker-package ph.adroit.ccxtrest.invoker --group-id ph.adoit.ccxtrest --artifact-id ccxt-rest-$lang-client --artifact-version $npm_package_version -c /local/config.json --additional-properties scmConnection=\"scm:git:git@github.com:ccxt-rest/ccxt-rest-$lang-client.git\" --additional-properties scmDeveloperConnection=\"scm:git:git@github.com:ccxt-rest/ccxt-rest-$lang-client.git\" --additional-properties scmUrl=\"https://github.com/ccxt-rest/ccxt-rest-$lang-client\" --additional-properties artifactUrl=\"https://github.com/ccxt-rest/ccxt-rest-$lang-client\" --additional-properties artifactDescription=\"ccxt-rest $lang client\" -i /local/api/swagger/swagger.yaml -l $lang -o /local/clients/$lang",
     "generate:clients": "for lang in `cat codegen_languages.txt`; do lang=$lang npm run generate:client; done",
     "generate:docs": "node ./scripts/generate-docs.js",
     "swagger:verify_version": "node ./scripts/verify-swagger-version.js"

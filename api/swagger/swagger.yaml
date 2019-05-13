@@ -8,7 +8,7 @@ info:
     url: "https://adroit.ph/ccxt-rest-contact-us/"
   license:
     name: "MIT"
-    url: "https://github.com/franz-see/ccxt-rest/blob/master/LICENSE.txt"
+    url: "https://github.com/ccxt-rest/ccxt-rest/blob/master/LICENSE.txt"
 servers:
   - url: 'http://localhost:3000/'
 tags:

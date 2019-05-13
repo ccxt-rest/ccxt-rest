@@ -24,14 +24,14 @@ deploy:
     skip_cleanup: true
     on:
       branch: develop
-      repo: franz-see/ccxt-rest
+      repo: ccxt-rest/ccxt-rest
   - provider: npm
     email: franz@see.net.ph
     api_key: $NPM_TOKEN
     skip_cleanup: true
     on:
       tags: true
-      repo: franz-see/ccxt-rest
+      repo: ccxt-rest/ccxt-rest
 
 branches:
   only:

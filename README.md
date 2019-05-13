@@ -10,10 +10,10 @@
 Connect to 100+ <span style="font-style:bold;text-decoration:underline;font-size:1.5em">C</span>rypto <span style="font-style:bold;text-decoration:underline;font-size:1.5em">C</span>urrency e<span style="font-style:bold;text-decoration:underline;font-size:1.5em">X</span>change <span style="font-style:bold;text-decoration:underline;font-size:1.5em">T</span>rading platforms using the same <span style="font-style:bold;text-decoration:underline;font-size:1.5em">REST</span> API!
 </p>
 
-[![Build Status](https://travis-ci.org/franz-see/ccxt-rest.svg)](https://travis-ci.org/franz-see/ccxt-rest)
+[![Build Status](https://travis-ci.org/ccxt-rest/ccxt-rest.svg)](https://travis-ci.org/ccxt-rest/ccxt-rest)
 [![npm](https://img.shields.io/npm/v/ccxt-rest.svg)](https://npmjs.com/package/ccxt-rest)
 [![NPM Downloads](https://img.shields.io/npm/dm/ccxt-rest.svg)](https://www.npmjs.com/package/ccxt-rest)
-[![Docker Pulls](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svg)](https://img.shields.io/docker/pulls/franzsee/ccxt-rest.svgt)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ccxtrest/ccxt-rest.svg)](https://img.shields.io/docker/pulls/ccxtrest/ccxt-rest.svgt)
 [![Supported Exchanges](https://img.shields.io/badge/exchanges-133-blue.svg)](https://github.com/ccxt/ccxt/wiki/Exchange-Markets)
 
 [![Gitter](https://img.shields.io/gitter/room/ccxt-rest/community.svg)](https://gitter.im/ccxt-rest/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -49,7 +49,7 @@ You can install either through docker or as a global node package
 ## Docker
 
 ```bash
-$ docker run -p 3000:3000 franzsee/ccxt-rest
+$ docker run -p 3000:3000 ccxtrest/ccxt-rest
 ```
 
 ## NPM Package
