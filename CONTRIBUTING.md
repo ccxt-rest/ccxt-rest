@@ -22,7 +22,7 @@ The fix there may be in [CCXT](https://github.com/ccxt/ccxt), in CCXT-REST, or b
 If you see a particular exchange you want to try to investigate, you can clone this repo
 
 ```
-git clone https://github.com/franz-see/ccxt-rest.git
+git clone https://github.com/ccxt-rest/ccxt-rest.git
 ```
 
 And then run the Exchange Summary Dashboard test.
@@ -44,13 +44,13 @@ _Note: the `--` after the script name `generate:exchangeSummary` means whatever 
 
 # How to Submit a Contribution
 
-If there are no existing [issues](https://github.com/franz-see/ccxt-rest/issues) yet
+If there are no existing [issues](https://github.com/ccxt-rest/ccxt-rest/issues) yet
 
 1. Create your own fork of the code
 2. Do the changes in your fork
 3. Submit a Pull Request
 4. Comment your Pull Request URL into the Github Issue that that pull request is for.
-   * Note: If there are no associated issues yet for your Pull Request, kindly [create an issue](https://github.com/franz-see/ccxt-rest/issues/new/choose) first
+   * Note: If there are no associated issues yet for your Pull Request, kindly [create an issue](https://github.com/ccxt-rest/ccxt-rest/issues/new/choose) first
 
 
 # How to file a Bug / Feature Request / Other Issues
