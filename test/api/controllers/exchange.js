@@ -287,7 +287,7 @@ describe('> controllers', function() {
       });
     });
 
-    describe('> Given broken exchanges', function() {
+    /*describe('> Given broken exchanges', function() {
       ['allcoin', 'quadrigacx'].forEach(function(exchangeName) {
         it(`> [${exchangeName}] When trying to instantiate, then 503`, function(done) {
           request(server)
@@ -297,7 +297,7 @@ describe('> controllers', function() {
             .expect(503, done);
         })
       })
-    });
+    });*/
 
   });
 
