@@ -42,8 +42,7 @@ config/runtime.yaml
 ## ccxt-rest specifics
 clients
 out
-scripts/exchange-summary-dashboard/generated/**
-scripts/integration-tests/generated/**
+test/generated/**
 database.sqlite3
 
 # After npm pack

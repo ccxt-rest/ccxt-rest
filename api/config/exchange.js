@@ -6,15 +6,7 @@ const ccxt = require('ccxt')
 ;
 
 const UNSUPPORTED_EXCHANGES = {
-    'allcoin' : {
-        'status' : 'broken',
-        'moreInfo' : 'https://github.com/ccxt/ccxt/issues/2962'
-    },
-    'quadrigacx' : {
-        'status' : 'for delisting',
-        'moreInfo' : 'https://github.com/ccxt/ccxt/issues/4707'
-    }
- }
+}
 
 let exchangeConfigs = {
     bitso: {

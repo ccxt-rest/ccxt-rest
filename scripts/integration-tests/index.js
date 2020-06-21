@@ -5,6 +5,24 @@ const path = require('path')
 const exchangeConfig = require('../../api/config/exchange')
 
 const ccxtRestTestExchangeDetails = process.env.CCXTREST_TEST_EXCHANGEDETAILS
+if (!ccxtRestTestExchangeDetails) {
+    console.log('Skipping integration tests because there\'s no CCXTREST_TEST_EXCHANGEDETAILS environment variable found')
+    console.log('The format of CCXTREST_TEST_EXCHANGEDETAILS is:\n' + 
+        '{\n' + 
+        '    "<exchangeName>" : {\n' + 
+        '        "creds" : {\n' + 
+        '           "id": "(optional) <any unique identifier>",\n' + 
+        '           "apiKey": "(required) <api key to the exchange>",\n' + 
+        '           "secret": "(required) <secret of the api key to the exchange>"\n' + 
+        '       },\n' + 
+        '       "knownCurrencyPairs" : ["<list of currency pairs>"], \n' + 
+        '       "targetCurrencyPair" : "<one of the currency pairs in knownCurrencyPairs>"\n' + 
+        '   }\n' + 
+        '}\n'
+     );
+    return;
+}
+
 const exchangeDetailsMap = JSON.parse(ccxtRestTestExchangeDetails)
 
 const SKIPPED_EXCHANGES = JSON.parse(process.env.SKIPPED_EXCHANGES || '[]')
@@ -15,11 +33,15 @@ parallelTest.runParallelProcessTests(
     exchangeConfig.exchanges
         .filter(exchangeName => exchangeDetailsMap[exchangeName])
         .filter(exchangeName => !SKIPPED_EXCHANGES.includes(exchangeName)), 
-    `${__dirname}/generated`, 
+    `${__dirname}/../../test/generated`, 
     `${__dirname}/_template-test.js`, 
     (testContent, exchangeName) => {
         var exchangeDetails = exchangeDetailsMap[exchangeName] || {};
-        const exchangeId = exchangeDetails.creds ? exchangeDetails.creds.id : (exchangeName + new Date().getTime());
+        const exchangeId = (exchangeDetails.creds && exchangeDetails.creds.id) || (exchangeName + new Date().getTime());
+
+        if (!exchangeDetails.creds.id) {
+            exchangeDetails.creds.id = exchangeId
+        }
 
         const creds = JSON.stringify(exchangeDetails.creds)
 

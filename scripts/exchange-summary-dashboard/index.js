@@ -146,7 +146,7 @@ const afterAll = function() {
 
 parallelTest.runParallelTests(
     exchangeConfig.exchanges, 
-    `${__dirname}/generated`, 
+    `${__dirname}/../../test/generated`, 
     `${__dirname}/_template-test.js`, 
     (testContent, exchangeName) => {
         const market = marketPerExchange[exchangeName]

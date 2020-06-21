@@ -63,7 +63,7 @@ function generateTestFiles(baseUrl, exchangeList, testDir, templateFile, postTes
             .replace(new RegExp('%%exchangeName%%', 'g'), exchangeName);
 
         testContent = postTestFileGenerationProcessor(testContent, exchangeName)
-        fs.writeFileSync(`${testDir}/${exchangeName}.js`, testContent)
+        fs.writeFileSync(`${testDir}/${exchangeName}-test.js`, testContent)
     })
 }
 
