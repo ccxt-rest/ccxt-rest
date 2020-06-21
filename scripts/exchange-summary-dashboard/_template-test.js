@@ -1,4 +1,4 @@
-const generateTest = require('../util').generateTest
+const generateTest = require('./../../scripts//exchange-summary-dashboard/util').generateTest
 
 const _ctx = {
     baseUrl : '%%baseUrl%%',
