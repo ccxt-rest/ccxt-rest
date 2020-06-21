@@ -33,11 +33,15 @@ parallelTest.runParallelProcessTests(
     exchangeConfig.exchanges
         .filter(exchangeName => exchangeDetailsMap[exchangeName])
         .filter(exchangeName => !SKIPPED_EXCHANGES.includes(exchangeName)), 
-    `${__dirname}/generated`, 
+    `${__dirname}/../../test/generated`, 
     `${__dirname}/_template-test.js`, 
     (testContent, exchangeName) => {
         var exchangeDetails = exchangeDetailsMap[exchangeName] || {};
         const exchangeId = (exchangeDetails.creds && exchangeDetails.creds.id) || (exchangeName + new Date().getTime());
+
+        if (!exchangeDetails.creds.id) {
+            exchangeDetails.creds.id = exchangeId
+        }
 
         const creds = JSON.stringify(exchangeDetails.creds)
 

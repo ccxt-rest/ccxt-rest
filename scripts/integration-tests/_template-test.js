@@ -2,12 +2,12 @@ const expect = require('chai').expect;
 const should = require('should');
 const superagent = require('superagent');
 
-const db = require('../../../api/models');
-const getUnattractiveOrderPlacement = require('../../_common/get-unattractive-order-placement').getUnattractiveOrderPlacement
-const jwtHelper = require('../../../api/helpers/jwt-helper')
+const db = require('./../../api/models');
+const getUnattractiveOrderPlacement = require('./../../scripts/_common/get-unattractive-order-placement').getUnattractiveOrderPlacement
+const jwtHelper = require('./../../api/helpers/jwt-helper')
 
 const TIMEOUT_MS = process.env.TIMEOUT_MS || 10000
-const BASE_URL = process.env.BASE_URL
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
 
 const creds = JSON.parse('%%creds%%')
 const knownCurrencyPairs = JSON.parse('%%knownCurrencyPairs%%')
