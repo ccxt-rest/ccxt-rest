@@ -463,7 +463,7 @@
   "readme": "README.md",
   "main": "app.js",
   "dependencies": {
-    "async": "^2.6.2",
+    "async": "^3.2.2",
     "bignumber.js": "^8.1.1",
     "body-parser": "^1.18.3",
     "ccxt": "^1.29.52",
