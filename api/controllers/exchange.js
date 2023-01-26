@@ -26,6 +26,8 @@ module.exports = {
   trades: trades,
   ticker: ticker,
   tickers: tickers,
+  fetchFundingRates: fetchFundingRates,
+  fetchFundingRate: fetchFundingRate,
   balances: balances,
   createOrder: createOrder,
   cancelOrder: cancelOrder,
@@ -170,6 +172,26 @@ function tickers(req, res) {
     execute(req, res, 
       ['symbol'], 
       'fetchTickers', 
+      (response) => Object.keys(response).sort().map(symbol => new exchange_response.TickerResponse(response[symbol]))
+    )
+  })
+}
+
+function fetchFundingRates(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'fetchFundingRates', (req, res) => {
+    execute(req, res, 
+      ['symbol'], 
+      'fetchFundingRates', 
+      (response) => Object.keys(response).sort().map(symbol => new exchange_response.TickerResponse(response[symbol]))
+    )
+  })
+}
+
+function fetchFundingRate(req, res) {
+  _doExchangeSpecificOrDefault(req, res, 'fetchFundingRate', (req, res) => {
+    execute(req, res, 
+      ['symbol'], 
+      'fetchFundingRate', 
       (response) => Object.keys(response).sort().map(symbol => new exchange_response.TickerResponse(response[symbol]))
     )
   })
