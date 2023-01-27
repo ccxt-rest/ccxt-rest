@@ -23,7 +23,8 @@ fs
     return (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js');
   })
   .forEach(file => {
-    const model = sequelize['import'](path.join(__dirname, file));
+    // Updated according to https://stackoverflow.com/questions/62917111/sequelize-import-is-not-a-function
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
     db[model.name] = model;
   });
 
@@ -38,8 +39,11 @@ db.Sequelize = Sequelize;
 
 db.migrate = function() {
   const sequelize = new Sequelize(dbConfig);
+  // Updated according to
+  // https://stackoverflow.com/questions/72003461/sequelize-umzug-migrations-error-invalid-umzug-storage
+  const { Umzug, SequelizeStorage } = require('umzug');
   const umzug     = new Umzug({
-    storage: "sequelize",
+    storage: new SequelizeStorage({ sequelize }),
   
     storageOptions: {
       sequelize: sequelize

@@ -24,7 +24,7 @@ var jsyaml = require('js-yaml');
 var serverPort = config.port;
 
 var spec = fs.readFileSync(path.join(__dirname, '/api/swagger/swagger.yaml'), 'utf8');
-var oasDoc = jsyaml.safeLoad(spec);
+var oasDoc = jsyaml.load(spec);
 
 var options_object = {
   controllers: path.join(__dirname, './api/controllers'),
@@ -93,6 +93,7 @@ function start(callback) {
     })
 }
 
+start()
 
 // for testing
 module.exports = {
